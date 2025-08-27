@@ -2,7 +2,8 @@
 #include <string.h>
 
 int main() {
-    printf("Hello, world!");
-    printf("Hello, world2!");
+    int x = 0;
+    printf("Hello, world! ");
+    printf("%s: %d",  "Hi!", x + 2);
     return 0;
 }

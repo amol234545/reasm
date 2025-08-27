@@ -36,6 +36,7 @@ local registers = {
 }
 local functions = {
     ["printf"] = function()
+        -- read string
         local pointer = registers["a0"]
         local str = ""
         local byte = -1
@@ -44,6 +45,19 @@ local functions = {
             str = str .. string.char(byte)
             pointer = pointer + 1
         end
+
+        -- format string
+        --- extract args
+        local args = {}
+        for key, value in pairs(registers) do
+           	if string.match(key, "^a%d+$") then
+          		local index = tonumber(string.match(key, "%d+"))
+          		args[index] = value
+           	end
+        end
+        str = string.format(str, unpack(args))
+
+        -- print
         print(str)
     end
 }
@@ -61,5 +75,5 @@ end
 -- /* Auto generated code ends here */
 
 --return function()
-main()
+    main()
 --end

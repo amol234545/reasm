@@ -36,6 +36,7 @@ local registers = {
 }
 local functions = {
     ["printf"] = function()
+        -- read string
         local pointer = registers["a0"]
         local str = ""
         local byte = -1
@@ -44,6 +45,19 @@ local functions = {
             str = str .. string.char(byte)
             pointer = pointer + 1
         end
+
+        -- format string
+        --- extract args
+        local args = {}
+        for key, value in pairs(registers) do
+           	if string.match(key, "^a%d+$") then
+          		local index = tonumber(string.match(key, "%d+"))
+          		args[index] = value
+           	end
+        end
+        str = string.format(str, unpack(args))
+
+        -- print
         print(str)
     end
 }
@@ -65,23 +79,28 @@ end
 -- ASM ATTRIBUTE: .p2align	1
 -- ASM ATTRIBUTE: .type	main,@function
 function main() -- main
-	registers["sp"] = registers["sp"] + -16
-	buffer.writei32(memory, registers["sp"]+12, registers["ra"])
-	buffer.writei32(memory, registers["sp"]+8, registers["s0"])
-	registers["s0"] = registers["sp"] + 16
+	registers["sp"] = registers["sp"] + -32
+	buffer.writei32(memory, registers["sp"]+28, registers["ra"])
+	buffer.writei32(memory, registers["sp"]+24, registers["s0"])
+	registers["s0"] = registers["sp"] + 32
 	registers["a0"] = 0
-	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
+	buffer.writei32(memory, registers["s0"]+-20, registers["a0"])
 	buffer.writei32(memory, registers["s0"]+-12, registers["a0"])
+	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
 	registers["a0"] = hi(data["str"])
 	registers["a0"] = registers["a0"] + lo(data["str"])
 	functions["printf"]() -- invoke provided function printf
+	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
+	registers["a2"] = registers["a0"] + 2
 	registers["a0"] = hi(data["str.1"])
 	registers["a0"] = registers["a0"] + lo(data["str.1"])
+	registers["a1"] = hi(data["str.2"])
+	registers["a1"] = registers["a1"] + lo(data["str.2"])
 	functions["printf"]() -- invoke provided function printf
-	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
-	registers["ra"] = buffer.readi32(memory, registers["sp"]+12)
-	registers["s0"] = buffer.readi32(memory, registers["sp"]+8)
-	registers["sp"] = registers["sp"] + 16
+	registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
+	registers["ra"] = buffer.readi32(memory, registers["sp"]+28)
+	registers["s0"] = buffer.readi32(memory, registers["sp"]+24)
+	registers["sp"] = registers["sp"] + 32
 	return
 end -- main (main)
 -- ASM ATTRIBUTE: .type	.L.str,@object
@@ -89,8 +108,11 @@ end -- main (main)
 buffer.writestring(memory, 0, "Hello, world!\0")
 data["str"] = 0 -- represents ^
 -- ASM ATTRIBUTE: .type	.L.str.1,@object
-buffer.writestring(memory, 14, "Hello, world2!\0")
+buffer.writestring(memory, 14, "%s: %d\0")
 data["str.1"] = 14 -- represents ^
+-- ASM ATTRIBUTE: .type	.L.str.2,@object
+buffer.writestring(memory, 21, "Hi!\0")
+data["str.2"] = 21 -- represents ^
 -- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 -- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
 -- ASM ATTRIBUTE: .addrsig
@@ -99,5 +121,5 @@ data["str.1"] = 14 -- represents ^
 -- /* Auto generated code ends here */
 
 --return function()
-main()
+    main()
 --end
