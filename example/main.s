@@ -15,15 +15,16 @@ main:                                   # @main
 	sw	a0, -20(s0)                     # 4-byte Folded Spill
 	sw	a0, -12(s0)
 	sw	a0, -16(s0)
+	lw	a0, -16(s0)
+	addi	a0, a0, 5
+	sw	a0, -16(s0)
+	lw	a0, -16(s0)
+	addi	a0, a0, -3
+	sw	a0, -16(s0)
+	lw	a0, -16(s0)
+	addi	a1, a0, 2
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
-	call	printf
-	lw	a0, -16(s0)
-	addi	a2, a0, 2
-	lui	a0, %hi(.L.str.1)
-	addi	a0, a0, %lo(.L.str.1)
-	lui	a1, %hi(.L.str.2)
-	addi	a1, a1, %lo(.L.str.2)
 	call	printf
                                         # kill: def $x11 killed $x10
 	lw	a0, -20(s0)                     # 4-byte Folded Reload
@@ -37,18 +38,8 @@ main:                                   # @main
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .L.str:
-	.asciz	"Hello, world! "
-	.size	.L.str, 15
-
-	.type	.L.str.1,@object                # @.str.1
-.L.str.1:
-	.asciz	"%s: %d"
-	.size	.L.str.1, 7
-
-	.type	.L.str.2,@object                # @.str.2
-.L.str.2:
-	.asciz	"Hi!"
-	.size	.L.str.2, 4
+	.asciz	"Hello, world! %d"
+	.size	.L.str, 17
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits

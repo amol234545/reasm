@@ -111,17 +111,6 @@ func size(w *OutputWriter, components []string) {
 func ret(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "return\n")
 }
-func addi(w *OutputWriter, command AssemblyCommand) {
-	offset := compile_register(command.Arguments[2])
-	WriteIndentedString(w, "registers[\"%s\"] = registers[\"%s\"] + %s\n", command.Arguments[0].Source, command.Arguments[1].Source, offset)
-}
-func subi(w *OutputWriter, command AssemblyCommand) {
-	offset := compile_macro_data(command.Arguments[2].Source)
-	if offset == "" {
-		offset = command.Arguments[2].Source
-	}
-	WriteIndentedString(w, "registers[\"%s\"] = %s - %s\n", command.Arguments[0].Source, command.Arguments[1].Source, offset)
-}
 func sw(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "buffer.writei32(memory, %s, %s)\n", compile_register(command.Arguments[1]), compile_register(command.Arguments[0]))
 }
@@ -129,8 +118,7 @@ func sh(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "buffer.writei16(memory, %s, %s)\n", compile_register(command.Arguments[1]), compile_register(command.Arguments[0]))
 }
 func li(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = %d\n", command.Arguments[0].Source, command.Arguments[1].Offset)
-	/* TODO: add an addi instruction to add the load 12 bits */
+	WriteIndentedString(w, "registers[\"%s\"] = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 func lw(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = buffer.readi32(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
@@ -146,18 +134,34 @@ func call(w *OutputWriter, command AssemblyCommand) {
 		WriteIndentedString(w, "%s() -- invoke %s\n", w.LabelCorrespondence[function], function)
 	}
 }
+func slli(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func srli(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.rshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func add(w *OutputWriter, command AssemblyCommand) { /* add & addi instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = %s + %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func sub(w *OutputWriter, command AssemblyCommand) { /* add & addi instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = %s - %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
 
 /* map instructions */
 var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"ret":  ret,
-	"addi": addi,
-	"subi": subi,
 	"sw":   sw,
 	"li":   li,
 	"lw":   lw,
 	"sh":   sh,
 	"lui":  lui,
 	"call": call,
+	"slli": slli,
+	"srli": srli,
+	"add":  add,
+	"addi": add,
+	"sub":  add,
+	"subi": sub,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,
@@ -173,6 +177,8 @@ func CompileLuau(writer *OutputWriter, command AssemblyCommand) {
 		}
 
 		if cmdFunc, ok := instructions[command.Name]; ok {
+			WriteIndentedString(writer, "-- %s (%v)\n", command.Name, command.Arguments)
+
 			cmdFunc(writer, command)
 		} else {
 			WriteIndentedString(writer, "-- unknown command: %s (%v)\n", command.Name, command.Arguments)

@@ -79,40 +79,59 @@ end
 -- ASM ATTRIBUTE: .p2align	1
 -- ASM ATTRIBUTE: .type	main,@function
 function main() -- main
+	-- addi ([{0 false sp } {0 false sp } {0 true -32 }])
 	registers["sp"] = registers["sp"] + -32
+	-- sw ([{0 false ra } {28 true sp }])
 	buffer.writei32(memory, registers["sp"]+28, registers["ra"])
+	-- sw ([{0 true s0 } {24 true sp }])
 	buffer.writei32(memory, registers["sp"]+24, registers["s0"])
+	-- addi ([{0 true s0 } {0 false sp } {0 true 32 }])
 	registers["s0"] = registers["sp"] + 32
+	-- li ([{0 true a0 } {0 true 0 }])
 	registers["a0"] = 0
+	-- sw ([{0 true a0 } {-20 true s0 }])
 	buffer.writei32(memory, registers["s0"]+-20, registers["a0"])
+	-- sw ([{0 true a0 } {-12 true s0 }])
 	buffer.writei32(memory, registers["s0"]+-12, registers["a0"])
+	-- sw ([{0 true a0 } {-16 true s0 }])
 	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
-	registers["a0"] = hi(data["str"])
-	registers["a0"] = registers["a0"] + lo(data["str"])
-	functions["printf"]() -- invoke provided function printf
+	-- lw ([{0 true a0 } {-16 true s0 }])
 	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
-	registers["a2"] = registers["a0"] + 2
-	registers["a0"] = hi(data["str.1"])
-	registers["a0"] = registers["a0"] + lo(data["str.1"])
-	registers["a1"] = hi(data["str.2"])
-	registers["a1"] = registers["a1"] + lo(data["str.2"])
+	-- addi ([{0 true a0 } {0 true a0 } {0 true 5 }])
+	registers["a0"] = registers["a0"] + 5
+	-- sw ([{0 true a0 } {-16 true s0 }])
+	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
+	-- lw ([{0 true a0 } {-16 true s0 }])
+	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
+	-- addi ([{0 true a0 } {0 true a0 } {0 true -3 }])
+	registers["a0"] = registers["a0"] + -3
+	-- sw ([{0 true a0 } {-16 true s0 }])
+	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
+	-- lw ([{0 true a0 } {-16 true s0 }])
+	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
+	-- addi ([{0 true a1 } {0 true a0 } {0 true 2 }])
+	registers["a1"] = registers["a0"] + 2
+	-- lui ([{0 true a0 } {0 false .L.str hi}])
+	registers["a0"] = hi(data["str"])
+	-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
+	registers["a0"] = registers["a0"] + lo(data["str"])
+	-- call ([{0 false printf }])
 	functions["printf"]() -- invoke provided function printf
+	-- lw ([{0 true a0 } {-20 true s0 }])
 	registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
+	-- lw ([{0 false ra } {28 true sp }])
 	registers["ra"] = buffer.readi32(memory, registers["sp"]+28)
+	-- lw ([{0 true s0 } {24 true sp }])
 	registers["s0"] = buffer.readi32(memory, registers["sp"]+24)
+	-- addi ([{0 false sp } {0 false sp } {0 true 32 }])
 	registers["sp"] = registers["sp"] + 32
+	-- ret ([])
 	return
 end -- main (main)
 -- ASM ATTRIBUTE: .type	.L.str,@object
 -- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
-buffer.writestring(memory, 0, "Hello, world!\0")
+buffer.writestring(memory, 0, "Hello, world! %d\0")
 data["str"] = 0 -- represents ^
--- ASM ATTRIBUTE: .type	.L.str.1,@object
-buffer.writestring(memory, 14, "%s: %d\0")
-data["str.1"] = 14 -- represents ^
--- ASM ATTRIBUTE: .type	.L.str.2,@object
-buffer.writestring(memory, 21, "Hi!\0")
-data["str.2"] = 21 -- represents ^
 -- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 -- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
 -- ASM ATTRIBUTE: .addrsig
