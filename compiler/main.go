@@ -4,11 +4,14 @@ import (
 	"strings"
 )
 
+var enders = map[string]func(*OutputWriter) []byte{
+	"luau": EndLuau,
+}
 var compilers = map[string]func(*OutputWriter, AssemblyCommand){
 	"luau": CompileLuau,
 }
-var enders = map[string]func(*OutputWriter) []byte{
-	"luau": EndLuau,
+var starters = map[string]func(*OutputWriter){
+	"luau": StartLuau,
 }
 
 func Compile(assembly []byte, lang string) []byte {
@@ -17,7 +20,8 @@ func Compile(assembly []byte, lang string) []byte {
 	lines := strings.Split(assembly_str, "\n")
 
 	/* compile line by line */
-	var writer = &OutputWriter{Buffer: []byte(""), LabelCorrespondence: make(map[string]string), CurrentLabel: "", MemoryDevelopmentPointer: 0}
+	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0}
+	starters[lang](writer)
 	for _, line := range lines {
 		var command AssemblyCommand = Parse(line)
 

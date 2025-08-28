@@ -17,7 +17,7 @@ func add_end(w *OutputWriter) {
 	}
 
 	w.Depth--
-	WriteString(w, "end -- %s (%s)\n", w.LabelCorrespondence[w.CurrentLabel], w.CurrentLabel)
+	WriteIndentedString(w, "end -- %s (%s)\n", w.CurrentLabel, w.CurrentLabel)
 }
 func compile_macro_data(data string) string {
 	var compiled string
@@ -54,10 +54,7 @@ func compile_register(argument Argument) string {
 	return compiled
 }
 func jump_to(w *OutputWriter, label string) {
-	address := HashVar(label) /* we need to hash since we can jump to future labels */
-
-	WriteIndentedString(w, "brokeout = true\n")
-	WriteIndentedString(w, "%s()\n", address)
+	WriteIndentedString(w, "PC = \"%s\"\n", label)
 }
 
 /* instructions */
@@ -65,33 +62,18 @@ func jump_to(w *OutputWriter, label string) {
 
 /* basic */
 func label(w *OutputWriter, command AssemblyCommand) {
-	/* has this label been defined already? */
-	corr := w.LabelCorrespondence[command.Name]
-	if corr != "" {
-		panic("Label already defined")
-	}
-
 	/* end previous label */
 	add_end(w)
 
 	/* define it */
-	newCor := HashVar(command.Name)
-	if command.Name == "main" { /* preserve main */
-		newCor = "main"
-	}
-	w.LabelCorrespondence[newCor] = command.Name
-	w.CurrentLabel = newCor
-	w.Depth++
+	w.CurrentLabel = command.Name
 
-	/* append to memorization */
 	if strings.HasPrefix(command.Name, ".L.") {
-		w.InitializationLabel = append(w.InitializationLabel, newCor)
+		WriteIndentedString(w, "if init then -- %s (initialization)\n", command.Name)
 	} else {
-		w.OrderedLabel = append(w.OrderedLabel, newCor)
+		WriteIndentedString(w, "if PC == \"%s\" and not init then -- %s (runtime) \n", command.Name, command.Name)
 	}
-
-	/* code it */
-	WriteString(w, "function %s() -- %s\n", newCor, command.Name)
+	w.Depth++
 }
 
 /* attributes */
@@ -140,23 +122,7 @@ func lui(w *OutputWriter, command AssemblyCommand) {
 }
 func call(w *OutputWriter, command AssemblyCommand) {
 	var function = command.Arguments[0].Source
-
-	/* locate the function address */
-	address, exists := "", false
-	for cAddress, label := range w.LabelCorrespondence {
-		if label == function {
-			address = cAddress
-			exists = true
-			break
-		}
-	}
-
-	/* call */
-	if exists {
-		WriteIndentedString(w, "%s() -- invoke %s\n", address, function)
-	} else {
-		WriteIndentedString(w, "functions[\"%s\"]() -- invoke provided function %s\n", function, function)
-	}
+	WriteIndentedString(w, "functions[\"%s\"]() -- invoke provided function %s\n", function, function)
 }
 func slli(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
@@ -177,8 +143,8 @@ func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions 
 	WriteIndentedString(w, "if %s < %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
 	jump_to(w, command.Arguments[2].Source)
-	w.Depth--
 	WriteIndentedString(w, "return\n")
+	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 
@@ -232,21 +198,16 @@ func CompileLuau(writer *OutputWriter, command AssemblyCommand) {
 		label(writer, command)
 	}
 }
+func StartLuau(writer *OutputWriter) {
+	WriteIndentedString(writer, "while PC do\n")
+	writer.Depth++
+}
 func EndLuau(writer *OutputWriter) []byte {
-	add_end(writer) // end the current label
-
-	/* start all initialization labels, like allocating strings */
-	WriteString(writer, "\n\n--- Startup code (allocate strings, etc)\n")
-	for _, initializing := range writer.InitializationLabel {
-		WriteString(writer, "%s()\n", initializing)
-	}
-
-	/* main loop */
-	WriteString(writer, "local orderedLabels = {\n")
-	for _, label := range writer.OrderedLabel {
-		WriteString(writer, "\t%s,\n", label)
-	}
-	WriteString(writer, "};\n")
+	add_end(writer) // end the current label, if active
+	// end the while loop we initialized in StartLuau
+	WriteIndentedString(writer, "init = false\n")
+	writer.Depth--
+	WriteIndentedString(writer, "end")
 
 	return []byte(strings.Replace(luau_boilerplate, "--{code here}", string(writer.Buffer), 1))
 }

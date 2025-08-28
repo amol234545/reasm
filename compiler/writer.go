@@ -16,14 +16,11 @@ type PendingData struct {
 	Data string
 }
 type OutputWriter struct {
-	Buffer                   []byte            /* the output */
-	LabelCorrespondence      map[string]string /* a map of all the labels ASM name to their "fake" name */
-	CurrentLabel             string            /* keep track of current label  */
-	InitializationLabel      []string          /* labels to call when program starts */
-	OrderedLabel             []string          /* labels in order */
-	MemoryDevelopmentPointer int32             /* used when generating code that propagates memory with strings */
-	PendingData              PendingData       /* used for remember data across instructions */
-	Depth                    int               /* used for indentation */
+	Buffer                   []byte      /* the output */
+	CurrentLabel             string      /* keep track of current label  */
+	MemoryDevelopmentPointer int32       /* used when generating code that propagates memory with strings */
+	PendingData              PendingData /* used for remember data across instructions */
+	Depth                    int         /* used for indentation */
 }
 
 func WriteString(writer *OutputWriter, format string, args ...any) {

@@ -35,7 +35,6 @@ local registers = {
     ["t5"]   = 0, ["x30"] = 0,
     ["t6"]   = 0, ["x31"] = 0,
 }
-local brokeout = false -- set to true when a jump occurs to escape main fallback loop
 local functions = {
     ["printf"] = function()
         -- read string
@@ -63,6 +62,8 @@ local functions = {
         print(str)
     end
 }
+local PC = "main"
+local init = true -- becomes false when the buffer is poluted with static data
 
 local function hi(addr)
     return bit32.lshift(bit32.rshift(addr, 12), 12)
@@ -73,8 +74,3 @@ end
 
 ---- Auto generated code starts here
 --{code here}
-
-for _, label in orderedLabels do
-    label()
-    if brokeout then break end
-end
