@@ -1,5 +1,6 @@
 -- Compiled from RISC-V assembly.
 local memory = buffer.create(2048)
+local data = {} -- pointers in memory to static data like strings
 local registers = {
     ["zero"] = 0, ["x0"] = 0,
     ["ra"]   = 0, ["x1"] = 0,
@@ -34,6 +35,7 @@ local registers = {
     ["t5"]   = 0, ["x30"] = 0,
     ["t6"]   = 0, ["x31"] = 0,
 }
+local brokeout = false -- set to true when a jump occurs to escape main fallback loop
 local functions = {
     ["printf"] = function()
         -- read string
@@ -61,7 +63,6 @@ local functions = {
         print(str)
     end
 }
-local data = {}
 
 local function hi(addr)
     return bit32.lshift(bit32.rshift(addr, 12), 12)
@@ -70,10 +71,10 @@ local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
 
--- /* Auto generated code starts here */
+---- Auto generated code starts here
 --{code here}
--- /* Auto generated code ends here */
 
---return function()
-    main()
---end
+for _, label in orderedLabels do
+    label()
+    if brokeout then break end
+end

@@ -7,8 +7,8 @@ import (
 var compilers = map[string]func(*OutputWriter, AssemblyCommand){
 	"luau": CompileLuau,
 }
-var formatters = map[string]func(*OutputWriter) []byte{
-	"luau": FormatLuau,
+var enders = map[string]func(*OutputWriter) []byte{
+	"luau": EndLuau,
 }
 
 func Compile(assembly []byte, lang string) []byte {
@@ -24,5 +24,5 @@ func Compile(assembly []byte, lang string) []byte {
 		compilers[lang](writer, command)
 	}
 
-	return formatters[lang](writer)
+	return enders[lang](writer)
 }

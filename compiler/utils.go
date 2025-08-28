@@ -1,19 +1,21 @@
 package compiler
 
 import (
-	"math/rand"
+	"crypto/sha256"
 	"regexp"
 	"strings"
 )
 
-func RandomVar() string {
+func HashVar(input string) string {
 	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	const alphanumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-	name := []byte{letters[rand.Intn(len(letters))]}
+	hash := sha256.Sum256([]byte(input))
+
+	name := []byte{letters[int(hash[0])%len(letters)]}
 
 	for i := 1; i < 8; i++ {
-		name = append(name, alphanumeric[rand.Intn(len(alphanumeric))])
+		name = append(name, alphanumeric[int(hash[i])%len(alphanumeric)])
 	}
 
 	return string(name)

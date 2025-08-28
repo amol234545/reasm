@@ -12,9 +12,12 @@ var luau_boilerplate string
 
 /* util */
 func add_end(w *OutputWriter) {
-	if w.CurrentLabel != "" {
-		WriteString(w, "end -- %s (%s)\n", w.LabelCorrespondence[w.CurrentLabel], w.CurrentLabel)
+	if w.CurrentLabel == "" {
+		return
 	}
+
+	w.Depth--
+	WriteString(w, "end -- %s (%s)\n", w.LabelCorrespondence[w.CurrentLabel], w.CurrentLabel)
 }
 func compile_macro_data(data string) string {
 	var compiled string
@@ -50,18 +53,18 @@ func compile_register(argument Argument) string {
 
 	return compiled
 }
+func jump_to(w *OutputWriter, label string) {
+	address := HashVar(label) /* we need to hash since we can jump to future labels */
+
+	WriteIndentedString(w, "brokeout = true\n")
+	WriteIndentedString(w, "%s()\n", address)
+}
 
 /* instructions */
 /** todo: handle wraparounds for where it cuts lower or upper bits, also add support for hi and low */
 
 /* basic */
 func label(w *OutputWriter, command AssemblyCommand) {
-	if strings.HasPrefix(command.Name, ".L") {
-		add_end(w)
-		w.CurrentLabel = ""
-		return
-	}
-
 	/* has this label been defined already? */
 	corr := w.LabelCorrespondence[command.Name]
 	if corr != "" {
@@ -72,13 +75,22 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	add_end(w)
 
 	/* define it */
-	newCor := RandomVar()
+	newCor := HashVar(command.Name)
 	if command.Name == "main" { /* preserve main */
 		newCor = "main"
 	}
 	w.LabelCorrespondence[newCor] = command.Name
 	w.CurrentLabel = newCor
+	w.Depth++
 
+	/* append to memorization */
+	if strings.HasPrefix(command.Name, ".L.") {
+		w.InitializationLabel = append(w.InitializationLabel, newCor)
+	} else {
+		w.OrderedLabel = append(w.OrderedLabel, newCor)
+	}
+
+	/* code it */
 	WriteString(w, "function %s() -- %s\n", newCor, command.Name)
 }
 
@@ -128,10 +140,22 @@ func lui(w *OutputWriter, command AssemblyCommand) {
 }
 func call(w *OutputWriter, command AssemblyCommand) {
 	var function = command.Arguments[0].Source
-	if w.LabelCorrespondence[function] == "" {
-		WriteIndentedString(w, "functions[\"%s\"]() -- invoke provided function %s\n", function, function)
+
+	/* locate the function address */
+	address, exists := "", false
+	for cAddress, label := range w.LabelCorrespondence {
+		if label == function {
+			address = cAddress
+			exists = true
+			break
+		}
+	}
+
+	/* call */
+	if exists {
+		WriteIndentedString(w, "%s() -- invoke %s\n", address, function)
 	} else {
-		WriteIndentedString(w, "%s() -- invoke %s\n", w.LabelCorrespondence[function], function)
+		WriteIndentedString(w, "functions[\"%s\"]() -- invoke provided function %s\n", function, function)
 	}
 }
 func slli(w *OutputWriter, command AssemblyCommand) {
@@ -143,8 +167,19 @@ func srli(w *OutputWriter, command AssemblyCommand) {
 func add(w *OutputWriter, command AssemblyCommand) { /* add & addi instructions */
 	WriteIndentedString(w, "registers[\"%s\"] = %s + %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
-func sub(w *OutputWriter, command AssemblyCommand) { /* add & addi instructions */
+func sub(w *OutputWriter, command AssemblyCommand) { /* sub & subi instructions */
 	WriteIndentedString(w, "registers[\"%s\"] = %s - %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
+	jump_to(w, command.Arguments[0].Source)
+}
+func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions */
+	WriteIndentedString(w, "if %s < %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
+	w.Depth++
+	jump_to(w, command.Arguments[2].Source)
+	w.Depth--
+	WriteIndentedString(w, "return\n")
+	WriteIndentedString(w, "end\n")
 }
 
 /* map instructions */
@@ -162,6 +197,8 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"addi": add,
 	"sub":  add,
 	"subi": sub,
+	"j":    jump,
+	"blt":  blt,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,
@@ -195,7 +232,21 @@ func CompileLuau(writer *OutputWriter, command AssemblyCommand) {
 		label(writer, command)
 	}
 }
-func FormatLuau(writer *OutputWriter) []byte {
+func EndLuau(writer *OutputWriter) []byte {
 	add_end(writer) // end the current label
+
+	/* start all initialization labels, like allocating strings */
+	WriteString(writer, "\n\n--- Startup code (allocate strings, etc)\n")
+	for _, initializing := range writer.InitializationLabel {
+		WriteString(writer, "%s()\n", initializing)
+	}
+
+	/* main loop */
+	WriteString(writer, "local orderedLabels = {\n")
+	for _, label := range writer.OrderedLabel {
+		WriteString(writer, "\t%s,\n", label)
+	}
+	WriteString(writer, "};\n")
+
 	return []byte(strings.Replace(luau_boilerplate, "--{code here}", string(writer.Buffer), 1))
 }

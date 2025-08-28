@@ -1,5 +1,6 @@
 -- Compiled from RISC-V assembly.
 local memory = buffer.create(2048)
+local data = {} -- pointers in memory to static data like strings
 local registers = {
     ["zero"] = 0, ["x0"] = 0,
     ["ra"]   = 0, ["x1"] = 0,
@@ -34,6 +35,7 @@ local registers = {
     ["t5"]   = 0, ["x30"] = 0,
     ["t6"]   = 0, ["x31"] = 0,
 }
+local brokeout = false -- set to true when a jump occurs to escape main fallback loop
 local functions = {
     ["printf"] = function()
         -- read string
@@ -61,7 +63,6 @@ local functions = {
         print(str)
     end
 }
-local data = {}
 
 local function hi(addr)
     return bit32.lshift(bit32.rshift(addr, 12), 12)
@@ -70,7 +71,7 @@ local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
 
--- /* Auto generated code starts here */
+---- Auto generated code starts here
 -- ASM ATTRIBUTE: .attribute	4, 16
 -- ASM ATTRIBUTE: .attribute	5, "rv32i2p1_m2p0_a2p1_c2p0_zmmul1p0_zaamo1p0_zalrsc1p0"
 -- ASM ATTRIBUTE: .file	"main.c"
@@ -79,66 +80,102 @@ end
 -- ASM ATTRIBUTE: .p2align	1
 -- ASM ATTRIBUTE: .type	main,@function
 function main() -- main
-	-- addi ([{0 false sp } {0 false sp } {0 true -32 }])
-	registers["sp"] = registers["sp"] + -32
-	-- sw ([{0 false ra } {28 true sp }])
-	buffer.writei32(memory, registers["sp"]+28, registers["ra"])
-	-- sw ([{0 true s0 } {24 true sp }])
-	buffer.writei32(memory, registers["sp"]+24, registers["s0"])
-	-- addi ([{0 true s0 } {0 false sp } {0 true 32 }])
-	registers["s0"] = registers["sp"] + 32
+	-- addi ([{0 false sp } {0 false sp } {0 true -16 }])
+	registers["sp"] = registers["sp"] + -16
+	-- sw ([{0 false ra } {12 true sp }])
+	buffer.writei32(memory, registers["sp"]+12, registers["ra"])
+	-- sw ([{0 true s0 } {8 true sp }])
+	buffer.writei32(memory, registers["sp"]+8, registers["s0"])
+	-- addi ([{0 true s0 } {0 false sp } {0 true 16 }])
+	registers["s0"] = registers["sp"] + 16
 	-- li ([{0 true a0 } {0 true 0 }])
 	registers["a0"] = 0
-	-- sw ([{0 true a0 } {-20 true s0 }])
-	buffer.writei32(memory, registers["s0"]+-20, registers["a0"])
 	-- sw ([{0 true a0 } {-12 true s0 }])
 	buffer.writei32(memory, registers["s0"]+-12, registers["a0"])
 	-- sw ([{0 true a0 } {-16 true s0 }])
 	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
-	-- lw ([{0 true a0 } {-16 true s0 }])
-	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
-	-- addi ([{0 true a0 } {0 true a0 } {0 true 5 }])
-	registers["a0"] = registers["a0"] + 5
-	-- sw ([{0 true a0 } {-16 true s0 }])
-	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
-	-- lw ([{0 true a0 } {-16 true s0 }])
-	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
-	-- addi ([{0 true a0 } {0 true a0 } {0 true -3 }])
-	registers["a0"] = registers["a0"] + -3
-	-- sw ([{0 true a0 } {-16 true s0 }])
-	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
-	-- lw ([{0 true a0 } {-16 true s0 }])
-	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
-	-- addi ([{0 true a1 } {0 true a0 } {0 true 2 }])
-	registers["a1"] = registers["a0"] + 2
+	-- j ([{0 true .LBB0_1 }])
+	brokeout = true
+	iJLoKQVe()
+end -- main (main)
+function iJLoKQVe() -- .LBB0_1
+	-- lw ([{0 true a1 } {-16 true s0 }])
+	registers["a1"] = buffer.readi32(memory, registers["s0"]+-16)
+	-- li ([{0 true a0 } {0 true 9 }])
+	registers["a0"] = 9
+	-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_4 }])
+	if registers["a0"] < registers["a1"] then
+		brokeout = true
+		G7jrMqXI()
+	return
+	end
+	-- j ([{0 true .LBB0_2 }])
+	brokeout = true
+	W4xjIire()
+end -- .LBB0_1 (iJLoKQVe)
+function W4xjIire() -- .LBB0_2
+	-- lw ([{0 true a1 } {-16 true s0 }])
+	registers["a1"] = buffer.readi32(memory, registers["s0"]+-16)
 	-- lui ([{0 true a0 } {0 false .L.str hi}])
 	registers["a0"] = hi(data["str"])
 	-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
 	registers["a0"] = registers["a0"] + lo(data["str"])
 	-- call ([{0 false printf }])
 	functions["printf"]() -- invoke provided function printf
-	-- lw ([{0 true a0 } {-20 true s0 }])
-	registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
-	-- lw ([{0 false ra } {28 true sp }])
-	registers["ra"] = buffer.readi32(memory, registers["sp"]+28)
-	-- lw ([{0 true s0 } {24 true sp }])
-	registers["s0"] = buffer.readi32(memory, registers["sp"]+24)
-	-- addi ([{0 false sp } {0 false sp } {0 true 32 }])
-	registers["sp"] = registers["sp"] + 32
+	-- j ([{0 true .LBB0_3 }])
+	brokeout = true
+	s9NxhGhO()
+end -- .LBB0_2 (W4xjIire)
+function s9NxhGhO() -- .LBB0_3
+	-- lw ([{0 true a0 } {-16 true s0 }])
+	registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
+	-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
+	registers["a0"] = registers["a0"] + 1
+	-- sw ([{0 true a0 } {-16 true s0 }])
+	buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
+	-- j ([{0 true .LBB0_1 }])
+	brokeout = true
+	iJLoKQVe()
+end -- .LBB0_3 (s9NxhGhO)
+function G7jrMqXI() -- .LBB0_4
+	-- li ([{0 true a0 } {0 true 0 }])
+	registers["a0"] = 0
+	-- lw ([{0 false ra } {12 true sp }])
+	registers["ra"] = buffer.readi32(memory, registers["sp"]+12)
+	-- lw ([{0 true s0 } {8 true sp }])
+	registers["s0"] = buffer.readi32(memory, registers["sp"]+8)
+	-- addi ([{0 false sp } {0 false sp } {0 true 16 }])
+	registers["sp"] = registers["sp"] + 16
 	-- ret ([])
 	return
-end -- main (main)
--- ASM ATTRIBUTE: .type	.L.str,@object
--- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
-buffer.writestring(memory, 0, "Hello, world! %d\0")
-data["str"] = 0 -- represents ^
--- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
--- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
--- ASM ATTRIBUTE: .addrsig
--- ASM ATTRIBUTE: .addrsig_sym printf
+end -- .LBB0_4 (G7jrMqXI)
+function rMcSRMwF() -- .Lfunc_end0
+	-- ASM ATTRIBUTE: .type	.L.str,@object
+	-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
+end -- .Lfunc_end0 (rMcSRMwF)
+function gmCAAcrA() -- .L.str
+	buffer.writestring(memory, 0, "%d\0")
+	data["str"] = 0 -- represents ^
+	-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
+	-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
+	-- ASM ATTRIBUTE: .addrsig
+	-- ASM ATTRIBUTE: .addrsig_sym printf
+end -- .L.str (gmCAAcrA)
 
--- /* Auto generated code ends here */
 
---return function()
-    main()
---end
+--- Startup code (allocate strings, etc)
+gmCAAcrA()
+local orderedLabels = {
+	main,
+	iJLoKQVe,
+	W4xjIire,
+	s9NxhGhO,
+	G7jrMqXI,
+	rMcSRMwF,
+};
+
+
+for _, label in orderedLabels do
+    label()
+    if brokeout then break end
+end

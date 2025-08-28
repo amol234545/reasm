@@ -7,30 +7,35 @@
 	.type	main,@function
 main:                                   # @main
 # %bb.0:
-	addi	sp, sp, -32
-	sw	ra, 28(sp)                      # 4-byte Folded Spill
-	sw	s0, 24(sp)                      # 4-byte Folded Spill
-	addi	s0, sp, 32
+	addi	sp, sp, -16
+	sw	ra, 12(sp)                      # 4-byte Folded Spill
+	sw	s0, 8(sp)                       # 4-byte Folded Spill
+	addi	s0, sp, 16
 	li	a0, 0
-	sw	a0, -20(s0)                     # 4-byte Folded Spill
 	sw	a0, -12(s0)
 	sw	a0, -16(s0)
-	lw	a0, -16(s0)
-	addi	a0, a0, 5
-	sw	a0, -16(s0)
-	lw	a0, -16(s0)
-	addi	a0, a0, -3
-	sw	a0, -16(s0)
-	lw	a0, -16(s0)
-	addi	a1, a0, 2
+	j	.LBB0_1
+.LBB0_1:                                # =>This Inner Loop Header: Depth=1
+	lw	a1, -16(s0)
+	li	a0, 9
+	blt	a0, a1, .LBB0_4
+	j	.LBB0_2
+.LBB0_2:                                #   in Loop: Header=BB0_1 Depth=1
+	lw	a1, -16(s0)
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
 	call	printf
-                                        # kill: def $x11 killed $x10
-	lw	a0, -20(s0)                     # 4-byte Folded Reload
-	lw	ra, 28(sp)                      # 4-byte Folded Reload
-	lw	s0, 24(sp)                      # 4-byte Folded Reload
-	addi	sp, sp, 32
+	j	.LBB0_3
+.LBB0_3:                                #   in Loop: Header=BB0_1 Depth=1
+	lw	a0, -16(s0)
+	addi	a0, a0, 1
+	sw	a0, -16(s0)
+	j	.LBB0_1
+.LBB0_4:
+	li	a0, 0
+	lw	ra, 12(sp)                      # 4-byte Folded Reload
+	lw	s0, 8(sp)                       # 4-byte Folded Reload
+	addi	sp, sp, 16
 	ret
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
@@ -38,8 +43,8 @@ main:                                   # @main
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .L.str:
-	.asciz	"Hello, world! %d"
-	.size	.L.str, 17
+	.asciz	"%d"
+	.size	.L.str, 3
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits
