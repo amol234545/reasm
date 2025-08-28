@@ -103,7 +103,7 @@ func size(w *OutputWriter, components []string) {
 
 /* instructions */
 func ret(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "return\n")
+	WriteIndentedString(w, "break\n")
 }
 func sw(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "buffer.writei32(memory, %s, %s)\n", compile_register(command.Arguments[1]), compile_register(command.Arguments[0]))
@@ -143,7 +143,7 @@ func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions 
 	WriteIndentedString(w, "if %s < %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
 	jump_to(w, command.Arguments[2].Source)
-	WriteIndentedString(w, "return\n")
+	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -158,27 +158,46 @@ func bnez(w *OutputWriter, command AssemblyCommand) { /* bnez & bnezi instructio
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
+func bge(w *OutputWriter, command AssemblyCommand) { /* bge & bgei instructions */
+	WriteIndentedString(w, "if %s >= %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
+	w.Depth++
+	jump_to(w, command.Arguments[2].Source)
+	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func slt(w *OutputWriter, command AssemblyCommand) { /* sltu & sltui instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = if (%s < %s) then 1 else 0\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func srai(w *OutputWriter, command AssemblyCommand) { /* srai & srari instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = bit32.arshift(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
 
 /* map instructions */
 var instructions = map[string]func(*OutputWriter, AssemblyCommand){
-	"ret":  ret,
-	"sw":   sw,
-	"li":   li,
-	"lw":   lw,
-	"sh":   sh,
-	"lui":  lui,
-	"call": call,
-	"slli": slli,
-	"srli": srli,
-	"add":  add,
-	"addi": add,
-	"sub":  sub,
-	"subi": sub,
-	"j":    jump,
-	"blt":  blt,
-	"bnez": bnez,
-	"and":  and,
-	"andi": and,
+	"ret":   ret,
+	"sw":    sw,
+	"li":    li,
+	"lw":    lw,
+	"sh":    sh,
+	"lui":   lui,
+	"call":  call,
+	"slli":  slli,
+	"srli":  srli,
+	"add":   add,
+	"addi":  add,
+	"sub":   sub,
+	"subi":  sub,
+	"j":     jump,
+	"blt":   blt,
+	"bnez":  bnez,
+	"and":   and,
+	"andi":  and,
+	"slt":   slt,
+	"sltu":  slt,
+	"sltiu": slt,
+	"srai":  srai,
+	"bge":   bge,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,
@@ -198,7 +217,7 @@ func CompileLuau(writer *OutputWriter, command AssemblyCommand) {
 
 			cmdFunc(writer, command)
 		} else {
-			WriteIndentedString(writer, "-- unknown command: %s (%v)\n", command.Name, command.Arguments)
+			WriteIndentedString(writer, "-- unknown instruction: %s (%v)\n", command.Name, command.Arguments)
 		}
 	case Attribute:
 		attributeComponents := ReadAttribute(command.Name)

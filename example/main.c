@@ -1,11 +1,20 @@
 #include <stdio.h>
 
 int main() {
-    for (int i = 0; i <= 25; i++) {
-        printf("%d", i);
-        if (i%2 == 0){
-            printf("DIVISIBLE BY 2: %d", i);
+    int n = 25;
+    int i;
+    long long int first = 0, second = 1, next;
+
+    for (i = 0; i < n; i++) {
+        if (i <= 1)
+            next = i; // First two terms are 0 and 1
+        else {
+            next = first + second;
+            first = second;
+            second = next;
         }
+        printf("%d ", (int)next);
     }
+
     return 0;
 }
