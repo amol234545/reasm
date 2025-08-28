@@ -30,7 +30,7 @@ func compile_macro_data(data string) string {
 }
 func compile_register(argument Argument) string {
 	/* does it work as a integer (its a plain) */
-	_, err := strconv.ParseInt(argument.Source, 10, 8)
+	_, err := strconv.Atoi(argument.Source)
 	if err == nil {
 		return argument.Source
 	}
@@ -147,6 +147,17 @@ func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions 
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
+func and(w *OutputWriter, command AssemblyCommand) { /* and & andi instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func bnez(w *OutputWriter, command AssemblyCommand) { /* bnez & bnezi instructions */
+	WriteIndentedString(w, "if %s ~= 0 then\n", compile_register(command.Arguments[0]))
+	w.Depth++
+	jump_to(w, command.Arguments[1].Source)
+	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
 
 /* map instructions */
 var instructions = map[string]func(*OutputWriter, AssemblyCommand){
@@ -161,10 +172,13 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"srli": srli,
 	"add":  add,
 	"addi": add,
-	"sub":  add,
+	"sub":  sub,
 	"subi": sub,
 	"j":    jump,
 	"blt":  blt,
+	"bnez": bnez,
+	"and":  and,
+	"andi": and,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,

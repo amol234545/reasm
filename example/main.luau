@@ -102,11 +102,11 @@ while PC do
 	if PC == ".LBB0_1" and not init then -- .LBB0_1 (runtime) 
 		-- lw ([{0 true a1 } {-16 true s0 }])
 		registers["a1"] = buffer.readi32(memory, registers["s0"]+-16)
-		-- li ([{0 true a0 } {0 true 9 }])
-		registers["a0"] = 9
-		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_4 }])
+		-- li ([{0 true a0 } {0 true 25 }])
+		registers["a0"] = 25
+		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_6 }])
 		if registers["a0"] < registers["a1"] then
-			PC = ".LBB0_4"
+			PC = ".LBB0_6"
 			return
 		end
 		-- j ([{0 true .LBB0_2 }])
@@ -121,10 +121,41 @@ while PC do
 		registers["a0"] = registers["a0"] + lo(data["str"])
 		-- call ([{0 false printf }])
 		functions["printf"]() -- invoke provided function printf
+		-- lw ([{0 true a0 } {-16 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
+		-- srli ([{0 true a1 } {0 true a0 } {0 true 31 }])
+		registers["a1"] = bit32.band(bit32.rshift(registers["a0"], 31), 0xFFFFFFFF)
+		-- add ([{0 true a1 } {0 true a1 } {0 true a0 }])
+		registers["a1"] = registers["a1"] + registers["a0"]
+		-- andi ([{0 true a1 } {0 true a1 } {0 true -2 }])
+		registers["a1"] = bit32.band(registers["a1"], -2)
+		-- sub ([{0 true a0 } {0 true a0 } {0 true a1 }])
+		registers["a0"] = registers["a0"] - registers["a1"]
+		-- bnez ([{0 true a0 } {0 true .LBB0_4 }])
+		if registers["a0"] ~= 0 then
+			PC = ".LBB0_4"
+			continue
+		end
 		-- j ([{0 true .LBB0_3 }])
 		PC = ".LBB0_3"
 	end -- .LBB0_2 (.LBB0_2)
 	if PC == ".LBB0_3" and not init then -- .LBB0_3 (runtime) 
+		-- lw ([{0 true a1 } {-16 true s0 }])
+		registers["a1"] = buffer.readi32(memory, registers["s0"]+-16)
+		-- lui ([{0 true a0 } {0 true .L.str.1 hi}])
+		registers["a0"] = hi(data["str.1"])
+		-- addi ([{0 true a0 } {0 true a0 } {0 true .L.str.1 lo}])
+		registers["a0"] = registers["a0"] + lo(data["str.1"])
+		-- call ([{0 false printf }])
+		functions["printf"]() -- invoke provided function printf
+		-- j ([{0 true .LBB0_4 }])
+		PC = ".LBB0_4"
+	end -- .LBB0_3 (.LBB0_3)
+	if PC == ".LBB0_4" and not init then -- .LBB0_4 (runtime) 
+		-- j ([{0 true .LBB0_5 }])
+		PC = ".LBB0_5"
+	end -- .LBB0_4 (.LBB0_4)
+	if PC == ".LBB0_5" and not init then -- .LBB0_5 (runtime) 
 		-- lw ([{0 true a0 } {-16 true s0 }])
 		registers["a0"] = buffer.readi32(memory, registers["s0"]+-16)
 		-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
@@ -133,8 +164,8 @@ while PC do
 		buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
 		-- j ([{0 true .LBB0_1 }])
 		PC = ".LBB0_1"
-	end -- .LBB0_3 (.LBB0_3)
-	if PC == ".LBB0_4" and not init then -- .LBB0_4 (runtime) 
+	end -- .LBB0_5 (.LBB0_5)
+	if PC == ".LBB0_6" and not init then -- .LBB0_6 (runtime) 
 		-- li ([{0 true a0 } {0 true 0 }])
 		registers["a0"] = 0
 		-- lw ([{0 false ra } {12 true sp }])
@@ -145,7 +176,7 @@ while PC do
 		registers["sp"] = registers["sp"] + 16
 		-- ret ([])
 		return
-	end -- .LBB0_4 (.LBB0_4)
+	end -- .LBB0_6 (.LBB0_6)
 	if PC == ".Lfunc_end0" and not init then -- .Lfunc_end0 (runtime) 
 		-- ASM ATTRIBUTE: .type	.L.str,@object
 		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
@@ -153,10 +184,15 @@ while PC do
 	if init then -- .L.str (initialization)
 		buffer.writestring(memory, 0, "%d\0")
 		data["str"] = 0 -- represents ^
+		-- ASM ATTRIBUTE: .type	.L.str.1,@object
+	end -- .L.str (.L.str)
+	if init then -- .L.str.1 (initialization)
+		buffer.writestring(memory, 3, "DIVISIBLE BY 2: %d\0")
+		data["str.1"] = 3 -- represents ^
 		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
 		-- ASM ATTRIBUTE: .addrsig
 		-- ASM ATTRIBUTE: .addrsig_sym printf
-	end -- .L.str (.L.str)
+	end -- .L.str.1 (.L.str.1)
 	init = false
 end
