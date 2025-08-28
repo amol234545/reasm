@@ -1,21 +1,12 @@
 void print(const char *str);
 
+void printtwice(const char *str) {
+    print(str);
+    print(str);
+}
+
 int main() {
-    int i, j;
-    int rows = 5;
-    char output[1024];
-    int pos = 0;
-
-    for (i = 1; i <= rows; i++) {
-        for (j = 1; j <= i; j++) {
-            output[pos++] = '0' + j;
-        }
-        output[pos++] = '\n';
-    }
-
-    output[pos] = '\0';
-
-    print(output);
+    printtwice("hi");
 
     return 0;
 }

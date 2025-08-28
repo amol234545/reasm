@@ -48,7 +48,7 @@ local functions = {
         end
         -- print
         print(str)
-    end
+    end,
 }
 local PC = "main"
 local init = true -- becomes false when the buffer is poluted with static data
