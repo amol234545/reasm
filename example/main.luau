@@ -36,7 +36,7 @@ local registers = {
     ["t6"]   = 0,    ["x31"] = 0,
 }
 local functions = {
-    ["printf"] = function()
+    ["print"] = function()
         -- read string
         local pointer = registers["a0"]
         local str = ""
@@ -46,18 +46,6 @@ local functions = {
             str = str .. string.char(byte)
             pointer = pointer + 1
         end
-
-        -- format string
-        --- extract args
-        local args = {}
-        for key, value in pairs(registers) do
-           	if string.match(key, "^a%d+$") then
-          		local index = tonumber(string.match(key, "%d+"))
-          		args[index] = value
-           	end
-        end
-        str = string.format(str, unpack(args))
-
         -- print
         print(str)
     end
@@ -82,128 +70,114 @@ while PC do
 	-- ASM ATTRIBUTE: .p2align	1
 	-- ASM ATTRIBUTE: .type	main,@function
 	if PC == "main" and not init then -- main (runtime) 
-		-- addi ([{0 false sp } {0 false sp } {0 true -48 }])
-		registers["sp"] = registers["sp"] + -48
+		-- addi ([{0 false sp } {0 false sp } {0 true -1072 }])
+		registers["sp"] = registers["sp"] + -1072
 		-- sw ([{0 false ra } {44 true sp }])
 		buffer.writei32(memory, registers["sp"]+44, registers["ra"])
 		-- sw ([{0 true s0 } {40 true sp }])
 		buffer.writei32(memory, registers["sp"]+40, registers["s0"])
-		-- addi ([{0 true s0 } {0 false sp } {0 true 48 }])
-		registers["s0"] = registers["sp"] + 48
+		-- addi ([{0 true s0 } {0 false sp } {0 true 1072 }])
+		registers["s0"] = registers["sp"] + 1072
 		-- li ([{0 true a0 } {0 true 0 }])
 		registers["a0"] = 0
-		-- sw ([{0 true a0 } {-12 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-12, registers["a0"])
-		-- li ([{0 true a1 } {0 true 25 }])
-		registers["a1"] = 25
-		-- sw ([{0 true a1 } {-16 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-16, registers["a1"])
-		-- sw ([{0 true a0 } {-28 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-28, registers["a0"])
+		-- sw ([{0 true a0 } {-16 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-16, registers["a0"])
+		-- li ([{0 true a1 } {0 true 5 }])
+		registers["a1"] = 5
+		-- sw ([{0 true a1 } {-28 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-28, registers["a1"])
 		-- sw ([{0 true a0 } {-32 true s0 }])
 		buffer.writei32(memory, registers["s0"]+-32, registers["a0"])
-		-- sw ([{0 true a0 } {-36 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-36, registers["a0"])
-		-- li ([{0 true a1 } {0 true 1 }])
-		registers["a1"] = 1
-		-- sw ([{0 true a1 } {-40 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-40, registers["a1"])
+		-- li ([{0 true a0 } {0 true 1 }])
+		registers["a0"] = 1
 		-- sw ([{0 true a0 } {-20 true s0 }])
 		buffer.writei32(memory, registers["s0"]+-20, registers["a0"])
 		-- j ([{0 true .LBB0_1 }])
 		PC = ".LBB0_1"
 	end -- main (main)
 	if PC == ".LBB0_1" and not init then -- .LBB0_1 (runtime) 
-		-- lw ([{0 true a0 } {-20 true s0 }])
-		registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
-		-- lw ([{0 true a1 } {-16 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-16)
-		-- bge ([{0 true a0 } {0 true a1 } {0 true .LBB0_7 }])
-		if registers["a0"] >= registers["a1"] then
-			PC = ".LBB0_7"
+		-- lw ([{0 true a1 } {-20 true s0 }])
+		registers["a1"] = buffer.readi32(memory, registers["s0"]+-20)
+		-- lw ([{0 true a0 } {-28 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-28)
+		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_8 }])
+		if registers["a0"] < registers["a1"] then
+			PC = ".LBB0_8"
 			continue
 		end
 		-- j ([{0 true .LBB0_2 }])
 		PC = ".LBB0_2"
 	end -- .LBB0_1 (.LBB0_1)
 	if PC == ".LBB0_2" and not init then -- .LBB0_2 (runtime) 
-		-- lw ([{0 true a1 } {-20 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-20)
 		-- li ([{0 true a0 } {0 true 1 }])
 		registers["a0"] = 1
-		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_4 }])
-		if registers["a0"] < registers["a1"] then
-			PC = ".LBB0_4"
-			continue
-		end
+		-- sw ([{0 true a0 } {-24 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-24, registers["a0"])
 		-- j ([{0 true .LBB0_3 }])
 		PC = ".LBB0_3"
 	end -- .LBB0_2 (.LBB0_2)
 	if PC == ".LBB0_3" and not init then -- .LBB0_3 (runtime) 
-		-- lw ([{0 true a1 } {-20 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-20)
-		-- srai ([{0 true a0 } {0 true a1 } {0 true 31 }])
-		registers["a0"] = bit32.arshift(registers["a1"], 31)
-		-- sw ([{0 true a1 } {-48 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-48, registers["a1"])
-		-- sw ([{0 true a0 } {-44 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-44, registers["a0"])
-		-- j ([{0 true .LBB0_5 }])
-		PC = ".LBB0_5"
+		-- lw ([{0 true a1 } {-24 true s0 }])
+		registers["a1"] = buffer.readi32(memory, registers["s0"]+-24)
+		-- lw ([{0 true a0 } {-20 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
+		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_6 }])
+		if registers["a0"] < registers["a1"] then
+			PC = ".LBB0_6"
+			continue
+		end
+		-- j ([{0 true .LBB0_4 }])
+		PC = ".LBB0_4"
 	end -- .LBB0_3 (.LBB0_3)
 	if PC == ".LBB0_4" and not init then -- .LBB0_4 (runtime) 
+		-- lw ([{0 true a0 } {-24 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-24)
+		-- addi ([{0 true a0 } {0 true a0 } {0 true 48 }])
+		registers["a0"] = registers["a0"] + 48
 		-- lw ([{0 true a2 } {-32 true s0 }])
 		registers["a2"] = buffer.readi32(memory, registers["s0"]+-32)
-		-- lw ([{0 true a0 } {-28 true s0 }])
-		registers["a0"] = buffer.readi32(memory, registers["s0"]+-28)
-		-- lw ([{0 true a1 } {-40 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-40)
-		-- lw ([{0 true a3 } {-36 true s0 }])
-		registers["a3"] = buffer.readi32(memory, registers["s0"]+-36)
-		-- add ([{0 true a0 } {0 true a0 } {0 true a3 }])
-		registers["a0"] = registers["a0"] + registers["a3"]
+		-- addi ([{0 true a1 } {0 true a2 } {0 true 1 }])
+		registers["a1"] = registers["a2"] + 1
+		-- sw ([{0 true a1 } {-32 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-32, registers["a1"])
+		-- addi ([{0 true a1 } {0 true s0 } {0 true -1052 }])
+		registers["a1"] = registers["s0"] + -1052
 		-- add ([{0 true a1 } {0 true a1 } {0 true a2 }])
 		registers["a1"] = registers["a1"] + registers["a2"]
-		-- sltu ([{0 true a2 } {0 true a1 } {0 true a2 }])
-		registers["a2"] = if (registers["a1"] < registers["a2"]) then 1 else 0
-		-- add ([{0 true a0 } {0 true a0 } {0 true a2 }])
-		registers["a0"] = registers["a0"] + registers["a2"]
-		-- sw ([{0 true a1 } {-48 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-48, registers["a1"])
-		-- sw ([{0 true a0 } {-44 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-44, registers["a0"])
-		-- lw ([{0 true a0 } {-40 true s0 }])
-		registers["a0"] = buffer.readi32(memory, registers["s0"]+-40)
-		-- lw ([{0 true a1 } {-36 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-36)
-		-- sw ([{0 true a1 } {-28 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-28, registers["a1"])
-		-- sw ([{0 true a0 } {-32 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-32, registers["a0"])
-		-- lw ([{0 true a0 } {-48 true s0 }])
-		registers["a0"] = buffer.readi32(memory, registers["s0"]+-48)
-		-- lw ([{0 true a1 } {-44 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-44)
-		-- sw ([{0 true a1 } {-36 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-36, registers["a1"])
-		-- sw ([{0 true a0 } {-40 true s0 }])
-		buffer.writei32(memory, registers["s0"]+-40, registers["a0"])
+		-- sb ([{0 true a0 } {0 true a1 }])
+		buffer.writei8(memory, registers["a1"], registers["a0"])
 		-- j ([{0 true .LBB0_5 }])
 		PC = ".LBB0_5"
 	end -- .LBB0_4 (.LBB0_4)
 	if PC == ".LBB0_5" and not init then -- .LBB0_5 (runtime) 
-		-- lw ([{0 true a1 } {-48 true s0 }])
-		registers["a1"] = buffer.readi32(memory, registers["s0"]+-48)
-		-- lui ([{0 true a0 } {0 false .L.str hi}])
-		registers["a0"] = hi(data["str"])
-		-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
-		registers["a0"] = registers["a0"] + lo(data["str"])
-		-- call ([{0 false printf }])
-		functions["printf"]() -- invoke provided function printf
-		-- j ([{0 true .LBB0_6 }])
-		PC = ".LBB0_6"
+		-- lw ([{0 true a0 } {-24 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-24)
+		-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
+		registers["a0"] = registers["a0"] + 1
+		-- sw ([{0 true a0 } {-24 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-24, registers["a0"])
+		-- j ([{0 true .LBB0_3 }])
+		PC = ".LBB0_3"
 	end -- .LBB0_5 (.LBB0_5)
 	if PC == ".LBB0_6" and not init then -- .LBB0_6 (runtime) 
+		-- lw ([{0 true a1 } {-32 true s0 }])
+		registers["a1"] = buffer.readi32(memory, registers["s0"]+-32)
+		-- addi ([{0 true a0 } {0 true a1 } {0 true 1 }])
+		registers["a0"] = registers["a1"] + 1
+		-- sw ([{0 true a0 } {-32 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-32, registers["a0"])
+		-- addi ([{0 true a0 } {0 true s0 } {0 true -1052 }])
+		registers["a0"] = registers["s0"] + -1052
+		-- add ([{0 true a1 } {0 true a1 } {0 true a0 }])
+		registers["a1"] = registers["a1"] + registers["a0"]
+		-- li ([{0 true a0 } {0 true 10 }])
+		registers["a0"] = 10
+		-- sb ([{0 true a0 } {0 true a1 }])
+		buffer.writei8(memory, registers["a1"], registers["a0"])
+		-- j ([{0 true .LBB0_7 }])
+		PC = ".LBB0_7"
+	end -- .LBB0_6 (.LBB0_6)
+	if PC == ".LBB0_7" and not init then -- .LBB0_7 (runtime) 
 		-- lw ([{0 true a0 } {-20 true s0 }])
 		registers["a0"] = buffer.readi32(memory, registers["s0"]+-20)
 		-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
@@ -212,30 +186,38 @@ while PC do
 		buffer.writei32(memory, registers["s0"]+-20, registers["a0"])
 		-- j ([{0 true .LBB0_1 }])
 		PC = ".LBB0_1"
-	end -- .LBB0_6 (.LBB0_6)
-	if PC == ".LBB0_7" and not init then -- .LBB0_7 (runtime) 
-		-- li ([{0 true a0 } {0 true 0 }])
-		registers["a0"] = 0
+	end -- .LBB0_7 (.LBB0_7)
+	if PC == ".LBB0_8" and not init then -- .LBB0_8 (runtime) 
+		-- lw ([{0 true a1 } {-32 true s0 }])
+		registers["a1"] = buffer.readi32(memory, registers["s0"]+-32)
+		-- addi ([{0 true a0 } {0 true s0 } {0 true -1052 }])
+		registers["a0"] = registers["s0"] + -1052
+		-- add ([{0 true a2 } {0 true a0 } {0 true a1 }])
+		registers["a2"] = registers["a0"] + registers["a1"]
+		-- li ([{0 true a1 } {0 true 0 }])
+		registers["a1"] = 0
+		-- sw ([{0 true a1 } {-36 true s0 }])
+		buffer.writei32(memory, registers["s0"]+-36, registers["a1"])
+		-- sb ([{0 true a1 } {0 true a2 }])
+		buffer.writei8(memory, registers["a2"], registers["a1"])
+		-- call ([{0 false print }])
+		functions["print"]() -- invoke provided function print
+		-- lw ([{0 true a0 } {-36 true s0 }])
+		registers["a0"] = buffer.readi32(memory, registers["s0"]+-36)
 		-- lw ([{0 false ra } {44 true sp }])
 		registers["ra"] = buffer.readi32(memory, registers["sp"]+44)
 		-- lw ([{0 true s0 } {40 true sp }])
 		registers["s0"] = buffer.readi32(memory, registers["sp"]+40)
-		-- addi ([{0 false sp } {0 false sp } {0 true 48 }])
-		registers["sp"] = registers["sp"] + 48
+		-- addi ([{0 false sp } {0 false sp } {0 true 1072 }])
+		registers["sp"] = registers["sp"] + 1072
 		-- ret ([])
 		break
-	end -- .LBB0_7 (.LBB0_7)
+	end -- .LBB0_8 (.LBB0_8)
 	if PC == ".Lfunc_end0" and not init then -- .Lfunc_end0 (runtime) 
-		-- ASM ATTRIBUTE: .type	.L.str,@object
-		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
-	end -- .Lfunc_end0 (.Lfunc_end0)
-	if init then -- .L.str (initialization)
-		buffer.writestring(memory, 0, "%d\0")
-		data["str"] = 0 -- represents ^
 		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
 		-- ASM ATTRIBUTE: .addrsig
-		-- ASM ATTRIBUTE: .addrsig_sym printf
-	end -- .L.str (.L.str)
+		-- ASM ATTRIBUTE: .addrsig_sym print
+	end -- .Lfunc_end0 (.Lfunc_end0)
 	init = false
 end

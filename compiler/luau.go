@@ -172,6 +172,9 @@ func slt(w *OutputWriter, command AssemblyCommand) { /* sltu & sltui instruction
 func srai(w *OutputWriter, command AssemblyCommand) { /* srai & srari instructions */
 	WriteIndentedString(w, "registers[\"%s\"] = bit32.arshift(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
+func sb(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "buffer.writei8(memory, %s, %s)\n", compile_register(command.Arguments[1]), compile_register(command.Arguments[0]))
+}
 
 /* map instructions */
 var instructions = map[string]func(*OutputWriter, AssemblyCommand){
@@ -198,6 +201,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltiu": slt,
 	"srai":  srai,
 	"bge":   bge,
+	"sb":    sb,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,

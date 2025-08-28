@@ -1,20 +1,21 @@
-#include <stdio.h>
+void print(const char *str);
 
 int main() {
-    int n = 25;
-    int i;
-    long long int first = 0, second = 1, next;
+    int i, j;
+    int rows = 5;
+    char output[1024];
+    int pos = 0;
 
-    for (i = 0; i < n; i++) {
-        if (i <= 1)
-            next = i; // First two terms are 0 and 1
-        else {
-            next = first + second;
-            first = second;
-            second = next;
+    for (i = 1; i <= rows; i++) {
+        for (j = 1; j <= i; j++) {
+            output[pos++] = '0' + j;
         }
-        printf("%d ", (int)next);
+        output[pos++] = '\n';
     }
+
+    output[pos] = '\0';
+
+    print(output);
 
     return 0;
 }
