@@ -52,11 +52,16 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"subi": sub,
 
 	/** M extension */
-	"div":  div,
-	"mul":  mul,
-	"mulh": mulh,
-	"rem":  rem,
-	"remu": rem,
+	"div": div,
+	"mul": mul,
+	"rem": rem,
+
+	/*** descendants */
+	"remu":  rem,
+	"mulh":  mulh,
+	"mulsu": mulh,
+	"mulu":  mulh,
+	"divu":  div,
 
 	/* branching */
 	"bne":  bne,
