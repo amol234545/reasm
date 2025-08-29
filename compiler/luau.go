@@ -38,7 +38,7 @@ func compile_register(argument Argument) string {
 	/* Try macros (.L.) */
 	var compiled = compile_macro_data(argument.Source)
 	if compiled == "" {
-		compiled = fmt.Sprintf("registers[\"%s\"]", argument.Source)
+		compiled = fmt.Sprintf("registers.%s", argument.Source)
 	}
 
 	/** Offset */
@@ -120,19 +120,19 @@ func sb(w *OutputWriter, command AssemblyCommand) {
 
 /** Load Memory */
 func li(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 func lw(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = buffer.readi32(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = buffer.readi32(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 func lui(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 func lb(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = buffer.readi8(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = buffer.readi8(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 func lbu(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = buffer.readu8(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = buffer.readu8(memory, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 
 /** Abstractions */
@@ -170,50 +170,50 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	w.Depth++
 }
 func move(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
 }
 
 /** Math */
 func add(w *OutputWriter, command AssemblyCommand) { /* add & addi instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = %s + %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = %s + %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func sub(w *OutputWriter, command AssemblyCommand) { /* sub & subi instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = %s - %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = %s - %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func mul(w *OutputWriter, command AssemblyCommand) { /* mul & muli instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = %s * %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = %s * %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func div(w *OutputWriter, command AssemblyCommand) { /* div & divi instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = %s // %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = %s // %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func rem(w *OutputWriter, command AssemblyCommand) { /* rem & remi instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = %s %% %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = %s %% %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /*** Math Descendants */
 func mulh(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /** Binary Shifts */
 func slli(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func srli(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(bit32.rshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = bit32.band(bit32.rshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /** Binary Operations */
 func and(w *OutputWriter, command AssemblyCommand) { /* and & andi instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = bit32.band(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = bit32.band(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /** Set */
 func slt(w *OutputWriter, command AssemblyCommand) { /* sltu & sltui instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = if (%s < %s) then 1 else 0\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = if (%s < %s) then 1 else 0\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 func srai(w *OutputWriter, command AssemblyCommand) { /* srai & srari instructions */
-	WriteIndentedString(w, "registers[\"%s\"] = bit32.arshift(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = bit32.arshift(%s, %s)\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /** Jump */
