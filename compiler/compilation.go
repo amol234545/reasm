@@ -9,44 +9,89 @@ import (
 var luau_boilerplate string
 
 var instructions = map[string]func(*OutputWriter, AssemblyCommand){
-	"ret":   ret,
-	"sw":    sw,
-	"li":    li,
-	"lw":    lw,
-	"sh":    sh,
-	"lui":   lui,
-	"call":  call,
-	"slli":  slli,
-	"srli":  srli,
-	"add":   add,
-	"addi":  add,
-	"sub":   sub,
-	"subi":  sub,
-	"j":     jump,
-	"blt":   blt,
-	"bltu":  blt,
-	"bnez":  bnez,
-	"and":   and,
-	"andi":  and,
+	/* bit shifts */
+	"sll":  sll,
+	"srl":  srl,
+	"slli": sll,
+	"srli": srl,
+	"sra":  sra,
+	"srai": sra,
+
+	/* bit operations */
+	"and": and,
+	"xor": xor,
+	"or":  or,
+
+	"andi": and,
+	"xori": xor,
+	"ori":  or,
+
+	/* memory */
+	/** save */
+	"sb": sb,
+	"sh": sh,
+	"sw": sw,
+
+	/** load */
+	"lb": lb,
+	"lh": lh,
+	"lw": lw,
+
+	/*** immediates */
+	"li":  li,
+	"lui": li,
+
+	/*** unsigned */
+	"lbu": lbu,
+	"lhu": lhu,
+
+	/* math */
+	"add":  add,
+	"addi": add,
+	"sub":  sub,
+	"subi": sub,
+
+	/** M extension */
+	"div":  div,
+	"mul":  mul,
+	"mulh": mulh,
+	"rem":  rem,
+	"remu": rem,
+
+	/* branching */
+	"bne":  bne,
+	"blt":  blt,
+	"bltu": blt,
+	"bge":  bge,
+	"beq":  beq,
+	"bgeu": bge,
+
+	/** zero descendants */
+	"bnez": bnez,
+	"beqz": beqz,
+	"bgez": bgez,
+
+	/* jump */
+	"j":    jump,
+	"jalr": jalr,
+	"jal":  jal,
+
+	/* os */
+	"ecall":  ecall,
+	"ebreak": ebreak,
+	"fence":  fence,
+
+	/* set less/greator then */
 	"slt":   slt,
 	"sltu":  slt,
 	"sltiu": slt,
-	"srai":  srai,
-	"bge":   bge,
-	"beq":   beq,
-	"bgeu":  bge,
-	"div":   div,
-	"mul":   mul,
-	"mulh":  mulh,
-	"sb":    sb,
+	"slti":  slt,
+
+	/* abstraction */
+	"auipc": auipc,
+	"ret":   ret,
+	"call":  call,
 	"mv":    move,
-	"lb":    lb,
-	"lbu":   lbu,
-	"beqz":  beqz,
-	"bgez":  bgez,
-	"bne":   bne,
-	"rem":   rem,
-	"remu":  rem,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,

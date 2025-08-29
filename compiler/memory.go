@@ -18,11 +18,14 @@ func li(w *OutputWriter, command AssemblyCommand) {
 func lw(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers.%s = buffer.readi32(memory, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
 }
-func lui(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
-}
 func lb(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers.%s = buffer.readi8(memory, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
+func lh(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = buffer.readi16(memory, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
+func lhu(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = buffer.readu16(memory, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
 }
 func lbu(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers.%s = buffer.readu8(memory, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))

@@ -4,6 +4,10 @@ package compiler
 func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
 	JumpTo(w, command.Arguments[0].Source, false)
 }
+func jal(w *OutputWriter, command AssemblyCommand) { /* jal instructions */
+	JumpTo(w, command.Arguments[0].Source, true)
+	CutAndLink(w)
+}
 
 /** Branching */
 func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions */

@@ -35,3 +35,20 @@ func call(w *OutputWriter, command AssemblyCommand) {
 func move(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
 }
+
+/* unimplemented */
+func auipc(w *OutputWriter, command AssemblyCommand) {
+	panic("AUIPC cannot be used.")
+}
+func jalr(w *OutputWriter, command AssemblyCommand) {
+	panic("JALR cannot be used.")
+}
+func ebreak(w *OutputWriter, command AssemblyCommand) {
+	panic("EBREAK cannot be used (yet).")
+}
+func ecall(w *OutputWriter, command AssemblyCommand) {
+	panic("ECALL cannot be used (yet).")
+}
+func fence(w *OutputWriter, command AssemblyCommand) {
+	panic("FENCE cannot be used.")
+}
