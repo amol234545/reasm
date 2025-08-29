@@ -53,8 +53,10 @@ func compile_register(argument Argument) string {
 
 	return compiled
 }
-func jump_to(w *OutputWriter, label string) {
-	WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
+func jump_to(w *OutputWriter, label string, link bool) {
+	if link {
+		WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
+	}
 	WriteIndentedString(w, "PC = \"%s\"\n", label)
 	WriteIndentedString(w, "continue\n")
 }
@@ -135,9 +137,17 @@ func lbu(w *OutputWriter, command AssemblyCommand) {
 
 /** Abstractions */
 func ret(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if RETURN then\n")
+	w.Depth++
 	WriteIndentedString(w, "PC = RETURN\n")
 	WriteIndentedString(w, "RETURN = nil\n")
 	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "else\n")
+	w.Depth++
+	WriteIndentedString(w, "PC = nil\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
 }
 func call(w *OutputWriter, command AssemblyCommand) {
 	var function = command.Arguments[0].Source
@@ -150,7 +160,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	w.Depth--
 	WriteIndentedString(w, "else\n")
 	w.Depth++
-	jump_to(w, function)
+	jump_to(w, function, true)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 
@@ -175,6 +185,9 @@ func mul(w *OutputWriter, command AssemblyCommand) { /* mul & muli instructions 
 }
 func div(w *OutputWriter, command AssemblyCommand) { /* div & divi instructions */
 	WriteIndentedString(w, "registers[\"%s\"] = %s // %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
+}
+func rem(w *OutputWriter, command AssemblyCommand) { /* rem & remi instructions */
+	WriteIndentedString(w, "registers[\"%s\"] = %s %% %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]), compile_register(command.Arguments[2]))
 }
 
 /*** Math Descendants */
@@ -205,42 +218,56 @@ func srai(w *OutputWriter, command AssemblyCommand) { /* srai & srari instructio
 
 /** Jump */
 func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
-	jump_to(w, command.Arguments[0].Source)
+	jump_to(w, command.Arguments[0].Source, false)
 }
 
 /** Branches */
 func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions */
 	WriteIndentedString(w, "if %s < %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
-	jump_to(w, command.Arguments[2].Source)
+	jump_to(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bnez(w *OutputWriter, command AssemblyCommand) { /* bnez & bnezi instructions */
 	WriteIndentedString(w, "if %s ~= 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
-	jump_to(w, command.Arguments[1].Source)
+	jump_to(w, command.Arguments[1].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func bne(w *OutputWriter, command AssemblyCommand) { /* bne & bnei instructions */
+	WriteIndentedString(w, "if %s ~= %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
+	w.Depth++
+	jump_to(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bge(w *OutputWriter, command AssemblyCommand) { /* bge & bgei instructions */
 	WriteIndentedString(w, "if %s >= %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
-	jump_to(w, command.Arguments[2].Source)
+	jump_to(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func beqz(w *OutputWriter, command AssemblyCommand) { /* beqz & beqi instructions */
 	WriteIndentedString(w, "if %s == 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
-	jump_to(w, command.Arguments[1].Source)
+	jump_to(w, command.Arguments[1].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func beq(w *OutputWriter, command AssemblyCommand) { /* beq & beqi instructions */
+	WriteIndentedString(w, "if %s == %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
+	w.Depth++
+	jump_to(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgez(w *OutputWriter, command AssemblyCommand) { /* bgez & bgezi instructions */
 	WriteIndentedString(w, "if %s >= 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
-	jump_to(w, command.Arguments[1].Source)
+	jump_to(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -262,6 +289,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"subi":  sub,
 	"j":     jump,
 	"blt":   blt,
+	"bltu":  blt,
 	"bnez":  bnez,
 	"and":   and,
 	"andi":  and,
@@ -270,6 +298,8 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltiu": slt,
 	"srai":  srai,
 	"bge":   bge,
+	"beq":   beq,
+	"bgeu":  bge,
 	"div":   div,
 	"mul":   mul,
 	"mulh":  mulh,
@@ -279,6 +309,9 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"lbu":   lbu,
 	"beqz":  beqz,
 	"bgez":  bgez,
+	"bne":   bne,
+	"rem":   rem,
+	"remu":  rem,
 }
 var attributes = map[string]func(*OutputWriter, []string){
 	".asciz": asciz,

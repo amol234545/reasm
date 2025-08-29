@@ -29,7 +29,7 @@ local registers = {
     ["x31"]  = 0
 }
 local functions = {
-    ["print"] = function()
+    ["printf"] = function()
         -- read string
         local pointer = registers["a0"]
         local str = ""
@@ -38,10 +38,23 @@ local functions = {
             byte = buffer.readbits(memory, pointer * 8, 8)  -- read 8 bits (1 byte)
             str = str .. string.char(byte)
             pointer = pointer + 1
+            if pointer >= mem then error("Buffer overflow in printf string read") end
         end
+
+        -- format string
+        --- extract args
+        local args = {}
+        for key, value in pairs(registers) do
+           	if string.match(key, "^a%d+$") then
+          		local index = tonumber(string.match(key, "%d+"))
+          		args[index] = value
+           	end
+        end
+        str = string.format(str, unpack(args))
+
         -- print
         print(str)
-    end,
+    end
 }
 
 --- Variables
