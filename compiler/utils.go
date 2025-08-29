@@ -66,7 +66,6 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 		WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
 	}
 	WriteIndentedString(w, "PC = \"%s\"\n", label)
-	//WriteIndentedString(w, "print(PC)\n")
 	WriteIndentedString(w, "continue\n")
 }
 func CutAndLink(w *OutputWriter) {
@@ -74,4 +73,5 @@ func CutAndLink(w *OutputWriter) {
 	WriteIndentedString(w, "if PC == \"%s_end\" and not init then -- %s (extended) \n", w.CurrentLabel, w.CurrentLabel)
 	w.Depth++
 	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
+	w.Labels = append(w.Labels, w.CurrentLabel)
 }

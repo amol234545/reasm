@@ -1,21 +1,23 @@
 #include <stdio.h>
-int is_prime(int num) {
-    if (num < 2) return 0;
-    for (int i = 2; i * i <= num; i++) {
-        if (num % i == 0) return 0;
+
+// Function to calculate factorial
+unsigned long factorial(int n) {
+    if (n <= 1) return 1;
+    unsigned long result = 1;
+    for (int i = 2; i <= n; i++) {
+        result *= i;
     }
-    return 1;
+    return result;
 }
 
 int main() {
-    int N = 100;
+    int numbers[] = {3, 5, 7, 10};
+    int size = sizeof(numbers) / sizeof(numbers[0]);
 
-    for (int i = 1; i <= N; i++) {
-        if (is_prime(i)) {
-            printf("PRIME: %d", i);
-        } else {
-            printf("%d", i);
-        }
+    // Print factorials of the numbers in the array
+    for (int i = 0; i < size; i++) {
+        printf("Factorial of %d is %d", numbers[i], (int)factorial(numbers[i]));
     }
+
     return 0;
 }
