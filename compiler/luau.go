@@ -58,7 +58,14 @@ func jump_to(w *OutputWriter, label string, link bool) {
 		WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
 	}
 	WriteIndentedString(w, "PC = \"%s\"\n", label)
+	//WriteIndentedString(w, "print(PC)\n")
 	WriteIndentedString(w, "continue\n")
+}
+func cut_and_link(w *OutputWriter) {
+	add_end(w)
+	WriteIndentedString(w, "if PC == \"%s_end\" and not init then -- %s (extended) \n", w.CurrentLabel, w.CurrentLabel)
+	w.Depth++
+	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
 }
 
 /* instructions */
@@ -139,6 +146,7 @@ func lbu(w *OutputWriter, command AssemblyCommand) {
 func ret(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if RETURN then\n")
 	w.Depth++
+	//WriteIndentedString(w, "print('ret', RETURN)\n")
 	WriteIndentedString(w, "PC = RETURN\n")
 	WriteIndentedString(w, "RETURN = nil\n")
 	WriteIndentedString(w, "continue\n")
@@ -165,9 +173,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "end\n")
 
 	/* cut the jump */
-	add_end(w)
-	WriteIndentedString(w, "if PC == \"%s_end\" and not init then -- %s (extended) \n", w.CurrentLabel, w.CurrentLabel)
-	w.Depth++
+	cut_and_link(w)
 }
 func move(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))

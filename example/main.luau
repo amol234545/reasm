@@ -240,9 +240,9 @@ while PC do
 		registers.a1 = buffer.readi32(memory, registers.s0+-20)
 		-- lw ([{0 true a0 } {-16 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-16)
-		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB1_6 }])
+		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB1_7 }])
 		if registers.a0 < registers.a1 then
-			PC = ".LBB1_6"
+			PC = ".LBB1_7"
 			continue
 		end
 		-- j ([{0 true .LBB1_2 }])
@@ -271,7 +271,7 @@ while PC do
 		-- j ([{0 true .LBB1_3 }])
 		PC = ".LBB1_3"
 		continue
-	end -- .LBB1_2 (.LBB1_2)
+	end -- .LBB1_2_end (.LBB1_2_end)
 	if PC == ".LBB1_3" and not init then -- .LBB1_3 (runtime) 
 		-- lw ([{0 true a1 } {-20 true s0 }])
 		registers.a1 = buffer.readi32(memory, registers.s0+-20)
@@ -290,16 +290,38 @@ while PC do
 		end
 	end -- .LBB1_3 (.LBB1_3)
 	if PC == ".LBB1_3_end" and not init then -- .LBB1_3 (extended) 
-		-- j ([{0 true .LBB1_4 }])
-		PC = ".LBB1_4"
-		continue
-	end -- .LBB1_3 (.LBB1_3)
-	if PC == ".LBB1_4" and not init then -- .LBB1_4 (runtime) 
 		-- j ([{0 true .LBB1_5 }])
 		PC = ".LBB1_5"
 		continue
+	end -- .LBB1_3_end (.LBB1_3_end)
+	if PC == ".LBB1_4" and not init then -- .LBB1_4 (runtime) 
+		-- lw ([{0 true a1 } {-20 true s0 }])
+		registers.a1 = buffer.readi32(memory, registers.s0+-20)
+		-- lui ([{0 true a0 } {0 true .L.str.1 hi}])
+		registers.a0 = hi(data["str.1"])
+		-- addi ([{0 true a0 } {0 true a0 } {0 true .L.str.1 lo}])
+		registers.a0 = registers.a0 + lo(data["str.1"])
+		-- call ([{0 false printf }])
+		if functions["printf"] then
+			functions["printf"]() -- invoke provided function printf
+			PC = ".LBB1_4_end" -- since we are cutting early
+		else
+			RETURN = ".LBB1_4_end"
+			PC = "printf"
+			continue
+		end
 	end -- .LBB1_4 (.LBB1_4)
+	if PC == ".LBB1_4_end" and not init then -- .LBB1_4 (extended) 
+		-- j ([{0 true .LBB1_5 }])
+		PC = ".LBB1_5"
+		continue
+	end -- .LBB1_4_end (.LBB1_4_end)
 	if PC == ".LBB1_5" and not init then -- .LBB1_5 (runtime) 
+		-- j ([{0 true .LBB1_6 }])
+		PC = ".LBB1_6"
+		continue
+	end -- .LBB1_5 (.LBB1_5)
+	if PC == ".LBB1_6" and not init then -- .LBB1_6 (runtime) 
 		-- lw ([{0 true a0 } {-20 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-20)
 		-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
@@ -309,8 +331,8 @@ while PC do
 		-- j ([{0 true .LBB1_1 }])
 		PC = ".LBB1_1"
 		continue
-	end -- .LBB1_5 (.LBB1_5)
-	if PC == ".LBB1_6" and not init then -- .LBB1_6 (runtime) 
+	end -- .LBB1_6 (.LBB1_6)
+	if PC == ".LBB1_7" and not init then -- .LBB1_7 (runtime) 
 		-- li ([{0 true a0 } {0 true 0 }])
 		registers.a0 = 0
 		-- lw ([{0 false ra } {28 true sp }])
@@ -327,23 +349,28 @@ while PC do
 		else
 			PC = nil
 		end
-	end -- .LBB1_6 (.LBB1_6)
+	end -- .LBB1_7 (.LBB1_7)
 	if PC == ".Lfunc_end1" and not init then -- .Lfunc_end1 (runtime) 
 		-- ASM ATTRIBUTE: .type	.L.str,@object
 		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
 	end -- .Lfunc_end1 (.Lfunc_end1)
 	if init then -- .L.str (initialization)
-		buffer.writestring(memory, 0, "%d\0")
+		buffer.writestring(memory, 0, "PRIME: %d\0")
 		data["str"] = 0 -- represents ^
+		-- ASM ATTRIBUTE: .type	.L.str.1,@object
+	end -- .L.str (.L.str)
+	if init then -- .L.str.1 (initialization)
+		buffer.writestring(memory, 10, "%d\0")
+		data["str.1"] = 10 -- represents ^
 		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
 		-- ASM ATTRIBUTE: .addrsig
 		-- ASM ATTRIBUTE: .addrsig_sym is_prime
 		-- ASM ATTRIBUTE: .addrsig_sym printf
-	end -- .L.str (.L.str)
+	end -- .L.str.1 (.L.str.1)
 	init = false -- do not initialize again
 	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 
-	if (not PC) or (PC ~= "is_prime" and PC ~= ".LBB0_1" and PC ~= ".LBB0_2" and PC ~= ".LBB0_3" and PC ~= ".LBB0_4" and PC ~= ".LBB0_5" and PC ~= ".LBB0_6" and PC ~= ".LBB0_7" and PC ~= ".LBB0_8" and PC ~= ".LBB0_9" and PC ~= ".Lfunc_end0" and PC ~= "main" and PC ~= ".LBB1_1" and PC ~= ".LBB1_2" and PC ~= ".LBB1_3" and PC ~= ".LBB1_4" and PC ~= ".LBB1_5" and PC ~= ".LBB1_6" and PC ~= ".Lfunc_end1" and PC ~= ".L.str") then
+	if (not PC) or (PC ~= "is_prime" and PC ~= ".LBB0_1" and PC ~= ".LBB0_2" and PC ~= ".LBB0_3" and PC ~= ".LBB0_4" and PC ~= ".LBB0_5" and PC ~= ".LBB0_6" and PC ~= ".LBB0_7" and PC ~= ".LBB0_8" and PC ~= ".LBB0_9" and PC ~= ".Lfunc_end0" and PC ~= "main" and PC ~= ".LBB1_1" and PC ~= ".LBB1_2" and PC ~= ".LBB1_3" and PC ~= ".LBB1_4" and PC ~= ".LBB1_5" and PC ~= ".LBB1_6" and PC ~= ".LBB1_7" and PC ~= ".Lfunc_end1" and PC ~= ".L.str" and PC ~= ".L.str.1") then
 		break
 	end
 end

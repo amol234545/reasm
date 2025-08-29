@@ -11,8 +11,9 @@ int main() {
     int N = 100;
 
     for (int i = 1; i <= N; i++) {
-        //printf("%d", i); <- Todo check why this fails.
         if (is_prime(i)) {
+            printf("PRIME: %d", i);
+        } else {
             printf("%d", i);
         }
     }

@@ -79,7 +79,7 @@ main:                                   # @main
 .LBB1_1:                                # =>This Inner Loop Header: Depth=1
 	lw	a1, -20(s0)
 	lw	a0, -16(s0)
-	blt	a0, a1, .LBB1_6
+	blt	a0, a1, .LBB1_7
 	j	.LBB1_2
 .LBB1_2:                                #   in Loop: Header=BB1_1 Depth=1
 	lw	a0, -20(s0)
@@ -91,15 +91,21 @@ main:                                   # @main
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
 	call	printf
-	j	.LBB1_4
+	j	.LBB1_5
 .LBB1_4:                                #   in Loop: Header=BB1_1 Depth=1
+	lw	a1, -20(s0)
+	lui	a0, %hi(.L.str.1)
+	addi	a0, a0, %lo(.L.str.1)
+	call	printf
 	j	.LBB1_5
 .LBB1_5:                                #   in Loop: Header=BB1_1 Depth=1
+	j	.LBB1_6
+.LBB1_6:                                #   in Loop: Header=BB1_1 Depth=1
 	lw	a0, -20(s0)
 	addi	a0, a0, 1
 	sw	a0, -20(s0)
 	j	.LBB1_1
-.LBB1_6:
+.LBB1_7:
 	li	a0, 0
 	lw	ra, 28(sp)                      # 4-byte Folded Reload
 	lw	s0, 24(sp)                      # 4-byte Folded Reload
@@ -111,8 +117,13 @@ main:                                   # @main
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .L.str:
+	.asciz	"PRIME: %d"
+	.size	.L.str, 10
+
+	.type	.L.str.1,@object                # @.str.1
+.L.str.1:
 	.asciz	"%d"
-	.size	.L.str, 3
+	.size	.L.str.1, 3
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits
