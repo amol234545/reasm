@@ -1,8 +1,9 @@
 void print(const char *str);
 
 void printtwice(const char *str) {
-    print(str);
-    print(str);
+    for (int i = 0; i < 2; i++) {
+        print(str);
+    }
 }
 
 int main() {

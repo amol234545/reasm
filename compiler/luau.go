@@ -54,7 +54,9 @@ func compile_register(argument Argument) string {
 	return compiled
 }
 func jump_to(w *OutputWriter, label string) {
+	WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
 	WriteIndentedString(w, "PC = \"%s\"\n", label)
+	WriteIndentedString(w, "continue\n")
 }
 
 /* instructions */
@@ -74,6 +76,7 @@ func label(w *OutputWriter, command AssemblyCommand) {
 		WriteIndentedString(w, "if PC == \"%s\" and not init then -- %s (runtime) \n", command.Name, command.Name)
 	}
 	w.Depth++
+	w.Labels = append(w.Labels, command.Name)
 }
 
 /* attributes */
@@ -132,11 +135,29 @@ func lbu(w *OutputWriter, command AssemblyCommand) {
 
 /** Abstractions */
 func ret(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "break\n")
+	WriteIndentedString(w, "PC = RETURN\n")
+	WriteIndentedString(w, "RETURN = nil\n")
+	WriteIndentedString(w, "continue\n")
 }
 func call(w *OutputWriter, command AssemblyCommand) {
 	var function = command.Arguments[0].Source
+
+	/* the actual jump */
+	WriteIndentedString(w, "if functions[\"%s\"] then\n", function)
+	w.Depth++
 	WriteIndentedString(w, "functions[\"%s\"]() -- invoke provided function %s\n", function, function)
+	WriteIndentedString(w, "PC = \"%s_end\" -- since we are cutting early\n", w.CurrentLabel)
+	w.Depth--
+	WriteIndentedString(w, "else\n")
+	w.Depth++
+	jump_to(w, function)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+
+	/* cut the jump */
+	add_end(w)
+	WriteIndentedString(w, "if PC == \"%s_end\" and not init then -- %s (extended) \n", w.CurrentLabel, w.CurrentLabel)
+	w.Depth++
 }
 func move(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = %s\n", command.Arguments[0].Source, compile_register(command.Arguments[1]))
@@ -192,7 +213,6 @@ func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions 
 	WriteIndentedString(w, "if %s < %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
 	jump_to(w, command.Arguments[2].Source)
-	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -200,7 +220,6 @@ func bnez(w *OutputWriter, command AssemblyCommand) { /* bnez & bnezi instructio
 	WriteIndentedString(w, "if %s ~= 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
 	jump_to(w, command.Arguments[1].Source)
-	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -208,7 +227,6 @@ func bge(w *OutputWriter, command AssemblyCommand) { /* bge & bgei instructions 
 	WriteIndentedString(w, "if %s >= %s then\n", compile_register(command.Arguments[0]), compile_register(command.Arguments[1]))
 	w.Depth++
 	jump_to(w, command.Arguments[2].Source)
-	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -216,7 +234,6 @@ func beqz(w *OutputWriter, command AssemblyCommand) { /* beqz & beqi instruction
 	WriteIndentedString(w, "if %s == 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
 	jump_to(w, command.Arguments[1].Source)
-	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -224,7 +241,6 @@ func bgez(w *OutputWriter, command AssemblyCommand) { /* bgez & bgezi instructio
 	WriteIndentedString(w, "if %s >= 0 then\n", compile_register(command.Arguments[0]))
 	w.Depth++
 	jump_to(w, command.Arguments[1].Source)
-	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -302,8 +318,25 @@ func StartLuau(writer *OutputWriter) {
 }
 func EndLuau(writer *OutputWriter) []byte {
 	add_end(writer) // end the current label, if active
+
+	WriteIndentedString(writer, "init = false -- do not initialize again\n")
+
+	// check if invalid PC, then break
+	WriteIndentedString(writer, "-- if no PC, or invalid PC then break (look into alternative implementations in the future) \n")
+	WriteIndentedString(writer, "if (not PC) or (")
+	for ind, label := range writer.Labels {
+		if ind > 0 {
+			WriteString(writer, " and ")
+		}
+		WriteString(writer, "PC ~= \"%s\"", label)
+	}
+	WriteString(writer, ") then\n")
+	writer.Depth++
+	WriteIndentedString(writer, "break\n")
+	writer.Depth--
+	WriteIndentedString(writer, "end\n")
+
 	// end the while loop we initialized in StartLuau
-	WriteIndentedString(writer, "init = false\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end")
 
