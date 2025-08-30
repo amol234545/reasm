@@ -17,23 +17,16 @@ factorial:                              # @factorial
 	blt	a0, a1, .LBB0_2
 	j	.LBB0_1
 .LBB0_1:
-	li	a0, 10
-	sw	a0, -12(s0)
-	j	.LBB0_9
-.LBB0_2:
 	li	a0, 1
-	sw	a0, -20(s0)
+	sw	a0, -12(s0)
+	j	.LBB0_6
+.LBB0_2:
 	lw	a0, -16(s0)
-	sw	a0, -24(s0)
-	j	.LBB0_3
-.LBB0_3:                                # =>This Inner Loop Header: Depth=1
-	lw	a1, -24(s0)
-	li	a0, 0
-	bge	a0, a1, .LBB0_8
-	j	.LBB0_4
-.LBB0_4:                                #   in Loop: Header=BB0_3 Depth=1
-	lw	a1, -24(s0)
-	lw	a0, -20(s0)
+	sw	a0, -24(s0)                     # 4-byte Folded Spill
+	addi	a0, a0, -1
+	call	factorial
+	mv	a1, a0
+	lw	a0, -24(s0)                     # 4-byte Folded Reload
 	mul	a0, a0, a1
 	sw	a0, -20(s0)
 	lw	a0, -20(s0)
@@ -41,32 +34,27 @@ factorial:                              # @factorial
 	add	a1, a0, a1
 	andi	a1, a1, -2
 	sub	a0, a0, a1
-	bnez	a0, .LBB0_6
-	j	.LBB0_5
-.LBB0_5:                                #   in Loop: Header=BB0_3 Depth=1
-	lw	a1, -24(s0)
+	bnez	a0, .LBB0_4
+	j	.LBB0_3
+.LBB0_3:
+	lw	a1, -16(s0)
 	lw	a2, -20(s0)
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
 	call	printf
-	j	.LBB0_7
-.LBB0_6:                                #   in Loop: Header=BB0_3 Depth=1
-	lw	a1, -24(s0)
+	j	.LBB0_5
+.LBB0_4:
+	lw	a1, -16(s0)
 	lw	a2, -20(s0)
 	lui	a0, %hi(.L.str.1)
 	addi	a0, a0, %lo(.L.str.1)
 	call	printf
-	j	.LBB0_7
-.LBB0_7:                                #   in Loop: Header=BB0_3 Depth=1
-	lw	a0, -24(s0)
-	addi	a0, a0, -1
-	sw	a0, -24(s0)
-	j	.LBB0_3
-.LBB0_8:
+	j	.LBB0_5
+.LBB0_5:
 	lw	a0, -20(s0)
 	sw	a0, -12(s0)
-	j	.LBB0_9
-.LBB0_9:
+	j	.LBB0_6
+.LBB0_6:
 	lw	a0, -12(s0)
 	lw	ra, 28(sp)                      # 4-byte Folded Reload
 	lw	s0, 24(sp)                      # 4-byte Folded Reload
@@ -168,8 +156,8 @@ main:                                   # @main
 
 	.type	.L.str.3,@object                # @.str.3
 .L.str.3:
-	.asciz	"----"
-	.size	.L.str.3, 5
+	.asciz	"---------"
+	.size	.L.str.3, 10
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits

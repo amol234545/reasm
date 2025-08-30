@@ -3,6 +3,7 @@
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
 local data = {} -- pointers in memory to static data, ex: strings
+local labels = {}
 local registers = {
     ["zero"] = 0,    ["x0"]  = 0,     ["ra"]   = 0,    ["x1"]  = 0,
     ["sp"]   = mem,  ["x2"]  = 0,     ["gp"]   = 0,    ["x3"]  = 0,
@@ -59,9 +60,8 @@ local functions = {
 }
 
 --- Variables
-local PC = "main" -- where the next iteration shall goto
-local RETURN = nil -- a return address for the GOTO
-local init = true -- becomes false when the buffer is poluted with static data
+local PC = -1 -- where the next iteration shall goto
+local init = true -- becomes false when the buffer is polluted with static data, and labels are assigned
 
 --- Utility
 local function idiv_trunc(a, b)

@@ -3,7 +3,6 @@
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
 local data = {} -- pointers in memory to static data, ex: strings
-local labels = {}
 local registers = {
     ["zero"] = 0,    ["x0"]  = 0,     ["ra"]   = 0,    ["x1"]  = 0,
     ["sp"]   = mem,  ["x2"]  = 0,     ["gp"]   = 0,    ["x3"]  = 0,
@@ -60,8 +59,9 @@ local functions = {
 }
 
 --- Variables
-local PC = -1 -- where the next iteration shall goto
-local init = true -- becomes false when the buffer is polluted with static data, and labels are assigned
+local PC = "main" -- where the next iteration shall goto
+local RETURN = nil -- a return address for the GOTO
+local init = true -- becomes false when the buffer is poluted with static data
 
 --- Utility
 local function idiv_trunc(a, b)
@@ -78,7 +78,7 @@ local function lo(addr)
 end
 
 ---- Auto generated code starts here
-while PC ~= 0 do
+while PC do
 	-- ASM ATTRIBUTE: .attribute	4, 16
 	-- ASM ATTRIBUTE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
 	-- ASM ATTRIBUTE: .file	"main.c"
@@ -86,7 +86,7 @@ while PC ~= 0 do
 	-- ASM ATTRIBUTE: .globl	factorial
 	-- ASM ATTRIBUTE: .p2align	2
 	-- ASM ATTRIBUTE: .type	factorial,@function
-	if PC == 1 and not init then -- factorial (runtime) 
+	if PC == "factorial" and not init then -- factorial (runtime)
 		-- addi ([{0 false sp } {0 false sp } {0 true -32 }])
 		registers.sp = registers.sp + -32
 		-- sw ([{0 false ra } {28 true sp }])
@@ -103,44 +103,54 @@ while PC ~= 0 do
 		registers.a0 = 0
 		-- blt ([{0 true a0 } {0 true a1 } {0 true .LBB0_2 }])
 		if registers.a0 < registers.a1 then
-			PC = labels[".LBB0_2"]
+			PC = ".LBB0_2"
 			continue
 		end
 		-- j ([{0 true .LBB0_1 }])
-		PC = labels[".LBB0_1"]
+		PC = ".LBB0_1"
 		continue
 	end -- factorial (factorial)
-	if PC == 2 and not init then -- .LBB0_1 (runtime) 
-		-- li ([{0 true a0 } {0 true 1 }])
-		registers.a0 = 1
+	if PC == ".LBB0_1" and not init then -- .LBB0_1 (runtime)
+		-- li ([{0 true a0 } {0 true 10 }])
+		registers.a0 = 10
 		-- sw ([{0 true a0 } {-12 true s0 }])
 		buffer.writei32(memory, registers.s0+-12, registers.a0)
-		-- j ([{0 true .LBB0_6 }])
-		PC = labels[".LBB0_6"]
+		-- j ([{0 true .LBB0_9 }])
+		PC = ".LBB0_9"
 		continue
 	end -- .LBB0_1 (.LBB0_1)
-	if PC == 3 and not init then -- .LBB0_2 (runtime) 
+	if PC == ".LBB0_2" and not init then -- .LBB0_2 (runtime)
+		-- li ([{0 true a0 } {0 true 1 }])
+		registers.a0 = 1
+		-- sw ([{0 true a0 } {-20 true s0 }])
+		buffer.writei32(memory, registers.s0+-20, registers.a0)
 		-- lw ([{0 true a0 } {-16 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-16)
 		-- sw ([{0 true a0 } {-24 true s0 }])
 		buffer.writei32(memory, registers.s0+-24, registers.a0)
-		-- addi ([{0 true a0 } {0 true a0 } {0 true -1 }])
-		registers.a0 = registers.a0 + -1
-		-- call ([{0 false factorial }])
-		if functions["factorial"] then
-			functions["factorial"]() -- invoke provided function factorial
-			PC = 4 -- since we are cutting early
-		else
-			registers.ra = 4
-			PC = labels["factorial"]
+		-- j ([{0 true .LBB0_3 }])
+		PC = ".LBB0_3"
+		continue
+	end -- .LBB0_2 (.LBB0_2)
+	if PC == ".LBB0_3" and not init then -- .LBB0_3 (runtime)
+		-- lw ([{0 true a1 } {-24 true s0 }])
+		registers.a1 = buffer.readi32(memory, registers.s0+-24)
+		-- li ([{0 true a0 } {0 true 0 }])
+		registers.a0 = 0
+		-- bge ([{0 true a0 } {0 true a1 } {0 true .LBB0_8 }])
+		if registers.a0 >= registers.a1 then
+			PC = ".LBB0_8"
 			continue
 		end
-	end -- .LBB0_2 (.LBB0_2)
-	if PC == 4 and not init then -- .LBB0_2 (extended) 
-		-- mv ([{0 true a1 } {0 true a0 }])
-		registers.a1 = registers.a0
-		-- lw ([{0 true a0 } {-24 true s0 }])
-		registers.a0 = buffer.readi32(memory, registers.s0+-24)
+		-- j ([{0 true .LBB0_4 }])
+		PC = ".LBB0_4"
+		continue
+	end -- .LBB0_3 (.LBB0_3)
+	if PC == ".LBB0_4" and not init then -- .LBB0_4 (runtime)
+		-- lw ([{0 true a1 } {-24 true s0 }])
+		registers.a1 = buffer.readi32(memory, registers.s0+-24)
+		-- lw ([{0 true a0 } {-20 true s0 }])
+		registers.a0 = buffer.readi32(memory, registers.s0+-20)
 		-- mul ([{0 true a0 } {0 true a0 } {0 true a1 }])
 		registers.a0 = registers.a0 * registers.a1
 		-- sw ([{0 true a0 } {-20 true s0 }])
@@ -155,18 +165,18 @@ while PC ~= 0 do
 		registers.a1 = bit32.band(registers.a1, -2)
 		-- sub ([{0 true a0 } {0 true a0 } {0 true a1 }])
 		registers.a0 = registers.a0 - registers.a1
-		-- bnez ([{0 true a0 } {0 true .LBB0_4 }])
+		-- bnez ([{0 true a0 } {0 true .LBB0_6 }])
 		if registers.a0 ~= 0 then
-			PC = labels[".LBB0_4"]
+			PC = ".LBB0_6"
 			continue
 		end
-		-- j ([{0 true .LBB0_3 }])
-		PC = labels[".LBB0_3"]
+		-- j ([{0 true .LBB0_5 }])
+		PC = ".LBB0_5"
 		continue
-	end -- .LBB0_2_end (.LBB0_2_end)
-	if PC == 5 and not init then -- .LBB0_3 (runtime) 
-		-- lw ([{0 true a1 } {-16 true s0 }])
-		registers.a1 = buffer.readi32(memory, registers.s0+-16)
+	end -- .LBB0_4 (.LBB0_4)
+	if PC == ".LBB0_5" and not init then -- .LBB0_5 (runtime)
+		-- lw ([{0 true a1 } {-24 true s0 }])
+		registers.a1 = buffer.readi32(memory, registers.s0+-24)
 		-- lw ([{0 true a2 } {-20 true s0 }])
 		registers.a2 = buffer.readi32(memory, registers.s0+-20)
 		-- lui ([{0 true a0 } {0 false .L.str hi}])
@@ -176,21 +186,21 @@ while PC ~= 0 do
 		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]() -- invoke provided function printf
-			PC = 6 -- since we are cutting early
+			PC = ".LBB0_5_end" -- since we are cutting early
 		else
-			registers.ra = 6
-			PC = labels["printf"]
+			RETURN = ".LBB0_5_end"
+			PC = "printf"
 			continue
 		end
-	end -- .LBB0_3 (.LBB0_3)
-	if PC == 6 and not init then -- .LBB0_3 (extended) 
-		-- j ([{0 true .LBB0_5 }])
-		PC = labels[".LBB0_5"]
+	end -- .LBB0_5 (.LBB0_5)
+	if PC == ".LBB0_5_end" and not init then -- .LBB0_5 (extended)
+		-- j ([{0 true .LBB0_7 }])
+		PC = ".LBB0_7"
 		continue
-	end -- .LBB0_3_end (.LBB0_3_end)
-	if PC == 7 and not init then -- .LBB0_4 (runtime) 
-		-- lw ([{0 true a1 } {-16 true s0 }])
-		registers.a1 = buffer.readi32(memory, registers.s0+-16)
+	end -- .LBB0_5_end (.LBB0_5_end)
+	if PC == ".LBB0_6" and not init then -- .LBB0_6 (runtime)
+		-- lw ([{0 true a1 } {-24 true s0 }])
+		registers.a1 = buffer.readi32(memory, registers.s0+-24)
 		-- lw ([{0 true a2 } {-20 true s0 }])
 		registers.a2 = buffer.readi32(memory, registers.s0+-20)
 		-- lui ([{0 true a0 } {0 true .L.str.1 hi}])
@@ -200,28 +210,39 @@ while PC ~= 0 do
 		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]() -- invoke provided function printf
-			PC = 8 -- since we are cutting early
+			PC = ".LBB0_6_end" -- since we are cutting early
 		else
-			registers.ra = 8
-			PC = labels["printf"]
+			RETURN = ".LBB0_6_end"
+			PC = "printf"
 			continue
 		end
-	end -- .LBB0_4 (.LBB0_4)
-	if PC == 8 and not init then -- .LBB0_4 (extended) 
-		-- j ([{0 true .LBB0_5 }])
-		PC = labels[".LBB0_5"]
+	end -- .LBB0_6 (.LBB0_6)
+	if PC == ".LBB0_6_end" and not init then -- .LBB0_6 (extended)
+		-- j ([{0 true .LBB0_7 }])
+		PC = ".LBB0_7"
 		continue
-	end -- .LBB0_4_end (.LBB0_4_end)
-	if PC == 9 and not init then -- .LBB0_5 (runtime) 
+	end -- .LBB0_6_end (.LBB0_6_end)
+	if PC == ".LBB0_7" and not init then -- .LBB0_7 (runtime)
+		-- lw ([{0 true a0 } {-24 true s0 }])
+		registers.a0 = buffer.readi32(memory, registers.s0+-24)
+		-- addi ([{0 true a0 } {0 true a0 } {0 true -1 }])
+		registers.a0 = registers.a0 + -1
+		-- sw ([{0 true a0 } {-24 true s0 }])
+		buffer.writei32(memory, registers.s0+-24, registers.a0)
+		-- j ([{0 true .LBB0_3 }])
+		PC = ".LBB0_3"
+		continue
+	end -- .LBB0_7 (.LBB0_7)
+	if PC == ".LBB0_8" and not init then -- .LBB0_8 (runtime)
 		-- lw ([{0 true a0 } {-20 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-20)
 		-- sw ([{0 true a0 } {-12 true s0 }])
 		buffer.writei32(memory, registers.s0+-12, registers.a0)
-		-- j ([{0 true .LBB0_6 }])
-		PC = labels[".LBB0_6"]
+		-- j ([{0 true .LBB0_9 }])
+		PC = ".LBB0_9"
 		continue
-	end -- .LBB0_5 (.LBB0_5)
-	if PC == 10 and not init then -- .LBB0_6 (runtime) 
+	end -- .LBB0_8 (.LBB0_8)
+	if PC == ".LBB0_9" and not init then -- .LBB0_9 (runtime)
 		-- lw ([{0 true a0 } {-12 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-12)
 		-- lw ([{0 false ra } {28 true sp }])
@@ -231,20 +252,20 @@ while PC ~= 0 do
 		-- addi ([{0 false sp } {0 false sp } {0 true 32 }])
 		registers.sp = registers.sp + 32
 		-- ret ([])
-		if registers.ra ~= 0 then
-			PC = registers.ra
-			registers.ra = 0
+		if RETURN then
+			PC = RETURN
+			RETURN = nil
 			continue
 		else
-			PC = 0
+			PC = nil
 		end
-	end -- .LBB0_6 (.LBB0_6)
-	if PC == 11 and not init then -- .Lfunc_end0 (runtime) 
+	end -- .LBB0_9 (.LBB0_9)
+	if PC == ".Lfunc_end0" and not init then -- .Lfunc_end0 (runtime)
 		-- ASM ATTRIBUTE: .globl	main
 		-- ASM ATTRIBUTE: .p2align	2
 		-- ASM ATTRIBUTE: .type	main,@function
 	end -- .Lfunc_end0 (.Lfunc_end0)
-	if PC == 12 and not init then -- main (runtime) 
+	if PC == "main" and not init then -- main (runtime)
 		-- addi ([{0 false sp } {0 false sp } {0 true -48 }])
 		registers.sp = registers.sp + -48
 		-- sw ([{0 false ra } {44 true sp }])
@@ -282,24 +303,24 @@ while PC ~= 0 do
 		-- sw ([{0 true a0 } {-40 true s0 }])
 		buffer.writei32(memory, registers.s0+-40, registers.a0)
 		-- j ([{0 true .LBB1_1 }])
-		PC = labels[".LBB1_1"]
+		PC = ".LBB1_1"
 		continue
 	end -- main (main)
-	if PC == 13 and not init then -- .LBB1_1 (runtime) 
+	if PC == ".LBB1_1" and not init then -- .LBB1_1 (runtime)
 		-- lw ([{0 true a0 } {-40 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-40)
 		-- lw ([{0 true a1 } {-36 true s0 }])
 		registers.a1 = buffer.readi32(memory, registers.s0+-36)
 		-- bge ([{0 true a0 } {0 true a1 } {0 true .LBB1_4 }])
 		if registers.a0 >= registers.a1 then
-			PC = labels[".LBB1_4"]
+			PC = ".LBB1_4"
 			continue
 		end
 		-- j ([{0 true .LBB1_2 }])
-		PC = labels[".LBB1_2"]
+		PC = ".LBB1_2"
 		continue
 	end -- .LBB1_1 (.LBB1_1)
-	if PC == 14 and not init then -- .LBB1_2 (runtime) 
+	if PC == ".LBB1_2" and not init then -- .LBB1_2 (runtime)
 		-- lw ([{0 true a0 } {-40 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-40)
 		-- slli ([{0 true a1 } {0 true a0 } {0 true 2 }])
@@ -319,14 +340,14 @@ while PC ~= 0 do
 		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]() -- invoke provided function printf
-			PC = 15 -- since we are cutting early
+			PC = ".LBB1_2_end" -- since we are cutting early
 		else
-			registers.ra = 15
-			PC = labels["printf"]
+			RETURN = ".LBB1_2_end"
+			PC = "printf"
 			continue
 		end
 	end -- .LBB1_2 (.LBB1_2)
-	if PC == 15 and not init then -- .LBB1_2 (extended) 
+	if PC == ".LBB1_2_end" and not init then -- .LBB1_2 (extended)
 		-- lw ([{0 true a0 } {-44 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-44)
 		-- lw ([{0 true a1 } {-40 true s0 }])
@@ -340,14 +361,14 @@ while PC ~= 0 do
 		-- call ([{0 false factorial }])
 		if functions["factorial"] then
 			functions["factorial"]() -- invoke provided function factorial
-			PC = 16 -- since we are cutting early
+			PC = ".LBB1_2_end_end" -- since we are cutting early
 		else
-			registers.ra = 16
-			PC = labels["factorial"]
+			RETURN = ".LBB1_2_end_end"
+			PC = "factorial"
 			continue
 		end
 	end -- .LBB1_2_end (.LBB1_2_end)
-	if PC == 16 and not init then -- .LBB1_2_end (extended) 
+	if PC == ".LBB1_2_end_end" and not init then -- .LBB1_2_end (extended)
 		-- lui ([{0 true a0 } {0 true .L.str.3 hi}])
 		registers.a0 = hi(data["str.3"])
 		-- addi ([{0 true a0 } {0 true a0 } {0 true .L.str.3 lo}])
@@ -355,19 +376,19 @@ while PC ~= 0 do
 		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]() -- invoke provided function printf
-			PC = 17 -- since we are cutting early
+			PC = ".LBB1_2_end_end_end" -- since we are cutting early
 		else
-			registers.ra = 17
-			PC = labels["printf"]
+			RETURN = ".LBB1_2_end_end_end"
+			PC = "printf"
 			continue
 		end
 	end -- .LBB1_2_end_end (.LBB1_2_end_end)
-	if PC == 17 and not init then -- .LBB1_2_end_end (extended) 
+	if PC == ".LBB1_2_end_end_end" and not init then -- .LBB1_2_end_end (extended)
 		-- j ([{0 true .LBB1_3 }])
-		PC = labels[".LBB1_3"]
+		PC = ".LBB1_3"
 		continue
 	end -- .LBB1_2_end_end_end (.LBB1_2_end_end_end)
-	if PC == 18 and not init then -- .LBB1_3 (runtime) 
+	if PC == ".LBB1_3" and not init then -- .LBB1_3 (runtime)
 		-- lw ([{0 true a0 } {-40 true s0 }])
 		registers.a0 = buffer.readi32(memory, registers.s0+-40)
 		-- addi ([{0 true a0 } {0 true a0 } {0 true 1 }])
@@ -375,10 +396,10 @@ while PC ~= 0 do
 		-- sw ([{0 true a0 } {-40 true s0 }])
 		buffer.writei32(memory, registers.s0+-40, registers.a0)
 		-- j ([{0 true .LBB1_1 }])
-		PC = labels[".LBB1_1"]
+		PC = ".LBB1_1"
 		continue
 	end -- .LBB1_3 (.LBB1_3)
-	if PC == 19 and not init then -- .LBB1_4 (runtime) 
+	if PC == ".LBB1_4" and not init then -- .LBB1_4 (runtime)
 		-- li ([{0 true a0 } {0 true 0 }])
 		registers.a0 = 0
 		-- lw ([{0 false ra } {44 true sp }])
@@ -388,15 +409,15 @@ while PC ~= 0 do
 		-- addi ([{0 false sp } {0 false sp } {0 true 48 }])
 		registers.sp = registers.sp + 48
 		-- ret ([])
-		if registers.ra ~= 0 then
-			PC = registers.ra
-			registers.ra = 0
+		if RETURN then
+			PC = RETURN
+			RETURN = nil
 			continue
 		else
-			PC = 0
+			PC = nil
 		end
 	end -- .LBB1_4 (.LBB1_4)
-	if PC == 20 and not init then -- .Lfunc_end1 (runtime) 
+	if PC == ".Lfunc_end1" and not init then -- .Lfunc_end1 (runtime)
 		-- ASM ATTRIBUTE: .type	.L.str,@object
 		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
 	end -- .Lfunc_end1 (.Lfunc_end1)
@@ -412,7 +433,7 @@ while PC ~= 0 do
 		-- ASM ATTRIBUTE: .section	.rodata,"a",@progbits
 		-- ASM ATTRIBUTE: .p2align	2, 0x0
 	end -- .L.str.1 (.L.str.1)
-	if PC == 23 and not init then -- .L__const.main.numbers (runtime) 
+	if PC == ".L__const.main.numbers" and not init then -- .L__const.main.numbers (runtime)
 		-- ASM ATTRIBUTE: .word	3
 		-- ASM ATTRIBUTE: .word	4
 		-- ASM ATTRIBUTE: .word	4294967291
@@ -427,7 +448,7 @@ while PC ~= 0 do
 		-- ASM ATTRIBUTE: .type	.L.str.3,@object
 	end -- .L.str.2 (.L.str.2)
 	if init then -- .L.str.3 (initialization)
-		buffer.writestring(memory, 55, "---------\0")
+		buffer.writestring(memory, 55, "----\0")
 		data["str.3"] = 55 -- represents ^
 		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
 		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
@@ -435,39 +456,10 @@ while PC ~= 0 do
 		-- ASM ATTRIBUTE: .addrsig_sym factorial
 		-- ASM ATTRIBUTE: .addrsig_sym printf
 	end -- .L.str.3 (.L.str.3)
-	if init then -- load label names for quick access
-		labels = {
-			["factorial"] = 1,
-			[".LBB0_1"] = 2,
-			[".LBB0_2"] = 3,
-			[".LBB0_2_end"] = 4,
-			[".LBB0_3"] = 5,
-			[".LBB0_3_end"] = 6,
-			[".LBB0_4"] = 7,
-			[".LBB0_4_end"] = 8,
-			[".LBB0_5"] = 9,
-			[".LBB0_6"] = 10,
-			[".Lfunc_end0"] = 11,
-			["main"] = 12,
-			[".LBB1_1"] = 13,
-			[".LBB1_2"] = 14,
-			[".LBB1_2_end"] = 15,
-			[".LBB1_2_end_end"] = 16,
-			[".LBB1_2_end_end_end"] = 17,
-			[".LBB1_3"] = 18,
-			[".LBB1_4"] = 19,
-			[".Lfunc_end1"] = 20,
-			[".L.str"] = 21,
-			[".L.str.1"] = 22,
-			[".L__const.main.numbers"] = 23,
-			[".L.str.2"] = 24,
-			[".L.str.3"] = 25,
-		}
-		PC = labels["main"]
-	end
 	init = false -- do not initialize again
-	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 
-	if (not PC) or PC == 0 or PC > 25 then
+	-- if no PC, or invalid PC then break (look into alternative implementations in the future)
+	if (not PC) or (PC ~= "factorial" and PC ~= ".LBB0_1" and PC ~= ".LBB0_2" and PC ~= ".LBB0_3" and PC ~= ".LBB0_4" and PC ~= ".LBB0_5" and PC ~= ".LBB0_5_end" and PC ~= ".LBB0_6" and PC ~= ".LBB0_6_end" and PC ~= ".LBB0_7" and PC ~= ".LBB0_8" and PC ~= ".LBB0_9" and PC ~= ".Lfunc_end0" and PC ~= "main" and PC ~= ".LBB1_1" and PC ~= ".LBB1_2" and PC ~= ".LBB1_2_end" and PC ~= ".LBB1_2_end_end" and PC ~= ".LBB1_2_end_end_end" and PC ~= ".LBB1_3" and PC ~= ".LBB1_4" and PC ~= ".Lfunc_end1" and PC ~= ".L.str" and PC ~= ".L.str.1" and PC ~= ".L__const.main.numbers" and PC ~= ".L.str.2" and PC ~= ".L.str.3") then
+		if PC then print("Ended execution due to missing label: " .. PC) end
 		break
 	end
 end

@@ -10,7 +10,7 @@ func Compile(assembly []byte, lang string) []byte {
 	lines := strings.Split(assembly_str, "\n")
 
 	/* compile line by line */
-	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0}
+	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0, MaxPC: 1}
 	BeforeCompilation(writer)
 	for _, line := range lines {
 		var command AssemblyCommand = Parse(line)

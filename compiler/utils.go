@@ -63,15 +63,24 @@ func CompileRegister(argument Argument) string {
 }
 func JumpTo(w *OutputWriter, label string, link bool) {
 	if link {
-		WriteIndentedString(w, "RETURN = \"%s_end\"\n", w.CurrentLabel)
+		WriteIndentedString(w, "registers.ra = %d\n", w.MaxPC)
 	}
-	WriteIndentedString(w, "PC = \"%s\"\n", label)
+	WriteIndentedString(w, "PC = labels[\"%s\"]\n", label)
 	WriteIndentedString(w, "continue\n")
 }
 func CutAndLink(w *OutputWriter) {
 	AddEnd(w)
-	WriteIndentedString(w, "if PC == \"%s_end\" and not init then -- %s (extended) \n", w.CurrentLabel, w.CurrentLabel)
+	WriteIndentedString(w, "if PC == %d and not init then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
+	w.MaxPC++
 	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
 	w.Labels = append(w.Labels, w.CurrentLabel)
+}
+func FindInArray(array []string, target string) int {
+	for i, item := range array {
+		if item == target {
+			return i
+		}
+	}
+	return -1
 }

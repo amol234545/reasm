@@ -22,6 +22,7 @@ type OutputWriter struct {
 	PendingData              PendingData /* used for remember data across instructions */
 	Depth                    int         /* used for indentation */
 	Labels                   []string    /* used for labels */
+	MaxPC                    int         /* used for counting PC which is hardcoded in */
 }
 
 func WriteString(writer *OutputWriter, format string, args ...any) {

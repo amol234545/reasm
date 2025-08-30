@@ -12,9 +12,10 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	if strings.HasPrefix(command.Name, ".L.") {
 		WriteIndentedString(w, "if init then -- %s (initialization)\n", command.Name)
 	} else {
-		WriteIndentedString(w, "if PC == \"%s\" and not init then -- %s (runtime) \n", command.Name, command.Name)
+		WriteIndentedString(w, "if PC == %d and not init then -- %s (runtime) \n", w.MaxPC, command.Name)
 	}
 	w.Depth++
+	w.MaxPC++
 	w.Labels = append(w.Labels, command.Name)
 }
 

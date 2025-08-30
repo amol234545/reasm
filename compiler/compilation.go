@@ -133,26 +133,33 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 	}
 }
 func BeforeCompilation(writer *OutputWriter) {
-	WriteIndentedString(writer, "while PC do\n")
+	WriteIndentedString(writer, "while PC ~= 0 do\n")
 	writer.Depth++
 }
 func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
 
+	// load the label names
+	WriteIndentedString(writer, "if init then -- load label names for quick access\n")
+	writer.Depth++
+	WriteIndentedString(writer, "labels = {\n")
+	writer.Depth++
+	for index, label := range writer.Labels {
+		WriteIndentedString(writer, "[\"%s\"] = %d,\n", label, index+1)
+	}
+	writer.Depth--
+	WriteIndentedString(writer, "}\n")
+	WriteIndentedString(writer, "PC = labels[\"main\"]\n")
+	writer.Depth--
+	WriteIndentedString(writer, "end\n")
+
 	WriteIndentedString(writer, "init = false -- do not initialize again\n")
 
 	// check if invalid PC, then break
 	WriteIndentedString(writer, "-- if no PC, or invalid PC then break (look into alternative implementations in the future) \n")
-	WriteIndentedString(writer, "if (not PC) or (")
-	for ind, label := range writer.Labels {
-		if ind > 0 {
-			WriteString(writer, " and ")
-		}
-		WriteString(writer, "PC ~= \"%s\"", label)
-	}
-	WriteString(writer, ") then\n")
+	WriteIndentedString(writer, "if (not PC) or PC == 0 or PC > %d then\n", writer.MaxPC-1)
 	writer.Depth++
-	WriteIndentedString(writer, "if PC then print(\"Ended execution due to missing label: \" .. PC) end\n")
+	//WriteIndentedString(writer, "if PC then print(`Ended execution due to missing label: .. PC`) end\n")
 	WriteIndentedString(writer, "break\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
