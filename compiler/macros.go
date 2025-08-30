@@ -62,3 +62,25 @@ func word(w *OutputWriter, components []string) {
 
 	w.MemoryDevelopmentPointer += 4
 }
+func half(w *OutputWriter, components []string) {
+	if w.PendingData.Type != PendingDataTypeNumeric {
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+	}
+	w.PendingData.Type = PendingDataTypeNumeric
+
+	val, _ := strconv.Atoi(components[1])
+	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
+
+	w.MemoryDevelopmentPointer += 2
+}
+func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap with the type */
+	if w.PendingData.Type != PendingDataTypeNumeric {
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+	}
+	w.PendingData.Type = PendingDataTypeNumeric
+
+	val, _ := strconv.Atoi(components[1])
+	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
+
+	w.MemoryDevelopmentPointer += 1
+}

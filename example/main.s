@@ -41,14 +41,14 @@ main:                                   # @main
 	addi	s1, s1, %lo(.L.str.4)
 	li	s3, 5
 .LBB0_1:                                # =>This Inner Loop Header: Depth=1
-	lw	a2, 0(s2)
+	lh	a2, 0(s2)
 	mv	a0, s1
 	mv	a1, s0
 	mv	a3, s0
 	mv	a4, a2
 	call	printf
 	addi	s0, s0, 1
-	addi	s2, s2, 4
+	addi	s2, s2, 2
 	bne	s0, s3, .LBB0_1
 # %bb.2:
 	li	a0, 0
@@ -80,14 +80,14 @@ main:                                   # @main
 
 	.type	.L__const.main.arr,@object      # @__const.main.arr
 	.section	.rodata,"a",@progbits
-	.p2align	2, 0x0
+	.p2align	1, 0x0
 .L__const.main.arr:
-	.word	1                               # 0x1
-	.word	2                               # 0x2
-	.word	3                               # 0x3
-	.word	4                               # 0x4
-	.word	5                               # 0x5
-	.size	.L__const.main.arr, 20
+	.half	1                               # 0x1
+	.half	2                               # 0x2
+	.half	3                               # 0x3
+	.half	4                               # 0x4
+	.half	5                               # 0x5
+	.size	.L__const.main.arr, 10
 
 	.type	.L.str.3,@object                # @.str.3
 	.section	.rodata.str1.1,"aMS",@progbits,1

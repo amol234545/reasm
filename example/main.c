@@ -20,8 +20,8 @@ int main() {
     printf("a = %d, b = %d\n", a, b);
 
     // Array and pointer example
-    int arr[5] = {1, 2, 3, 4, 5};
-    int *r = arr;  // pointer to first element
+    short int arr[5] = {1, 2, 3, 4, 5};
+    short int *r = arr;  // pointer to first element
 
     printf("Array elements using pointer:\n");
     for (int i = 0; i < 5; i++) {

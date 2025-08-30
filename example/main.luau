@@ -204,7 +204,7 @@ while PC ~= 0 do
 		PC += 1
 	end
 	if PC == 7 and not init then -- .LBB0_1 (runtime) 
-		registers.a2 = readi32(memory, registers.s2)
+		registers.a2 = readi16(memory, registers.s2)
 		registers.a0 = registers.s1
 		registers.a1 = registers.s0
 		registers.a3 = registers.s0
@@ -224,7 +224,7 @@ while PC ~= 0 do
 	end
 	if PC == 8 and not init then -- .LBB0_1 (extended) 
 		registers.s0 = registers.s0 + 1
-		registers.s2 = registers.s2 + 4
+		registers.s2 = registers.s2 + 2
 		if registers.s0 ~= registers.s3 then
 			do
 				PC = labels[".LBB0_1"]
@@ -267,22 +267,22 @@ while PC ~= 0 do
 		PC += 1
 	end
 	if init then -- .L__const.main.arr (initialization)
-		writei32(memory, 58, 1)
-		writei32(memory, 62, 2)
-		writei32(memory, 66, 3)
-		writei32(memory, 70, 4)
-		writei32(memory, 74, 5)
+		writei16(memory, 58, 1)
+		writei16(memory, 60, 2)
+		writei16(memory, 62, 3)
+		writei16(memory, 64, 4)
+		writei16(memory, 66, 5)
 		data["__const.main.arr"] = 58
 		PC += 1
 	end
 	if init then -- .L.str.3 (initialization)
-		writestring(memory, 78, "Array elements using pointer:\n\0")
-		data[".str.3"] = 78
+		writestring(memory, 68, "Array elements using pointer:\n\0")
+		data[".str.3"] = 68
 		PC += 1
 	end
 	if init then -- .L.str.4 (initialization)
-		writestring(memory, 110, "arr[%d] = %d, *(r+%d) = %d\n\0")
-		data[".str.4"] = 110
+		writestring(memory, 100, "arr[%d] = %d, *(r+%d) = %d\n\0")
+		data[".str.4"] = 100
 		PC += 1
 	end
 	if init then -- load label names for quick access
