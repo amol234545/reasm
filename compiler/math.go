@@ -19,5 +19,5 @@ func rem(w *OutputWriter, command AssemblyCommand) { /* rem & remi instructions 
 
 /*** Math Descendants */
 func mulh(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = bit32.band(bit32.lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = band(lshift(%s, %s), 0xFFFFFFFF)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
 }

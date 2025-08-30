@@ -36,7 +36,7 @@ func size(w *OutputWriter, components []string) {
 
 	if dataType == PendingDataTypeString {
 		/* define a string */
-		WriteIndentedString(w, "buffer.writestring(memory, %d, \"%s\\0\")\n", w.MemoryDevelopmentPointer, data)
+		WriteIndentedString(w, "writestring(memory, %d, \"%s\\0\")\n", w.MemoryDevelopmentPointer, data)
 		WriteIndentedString(w, "%s = %d -- represents ^\n", macro, w.MemoryDevelopmentPointer)
 
 		w.MemoryDevelopmentPointer += int32(len(data) + 1)

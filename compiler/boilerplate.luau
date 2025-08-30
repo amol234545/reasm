@@ -69,13 +69,36 @@ local function idiv_trunc(a, b)
   local q = math.modf(a / b) -- truncated toward zero
   return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
 end
-
 local function hi(addr)
     return bit32.lshift(bit32.rshift(addr, 12), 12)
 end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+
+-- Localized Functions
+--- bit32
+local band = bit32.band
+local bor = bit32.bor
+local lshift = bit32.lshift
+local rshift = bit32.rshift
+local arshift = bit32.arshift
+local bxor = bit32.bxor
+
+--- buffer
+local writestring = buffer.writestring
+local writei8 = buffer.writei8
+local writei16 = buffer.writei16
+local writei32 = buffer.writei32
+local readi8 = buffer.readi8
+local readi16 = buffer.readi16
+local readi32 = buffer.readi32
+local writeu8 = buffer.writeu8
+local writeu16 = buffer.writeu16
+local writeu32 = buffer.writeu32
+local readu8 = buffer.readu8
+local readu16 = buffer.readu16
+local readu32 = buffer.readu32
 
 ---- Auto generated code starts here
 --{code here}
