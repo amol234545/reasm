@@ -102,142 +102,56 @@ local readu32 = buffer.readu32
 
 ---- Auto generated code starts here
 while PC ~= 0 do
-	if PC == 1 and not init then -- main (runtime) 
-		registers.sp = registers.sp + -32
-		writei32(memory, registers.sp+28, registers.ra)
-		writei32(memory, registers.sp+24, registers.s0)
-		writei32(memory, registers.sp+20, registers.s1)
-		writei32(memory, registers.sp+16, registers.s2)
-		writei32(memory, registers.sp+12, registers.s3)
-		registers.s0 = hi(data[".str"])
-		registers.s0 = registers.s0 + lo(data[".str"])
-		registers.a1 = 10
-		registers.a2 = 20
-		registers.a0 = registers.s0
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 2
-			continue
-		else
+	if PC == 1 and not init then -- fib (runtime) 
+		registers.sp = registers.sp + -16
+		writei32(memory, registers.sp+12, registers.ra)
+		writei32(memory, registers.sp+8, registers.s0)
+		writei32(memory, registers.sp+4, registers.s1)
+		writei32(memory, registers.sp, registers.s2)
+		registers.s0 = registers.a0
+		registers.s1 = 0
+		registers.s2 = 2
+		if registers.s0 < registers.s2 then
 			do
-				registers.ra = 2
-				PC = labels["printf"]
+				PC = labels[".LBB0_2"]
 				continue
 			end
 		end
 		PC += 1
 	end
-	if PC == 2 and not init then -- main (extended) 
-		registers.a0 = hi(data[".str.1"])
-		registers.a0 = registers.a0 + lo(data[".str.1"])
-		registers.a1 = 10
-		registers.a2 = 20
-		if functions["printf"] then
-			functions["printf"]()
+	if PC == 2 and not init then -- .LBB0_1 (runtime) 
+		registers.a0 = registers.s0 + -1
+		if functions["fib"] then
+			functions["fib"]()
 			PC = 3
 			continue
 		else
 			do
 				registers.ra = 3
-				PC = labels["printf"]
+				PC = labels["fib"]
 				continue
 			end
 		end
 		PC += 1
 	end
-	if PC == 3 and not init then -- main_end (extended) 
-		registers.a0 = hi(data[".str.2"])
-		registers.a0 = registers.a0 + lo(data[".str.2"])
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 4
-			continue
-		else
-			do
-				registers.ra = 4
-				PC = labels["printf"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 4 and not init then -- main_end_end (extended) 
-		registers.a1 = 15
-		registers.a2 = 40
-		registers.a0 = registers.s0
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 5
-			continue
-		else
-			do
-				registers.ra = 5
-				PC = labels["printf"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 5 and not init then -- main_end_end_end (extended) 
-		registers.a0 = hi(data[".str.3"])
-		registers.a0 = registers.a0 + lo(data[".str.3"])
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 6
-			continue
-		else
-			do
-				registers.ra = 6
-				PC = labels["printf"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 6 and not init then -- main_end_end_end_end (extended) 
-		registers.s0 = 0
-		registers.s2 = hi(data["__const.main.arr"])
-		registers.s2 = registers.s2 + lo(data["__const.main.arr"])
-		registers.s1 = hi(data[".str.4"])
-		registers.s1 = registers.s1 + lo(data[".str.4"])
-		registers.s3 = 5
-		PC += 1
-	end
-	if PC == 7 and not init then -- .LBB0_1 (runtime) 
-		registers.a2 = readi16(memory, registers.s2)
-		registers.a0 = registers.s1
-		registers.a1 = registers.s0
-		registers.a3 = registers.s0
-		registers.a4 = registers.a2
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 8
-			continue
-		else
-			do
-				registers.ra = 8
-				PC = labels["printf"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 8 and not init then -- .LBB0_1 (extended) 
-		registers.s0 = registers.s0 + 1
-		registers.s2 = registers.s2 + 2
-		if registers.s0 ~= registers.s3 then
+	if PC == 3 and not init then -- .LBB0_1 (extended) 
+		registers.s1 = registers.s1 + registers.a0
+		registers.s0 = registers.s0 + -2
+		if registers.s0 >= registers.s2 then
 			do
 				PC = labels[".LBB0_1"]
 				continue
 			end
 		end
-		registers.a0 = 0
-		registers.ra = readi32(memory, registers.sp+28)
-		registers.s0 = readi32(memory, registers.sp+24)
-		registers.s1 = readi32(memory, registers.sp+20)
-		registers.s2 = readi32(memory, registers.sp+16)
-		registers.s3 = readi32(memory, registers.sp+12)
-		registers.sp = registers.sp + 32
+		PC += 1
+	end
+	if PC == 4 and not init then -- .LBB0_2 (runtime) 
+		registers.a0 = registers.s0 + registers.s1
+		registers.ra = readi32(memory, registers.sp+12)
+		registers.s0 = readi32(memory, registers.sp+8)
+		registers.s1 = readi32(memory, registers.sp+4)
+		registers.s2 = readi32(memory, registers.sp)
+		registers.sp = registers.sp + 16
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
@@ -248,60 +162,144 @@ while PC ~= 0 do
 		end
 		PC += 1
 	end
-	if PC == 9 and not init then -- .Lfunc_end0 (runtime) 
+	if PC == 5 and not init then -- .Lfunc_end0 (runtime) 
+		PC += 1
+	end
+	if PC == 6 and not init then -- printFib (runtime) 
+		registers.sp = registers.sp + -16
+		writei32(memory, registers.sp+12, registers.ra)
+		writei32(memory, registers.sp+8, registers.s0)
+		writei32(memory, registers.sp+4, registers.s1)
+		writei32(memory, registers.sp, registers.s2)
+		registers.s0 = registers.a1
+		registers.s1 = registers.a0
+		registers.s2 = hi(data[".str"])
+		registers.s2 = registers.s2 + lo(data[".str"])
+		if registers.s0 >= registers.s1 then
+			do
+				PC = labels[".LBB1_2"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 7 and not init then -- .LBB1_1 (runtime) 
+		registers.a0 = registers.s0
+		if functions["fib"] then
+			functions["fib"]()
+			PC = 8
+			continue
+		else
+			do
+				registers.ra = 8
+				PC = labels["fib"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 8 and not init then -- .LBB1_1 (extended) 
+		registers.a1 = registers.a0
+		registers.a0 = registers.s2
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 9
+			continue
+		else
+			do
+				registers.ra = 9
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 9 and not init then -- .LBB1_1_end (extended) 
+		registers.s0 = registers.s0 + 1
+		if registers.s0 < registers.s1 then
+			do
+				PC = labels[".LBB1_1"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 10 and not init then -- .LBB1_2 (runtime) 
+		registers.ra = readi32(memory, registers.sp+12)
+		registers.s0 = readi32(memory, registers.sp+8)
+		registers.s1 = readi32(memory, registers.sp+4)
+		registers.s2 = readi32(memory, registers.sp)
+		registers.sp = registers.sp + 16
+		if registers.ra ~= 0 then
+			PC = registers.ra
+			registers.ra = 0
+			continue
+		else
+			PC = 0
+			continue
+		end
+		PC += 1
+	end
+	if PC == 11 and not init then -- .Lfunc_end1 (runtime) 
+		PC += 1
+	end
+	if PC == 12 and not init then -- main (runtime) 
+		registers.sp = registers.sp + -16
+		writei32(memory, registers.sp+12, registers.ra)
+		registers.a0 = 10
+		registers.a1 = 0
+		if functions["printFib"] then
+			functions["printFib"]()
+			PC = 13
+			continue
+		else
+			do
+				registers.ra = 13
+				PC = labels["printFib"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 13 and not init then -- main (extended) 
+		registers.a0 = 0
+		registers.ra = readi32(memory, registers.sp+12)
+		registers.sp = registers.sp + 16
+		if registers.ra ~= 0 then
+			PC = registers.ra
+			registers.ra = 0
+			continue
+		else
+			PC = 0
+			continue
+		end
+		PC += 1
+	end
+	if PC == 14 and not init then -- .Lfunc_end2 (runtime) 
 		PC += 1
 	end
 	if init then -- .L.str (initialization)
-		writestring(memory, 0, "a = %d, b = %d\n\0")
+		writestring(memory, 0, "%d\0")
 		data[".str"] = 0
-		PC += 1
-	end
-	if init then -- .L.str.1 (initialization)
-		writestring(memory, 17, "*p = %d, *q = %d\n\0")
-		data[".str.1"] = 17
-		PC += 1
-	end
-	if init then -- .L.str.2 (initialization)
-		writestring(memory, 36, "After modification:\n\0")
-		data[".str.2"] = 36
-		PC += 1
-	end
-	if init then -- .L__const.main.arr (initialization)
-		writei16(memory, 58, 1)
-		writei16(memory, 60, 2)
-		writei16(memory, 62, 3)
-		writei16(memory, 64, 4)
-		writei16(memory, 66, 5)
-		data["__const.main.arr"] = 58
-		PC += 1
-	end
-	if init then -- .L.str.3 (initialization)
-		writestring(memory, 68, "Array elements using pointer:\n\0")
-		data[".str.3"] = 68
-		PC += 1
-	end
-	if init then -- .L.str.4 (initialization)
-		writestring(memory, 100, "arr[%d] = %d, *(r+%d) = %d\n\0")
-		data[".str.4"] = 100
 		PC += 1
 	end
 	if init then -- load label names for quick access
 		labels = {
-			["main"] = 1,
-			["main_end"] = 2,
-			["main_end_end"] = 3,
-			["main_end_end_end"] = 4,
-			["main_end_end_end_end"] = 5,
-			["main_end_end_end_end_end"] = 6,
-			[".LBB0_1"] = 7,
-			[".LBB0_1_end"] = 8,
-			[".Lfunc_end0"] = 9,
-			[".L.str"] = 10,
-			[".L.str.1"] = 11,
-			[".L.str.2"] = 12,
-			[".L__const.main.arr"] = 13,
-			[".L.str.3"] = 14,
-			[".L.str.4"] = 15,
+			["fib"] = 1,
+			[".LBB0_1"] = 2,
+			[".LBB0_1_end"] = 3,
+			[".LBB0_2"] = 4,
+			[".Lfunc_end0"] = 5,
+			["printFib"] = 6,
+			[".LBB1_1"] = 7,
+			[".LBB1_1_end"] = 8,
+			[".LBB1_1_end_end"] = 9,
+			[".LBB1_2"] = 10,
+			[".Lfunc_end1"] = 11,
+			["main"] = 12,
+			["main_end"] = 13,
+			[".Lfunc_end2"] = 14,
+			[".L.str"] = 15,
 		}
 		PC = labels["main"]
 	end

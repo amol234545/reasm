@@ -12,7 +12,7 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	/* define it */
 	w.CurrentLabel = command.Name
 
-	if strings.HasPrefix(command.Name, ".L.") || strings.HasPrefix(command.Name, ".L_") { /* TODO: use a preprocessor to analyze */
+	if strings.HasPrefix(command.Name, ".L.") || strings.HasPrefix(command.Name, ".L_") {
 		WriteIndentedString(w, "if init then -- %s (initialization)\n", command.Name)
 	} else {
 		WriteIndentedString(w, "if PC == %d and not init then -- %s (runtime) \n", w.MaxPC, command.Name)
