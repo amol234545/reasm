@@ -1,6 +1,9 @@
 package compiler
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func label(w *OutputWriter, command AssemblyCommand) {
 	/* end previous label */
@@ -40,5 +43,22 @@ func size(w *OutputWriter, components []string) {
 		WriteIndentedString(w, "%s = %d\n", macro, w.MemoryDevelopmentPointer)
 
 		w.MemoryDevelopmentPointer += int32(len(data) + 1)
+	} else if dataType == PendingDataTypeNumeric {
+		/* define a number */
+		dataInt, _ := strconv.Atoi(data)
+		WriteIndentedString(w, "%s = %d\n", macro, dataInt)
 	}
+
+	w.PendingData.Type = PendingDataTypeNone
+}
+func word(w *OutputWriter, components []string) {
+	if w.PendingData.Type != PendingDataTypeNumeric {
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+	}
+	w.PendingData.Type = PendingDataTypeNumeric
+
+	val, _ := strconv.Atoi(components[1])
+	WriteIndentedString(w, "writei32(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
+
+	w.MemoryDevelopmentPointer += 4
 }

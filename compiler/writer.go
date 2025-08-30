@@ -8,7 +8,9 @@ import (
 type PendingDataType int8
 
 const (
-	PendingDataTypeString PendingDataType = 0 /* a string generated via attribute */
+	PendingDataTypeNone    PendingDataType = 0
+	PendingDataTypeString  PendingDataType = 1 /* a string generated via attribute */
+	PendingDataTypeNumeric PendingDataType = 2 /* a numeric value generated via .word for example */
 )
 
 type PendingData struct {

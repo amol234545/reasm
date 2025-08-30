@@ -103,6 +103,7 @@ var attributes = map[string]func(*OutputWriter, []string){
 	".asciz":  asciz,
 	".string": asciz,
 	".size":   size,
+	".word":   word,
 }
 
 /* main */
