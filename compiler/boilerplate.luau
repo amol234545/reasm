@@ -33,13 +33,14 @@ local functions = {
         -- read string
         local pointer = registers["a0"]
         local str = ""
-        local byte = -1
-        while byte ~= 0 do
-            byte = buffer.readbits(memory, pointer * 8, 8)  -- read 8 bits (1 byte)
+        local byte
+        repeat
+            byte = buffer.readbits(memory, pointer * 8, 8)
+            if byte == 0 then break end
             str = str .. string.char(byte)
             pointer = pointer + 1
             if pointer >= mem then error("Buffer overflow in printf string read") end
-        end
+        until false
 
         -- format string
         --- extract args
@@ -63,6 +64,12 @@ local RETURN = nil -- a return address for the GOTO
 local init = true -- becomes false when the buffer is poluted with static data
 
 --- Utility
+local function idiv_trunc(a, b)
+  if b == 0 then error("division by zero") end
+  local q = math.modf(a / b) -- truncated toward zero
+  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
+end
+
 local function hi(addr)
     return bit32.lshift(bit32.rshift(addr, 12), 12)
 end

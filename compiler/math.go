@@ -11,7 +11,7 @@ func mul(w *OutputWriter, command AssemblyCommand) { /* mul & muli instructions 
 	WriteIndentedString(w, "registers.%s = %s * %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
 }
 func div(w *OutputWriter, command AssemblyCommand) { /* div & divi instructions */
-	WriteIndentedString(w, "registers.%s = %s // %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+	WriteIndentedString(w, "registers.%s = idiv_trunc(%s, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
 }
 func rem(w *OutputWriter, command AssemblyCommand) { /* rem & remi instructions */
 	WriteIndentedString(w, "registers.%s = %s %% %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))

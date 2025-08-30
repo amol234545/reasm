@@ -22,6 +22,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"xor": xor,
 	"or":  or,
 
+	/** immediate */
 	"andi": and,
 	"xori": xor,
 	"ori":  or,
@@ -99,8 +100,9 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"mv":    move,
 }
 var attributes = map[string]func(*OutputWriter, []string){
-	".asciz": asciz,
-	".size":  size,
+	".asciz":  asciz,
+	".string": asciz,
+	".size":   size,
 }
 
 /* main */
@@ -150,6 +152,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	}
 	WriteString(writer, ") then\n")
 	writer.Depth++
+	WriteIndentedString(writer, "if PC then print(\"Ended execution due to missing label: \" .. PC) end\n")
 	WriteIndentedString(writer, "break\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")

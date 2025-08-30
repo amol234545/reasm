@@ -1,22 +1,36 @@
-#include <stdio.h>
+void printf(const char *, ...);
 
-// Function to calculate factorial
-unsigned long factorial(int n) {
-    if (n <= 1) return 1;
-    unsigned long result = 1;
-    for (int i = 2; i <= n; i++) {
-        result *= i;
+int factorial(int n) {
+    if (n <= 0) {
+        return 10; // base case
     }
+
+    int result = 1;  // start with 1
+    int current = n;
+
+    while (current > 0) {
+        result *= current;
+
+        if (result % 2 == 0) {
+            printf("%d! = %d (even)", current, result);
+        } else {
+            printf("%d! = %d (odd)", current, result);
+        }
+
+        current--;  // decrement for next iteration
+    }
+
     return result;
 }
 
 int main() {
-    int numbers[] = {3, 5, 7, 10};
+    int numbers[] = {3, 4, -5, 0, 6};
     int size = sizeof(numbers) / sizeof(numbers[0]);
 
-    // Print factorials of the numbers in the array
     for (int i = 0; i < size; i++) {
-        printf("Factorial of %d is %d", numbers[i], (int)factorial(numbers[i]));
+        printf("Computing factorial(%d)", numbers[i]);
+        factorial(numbers[i]);
+        printf("----");
     }
 
     return 0;
