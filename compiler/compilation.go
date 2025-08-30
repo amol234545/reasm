@@ -114,7 +114,9 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 		}
 
 		if cmdFunc, ok := instructions[command.Name]; ok {
-			WriteIndentedString(writer, "-- %s (%v)\n", command.Name, command.Arguments)
+			if writer.DebugComments {
+				WriteIndentedString(writer, "-- %s (%v)\n", command.Name, command.Arguments)
+			}
 
 			cmdFunc(writer, command)
 		} else {
@@ -125,7 +127,7 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 		attributeName := attributeComponents[0]
 		if _, ok := attributes[attributeName]; ok {
 			attributes[attributeName](writer, attributeComponents)
-		} else {
+		} else if writer.DebugComments {
 			WriteIndentedString(writer, "-- ASM ATTRIBUTE: %s\n", command.Name)
 		}
 	case Label:
@@ -156,10 +158,11 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	WriteIndentedString(writer, "init = false -- do not initialize again\n")
 
 	// check if invalid PC, then break
-	WriteIndentedString(writer, "-- if no PC, or invalid PC then break (look into alternative implementations in the future) \n")
+	if writer.DebugComments {
+		WriteIndentedString(writer, "-- if no PC, or invalid PC then break (look into alternative implementations in the future) \n")
+	}
 	WriteIndentedString(writer, "if (not PC) or PC == 0 or PC > %d then\n", writer.MaxPC-1)
 	writer.Depth++
-	//WriteIndentedString(writer, "if PC then print(`Ended execution due to missing label: .. PC`) end\n")
 	WriteIndentedString(writer, "break\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")

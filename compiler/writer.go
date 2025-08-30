@@ -23,6 +23,10 @@ type OutputWriter struct {
 	Depth                    int         /* used for indentation */
 	Labels                   []string    /* used for labels */
 	MaxPC                    int         /* used for counting PC which is hardcoded in */
+
+	/* debug options */
+	DebugPC       bool /* code will print the program counter */
+	DebugComments bool /* code will be commented with the original instruction and other notes */
 }
 
 func WriteString(writer *OutputWriter, format string, args ...any) {

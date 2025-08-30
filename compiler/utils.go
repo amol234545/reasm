@@ -24,13 +24,18 @@ func AddEnd(w *OutputWriter) {
 		return
 	}
 
+	WriteIndentedString(w, "PC += 1\n")
 	w.Depth--
-	WriteIndentedString(w, "end -- %s (%s)\n", w.CurrentLabel, w.CurrentLabel)
+	if w.DebugComments {
+		WriteIndentedString(w, "end -- %s (%s)\n", w.CurrentLabel, w.CurrentLabel)
+	} else {
+		WriteIndentedString(w, "end\n")
+	}
 }
 func CompileMacro(data string) string {
 	var compiled string
-	if strings.HasPrefix(data, ".L.") { /* string */
-		cut, _ := strings.CutPrefix(data, ".L.")
+	if strings.HasPrefix(data, ".L") { /* string */
+		cut, _ := strings.CutPrefix(data, ".L")
 		compiled = fmt.Sprintf("data[\"%s\"]", cut)
 	}
 
@@ -62,11 +67,18 @@ func CompileRegister(argument Argument) string {
 	return compiled
 }
 func JumpTo(w *OutputWriter, label string, link bool) {
+	WriteIndentedString(w, "do\n")
+	w.Depth++
 	if link {
 		WriteIndentedString(w, "registers.ra = %d\n", w.MaxPC)
 	}
 	WriteIndentedString(w, "PC = labels[\"%s\"]\n", label)
+	if w.DebugPC {
+		WriteIndentedString(w, "print(PC)\n")
+	}
 	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
 }
 func CutAndLink(w *OutputWriter) {
 	AddEnd(w)

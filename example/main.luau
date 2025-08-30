@@ -102,100 +102,259 @@ local readu32 = buffer.readu32
 
 ---- Auto generated code starts here
 while PC ~= 0 do
-	-- ASM ATTRIBUTE: .attribute	4, 16
-	-- ASM ATTRIBUTE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
-	-- ASM ATTRIBUTE: .file	"main.c"
-	-- ASM ATTRIBUTE: .text
-	-- ASM ATTRIBUTE: .globl	main
-	-- ASM ATTRIBUTE: .p2align	2
-	-- ASM ATTRIBUTE: .type	main,@function
 	if PC == 1 and not init then -- main (runtime) 
-		-- addi ([{0 false sp } {0 false sp } {0 true -32 }])
-		registers.sp = registers.sp + -32
-		-- sw ([{0 false ra } {28 true sp }])
-		writei32(memory, registers.sp+28, registers.ra)
-		-- sw ([{0 true s0 } {24 true sp }])
-		writei32(memory, registers.sp+24, registers.s0)
-		-- addi ([{0 true s0 } {0 false sp } {0 true 32 }])
-		registers.s0 = registers.sp + 32
-		-- li ([{0 true a0 } {0 true 0 }])
-		registers.a0 = 0
-		-- sw ([{0 true a0 } {-28 true s0 }])
-		writei32(memory, registers.s0+-28, registers.a0)
-		-- sw ([{0 true a0 } {-12 true s0 }])
-		writei32(memory, registers.s0+-12, registers.a0)
-		-- lui ([{0 true a0 } {0 true 262290 }])
-		registers.a0 = 262290
-		-- addi ([{0 true a0 } {0 true a0 } {0 true -328 }])
-		registers.a0 = registers.a0 + -328
-		-- sw ([{0 true a0 } {-20 true s0 }])
-		writei32(memory, registers.s0+-20, registers.a0)
-		-- lui ([{0 true a0 } {0 true 335544 }])
-		registers.a0 = 335544
-		-- addi ([{0 true a0 } {0 true a0 } {0 true 1311 }])
-		registers.a0 = registers.a0 + 1311
-		-- sw ([{0 true a0 } {-24 true s0 }])
-		writei32(memory, registers.s0+-24, registers.a0)
-		-- lw ([{0 true a3 } {-20 true s0 }])
-		registers.a3 = readi32(memory, registers.s0+-20)
-		-- lw ([{0 true a2 } {-24 true s0 }])
-		registers.a2 = readi32(memory, registers.s0+-24)
-		-- lui ([{0 true a0 } {0 false .L.str hi}])
-		registers.a0 = hi(data["str"])
-		-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
-		registers.a0 = registers.a0 + lo(data["str"])
-		-- call ([{0 false printf }])
+		registers.sp = registers.sp + -16
+		writei32(memory, registers.sp+12, registers.ra)
+		writei32(memory, registers.sp+8, registers.s0)
+		registers.s0 = hi(data[".str"])
+		registers.s0 = registers.s0 + lo(data[".str"])
+		registers.a1 = 10
+		registers.a2 = 20
+		registers.a0 = registers.s0
 		if functions["printf"] then
-			functions["printf"]() -- invoke provided function printf
-			PC = 2 -- since we are cutting early
-		else
-			registers.ra = 2
-			PC = labels["printf"]
+			functions["printf"]()
+			PC = 2
 			continue
+		else
+			do
+				registers.ra = 2
+				PC = labels["printf"]
+				continue
+			end
 		end
-	end -- main (main)
+		PC += 1
+	end
 	if PC == 2 and not init then -- main (extended) 
-		-- lw ([{0 true a0 } {-28 true s0 }])
-		registers.a0 = readi32(memory, registers.s0+-28)
-		-- lw ([{0 false ra } {28 true sp }])
-		registers.ra = readi32(memory, registers.sp+28)
-		-- lw ([{0 true s0 } {24 true sp }])
-		registers.s0 = readi32(memory, registers.sp+24)
-		-- addi ([{0 false sp } {0 false sp } {0 true 32 }])
-		registers.sp = registers.sp + 32
-		-- ret ([])
+		registers.a0 = hi(data[".str.1"])
+		registers.a0 = registers.a0 + lo(data[".str.1"])
+		registers.a1 = 10
+		registers.a2 = 20
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 3
+			continue
+		else
+			do
+				registers.ra = 3
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 3 and not init then -- main_end (extended) 
+		registers.a0 = hi(data[".str.2"])
+		registers.a0 = registers.a0 + lo(data[".str.2"])
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 4
+			continue
+		else
+			do
+				registers.ra = 4
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 4 and not init then -- main_end_end (extended) 
+		registers.a1 = 15
+		registers.a2 = 40
+		registers.a0 = registers.s0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 5
+			continue
+		else
+			do
+				registers.ra = 5
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 5 and not init then -- main_end_end_end (extended) 
+		registers.a0 = hi(data[".str.3"])
+		registers.a0 = registers.a0 + lo(data[".str.3"])
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 6
+			continue
+		else
+			do
+				registers.ra = 6
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 6 and not init then -- main_end_end_end_end (extended) 
+		registers.s0 = hi(data[".str.4"])
+		registers.s0 = registers.s0 + lo(data[".str.4"])
+		registers.a2 = 1
+		registers.a4 = 1
+		registers.a0 = registers.s0
+		registers.a1 = 0
+		registers.a3 = 0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 7
+			continue
+		else
+			do
+				registers.ra = 7
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 7 and not init then -- main_end_end_end_end_end (extended) 
+		registers.a1 = 1
+		registers.a2 = 2
+		registers.a3 = 1
+		registers.a4 = 2
+		registers.a0 = registers.s0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 8
+			continue
+		else
+			do
+				registers.ra = 8
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 8 and not init then -- main_end_end_end_end_end_end (extended) 
+		registers.a1 = 2
+		registers.a2 = 3
+		registers.a3 = 2
+		registers.a4 = 3
+		registers.a0 = registers.s0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 9
+			continue
+		else
+			do
+				registers.ra = 9
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 9 and not init then -- main_end_end_end_end_end_end_end (extended) 
+		registers.a1 = 3
+		registers.a2 = 4
+		registers.a3 = 3
+		registers.a4 = 4
+		registers.a0 = registers.s0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 10
+			continue
+		else
+			do
+				registers.ra = 10
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 10 and not init then -- main_end_end_end_end_end_end_end_end (extended) 
+		registers.a1 = 4
+		registers.a2 = 5
+		registers.a3 = 4
+		registers.a4 = 5
+		registers.a0 = registers.s0
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 11
+			continue
+		else
+			do
+				registers.ra = 11
+				PC = labels["printf"]
+				continue
+			end
+		end
+		PC += 1
+	end
+	if PC == 11 and not init then -- main_end_end_end_end_end_end_end_end_end (extended) 
+		registers.a0 = 0
+		registers.ra = readi32(memory, registers.sp+12)
+		registers.s0 = readi32(memory, registers.sp+8)
+		registers.sp = registers.sp + 16
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
 			continue
 		else
 			PC = 0
+			continue
 		end
-	end -- main_end (main_end)
-	if PC == 3 and not init then -- .Lfunc_end0 (runtime) 
-		-- ASM ATTRIBUTE: .type	.L.str,@object
-		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
-	end -- .Lfunc_end0 (.Lfunc_end0)
+		PC += 1
+	end
+	if PC == 12 and not init then -- .Lfunc_end0 (runtime) 
+		PC += 1
+	end
 	if init then -- .L.str (initialization)
-		writestring(memory, 0, "The value of x is %f\n\0")
-		data["str"] = 0 -- represents ^
-		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
-		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
-		-- ASM ATTRIBUTE: .addrsig
-		-- ASM ATTRIBUTE: .addrsig_sym printf
-	end -- .L.str (.L.str)
+		writestring(memory, 0, "a = %d, b = %d\n\0")
+		data[".str"] = 0
+		PC += 1
+	end
+	if init then -- .L.str.1 (initialization)
+		writestring(memory, 17, "*p = %d, *q = %d\n\0")
+		data[".str.1"] = 17
+		PC += 1
+	end
+	if init then -- .L.str.2 (initialization)
+		writestring(memory, 36, "After modification:\n\0")
+		data[".str.2"] = 36
+		PC += 1
+	end
+	if init then -- .L.str.3 (initialization)
+		writestring(memory, 58, "Array elements using pointer:\n\0")
+		data[".str.3"] = 58
+		PC += 1
+	end
+	if init then -- .L.str.4 (initialization)
+		writestring(memory, 90, "arr[%d] = %d, *(r+%d) = %d\n\0")
+		data[".str.4"] = 90
+		PC += 1
+	end
 	if init then -- load label names for quick access
 		labels = {
 			["main"] = 1,
 			["main_end"] = 2,
-			[".Lfunc_end0"] = 3,
-			[".L.str"] = 4,
+			["main_end_end"] = 3,
+			["main_end_end_end"] = 4,
+			["main_end_end_end_end"] = 5,
+			["main_end_end_end_end_end"] = 6,
+			["main_end_end_end_end_end_end"] = 7,
+			["main_end_end_end_end_end_end_end"] = 8,
+			["main_end_end_end_end_end_end_end_end"] = 9,
+			["main_end_end_end_end_end_end_end_end_end"] = 10,
+			["main_end_end_end_end_end_end_end_end_end_end"] = 11,
+			[".Lfunc_end0"] = 12,
+			[".L.str"] = 13,
+			[".L.str.1"] = 14,
+			[".L.str.2"] = 15,
+			[".L.str.3"] = 16,
+			[".L.str.4"] = 17,
 		}
 		PC = labels["main"]
 	end
 	init = false -- do not initialize again
-	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 
-	if (not PC) or PC == 0 or PC > 4 then
+	if (not PC) or PC == 0 or PC > 17 then
 		break
 	end
 end

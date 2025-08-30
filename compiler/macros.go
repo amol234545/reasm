@@ -9,7 +9,7 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	/* define it */
 	w.CurrentLabel = command.Name
 
-	if strings.HasPrefix(command.Name, ".L.") {
+	if strings.HasPrefix(command.Name, ".L.") || strings.HasPrefix(command.Name, ".L_") { /* TODO: use a preprocessor to analyze */
 		WriteIndentedString(w, "if init then -- %s (initialization)\n", command.Name)
 	} else {
 		WriteIndentedString(w, "if PC == %d and not init then -- %s (runtime) \n", w.MaxPC, command.Name)
@@ -37,7 +37,7 @@ func size(w *OutputWriter, components []string) {
 	if dataType == PendingDataTypeString {
 		/* define a string */
 		WriteIndentedString(w, "writestring(memory, %d, \"%s\\0\")\n", w.MemoryDevelopmentPointer, data)
-		WriteIndentedString(w, "%s = %d -- represents ^\n", macro, w.MemoryDevelopmentPointer)
+		WriteIndentedString(w, "%s = %d\n", macro, w.MemoryDevelopmentPointer)
 
 		w.MemoryDevelopmentPointer += int32(len(data) + 1)
 	}
