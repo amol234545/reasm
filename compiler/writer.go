@@ -25,6 +25,7 @@ type OutputWriter struct {
 	Depth                    int               /* used for indentation */
 	MaxPC                    int               /* used for counting PC which is hardcoded in */
 	Commands                 []AssemblyCommand /* used to check lines in the future */
+	Mode                     string            /* generation mode */
 
 	/* debug options */
 	DebugPC       bool /* code will print the program counter */

@@ -165,6 +165,8 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 func BeforeCompilation(writer *OutputWriter) {
 
 	/* load directives */
+	WriteIndentedString(writer, "function init()\n")
+	writer.Depth++
 	for _, command := range writer.Commands {
 		if command.Type != Directive {
 			continue
@@ -178,8 +180,12 @@ func BeforeCompilation(writer *OutputWriter) {
 			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
 		}
 	}
+	writer.Depth--
+	WriteIndentedString(writer, "end\n")
 
 	/* start code */
+	WriteIndentedString(writer, "function main()\n")
+	writer.Depth++
 	WriteIndentedString(writer, "while PC ~= 0 do\n")
 	writer.Depth++
 }
@@ -195,7 +201,40 @@ func AfterCompilation(writer *OutputWriter) []byte {
 
 	// end the while loop we initialized in StartLuau
 	writer.Depth--
-	WriteIndentedString(writer, "end")
+	WriteIndentedString(writer, "end\n")
+	writer.Depth--
+	WriteIndentedString(writer, "end\n")
+
+	// final code based on mode
+	if writer.Mode == "main" {
+		WriteString(writer, "init()\nmain()\n")
+	} else if writer.Mode == "module" {
+		WriteString(writer, `return setmetatable({
+	init = init,
+	main = main,
+	memory = memory,
+	functions = functions,
+	util = {
+		extract_args = extract_args,
+		read_string = read_string,
+		format_string = format_string,
+	},
+	PC = PC,
+	registers = registers,
+	data = data
+}, {__call = function() init(); main() end})`)
+	} else if writer.Mode == "bench" {
+		WriteString(writer, `
+return {
+    Name = "RISCV File",
+
+    BeforeEach = init,
+
+    Functions = {
+        ["main"] = main,
+    }
+}`)
+	}
 
 	code := string(writer.Buffer)
 	registers := generateRegistryMap(regs)
