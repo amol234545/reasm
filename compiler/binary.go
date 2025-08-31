@@ -15,6 +15,18 @@ func sra(w *OutputWriter, command AssemblyCommand) {
 func slt(w *OutputWriter, command AssemblyCommand) { /* sltu & sltui instructions */
 	WriteIndentedString(w, "registers.%s = if (%s < %s) then 1 else 0\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
 }
+func seqz(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = if (%s == 0) then 1 else 0\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
+func snez(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = if (%s ~= 0) then 1 else 0\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
+func sltz(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = if (%s < 0) then 1 else 0\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
+func sgtz(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = if (%s > 0) then 1 else 0\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
 
 /** Binary Operations */
 func and(w *OutputWriter, command AssemblyCommand) { /* and & andi instructions */
@@ -25,4 +37,7 @@ func xor(w *OutputWriter, command AssemblyCommand) { /* xor & xori instructions 
 }
 func or(w *OutputWriter, command AssemblyCommand) { /* or & ori instructions */
 	WriteIndentedString(w, "registers.%s = bor(%s, %s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+}
+func not(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers.%s = bnot(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
 }

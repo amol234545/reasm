@@ -10,52 +10,87 @@ func jal(w *OutputWriter, command AssemblyCommand) { /* jal instructions */
 }
 
 /** Branching */
-func blt(w *OutputWriter, command AssemblyCommand) { /* blt & blti instructions */
+func blt(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s < %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func bnez(w *OutputWriter, command AssemblyCommand) { /* bnez & bnezi instructions */
+func bnez(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s ~= 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func bne(w *OutputWriter, command AssemblyCommand) { /* bne & bnei instructions */
+func bne(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s ~= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func bge(w *OutputWriter, command AssemblyCommand) { /* bge & bgei instructions */
+func bge(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s >= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func beqz(w *OutputWriter, command AssemblyCommand) { /* beqz & beqi instructions */
+func beqz(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s == 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func beq(w *OutputWriter, command AssemblyCommand) { /* beq & beqi instructions */
+func beq(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s == %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
-func bgez(w *OutputWriter, command AssemblyCommand) { /* bgez & bgezi instructions */
+func bgt(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if %s > %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	w.Depth++
+	JumpTo(w, command.Arguments[2].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func ble(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if %s <= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	w.Depth++
+	JumpTo(w, command.Arguments[2].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func bltz(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if %s < 0 then\n", CompileRegister(command.Arguments[0]))
+	w.Depth++
+	JumpTo(w, command.Arguments[2].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func bgtz(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if %s > 0 then\n", CompileRegister(command.Arguments[0]))
+	w.Depth++
+	JumpTo(w, command.Arguments[2].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func blez(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "if %s <= 0 then\n", CompileRegister(command.Arguments[0]))
+	w.Depth++
+	JumpTo(w, command.Arguments[2].Source, false)
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+}
+func bgez(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s >= 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
-	JumpTo(w, command.Arguments[1].Source, false)
+	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }

@@ -23,6 +23,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"and": and,
 	"xor": xor,
 	"or":  or,
+	"not": not,
 
 	/** immediate */
 	"andi": and,
@@ -40,11 +41,9 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"lh": lh,
 	"lw": lw,
 
-	/*** immediates */
+	/*** variants */
 	"li":  li,
 	"lui": li,
-
-	/*** unsigned */
 	"lbu": lbu,
 	"lhu": lhu,
 
@@ -53,8 +52,9 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"addi": add,
 	"sub":  sub,
 	"subi": sub,
+	"neg":  neg,
 
-	/** M extension */
+	/* M extension */
 	"div": div,
 	"mul": mul,
 	"rem": rem,
@@ -73,10 +73,17 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"bge":  bge,
 	"beq":  beq,
 	"bgeu": bge,
+	"bgt":  bgt,
+	"bgtu": bgt,
+	"ble":  ble,
+	"bleu": ble,
 
 	/** zero descendants */
 	"bnez": bnez,
 	"beqz": beqz,
+	"bltz": bltz,
+	"bgtz": bgtz,
+	"blez": blez,
 	"bgez": bgez,
 
 	/* jump */
@@ -94,6 +101,10 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltu":  slt,
 	"sltiu": slt,
 	"slti":  slt,
+	"seqz":  seqz,
+	"snez":  snez,
+	"sgtz":  sgtz,
+	"sltz":  sltz,
 
 	/* Abstraction */
 	"auipc": auipc,
@@ -191,7 +202,7 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 
 			cmdFunc(writer, command)
 		} else {
-			WriteIndentedString(writer, "-- unknown instruction: %s (%v)\n", command.Name, command.Arguments)
+			panic("unknown instruction: " + command.Name)
 		}
 	case Label:
 		label(writer, command)

@@ -16,6 +16,9 @@ func div(w *OutputWriter, command AssemblyCommand) { /* div & divi instructions 
 func rem(w *OutputWriter, command AssemblyCommand) { /* rem & remi instructions */
 	WriteIndentedString(w, "registers.%s = %s %% %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
 }
+func neg(w *OutputWriter, command AssemblyCommand) { /* neg & negi instructions */
+	WriteIndentedString(w, "registers.%s = -%s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}
 
 /** Math Descendants */
 func mulh(w *OutputWriter, command AssemblyCommand) {
