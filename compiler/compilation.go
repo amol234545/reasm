@@ -111,53 +111,6 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"ret":   ret,
 	"call":  call,
 	"mv":    move,
-
-	/* Floating extension (UNFINISHED!) */
-	"fclass.s": fclass,
-
-	"feq.s":  feq,
-	"flt.s":  flt,
-	"flte.s": flte,
-
-	/** move */
-	"fmv.x.w":  move,
-	"fmv.w.x":  move,
-	"fcvt.d.s": move,
-	"fcvt.s.d": move,
-	"fmv.s":    move,
-
-	/** basic math */
-	"fadd.s": add,
-	"fsub.s": sub,
-	"fmul.s": mul,
-	"fdiv.s": fdiv,
-
-	/** load & store */
-	"flw": flw,
-	"fsw": fsw,
-	"fld": fld,
-	"fsd": fsd,
-
-	/** special */
-	"fsqrt.s":  fsqrt,
-	"fsgnj.s":  fsgnj,
-	"fsgnjn.s": fsgnjn,
-	"fsgnjx.s": fsgnjx,
-
-	"fmin.s": fmin,
-	"fmax.s": fmax,
-
-	/** convert */
-	"fcvt.w.s":  fcvtint,
-	"fcvt.wu.s": fcvtint,
-	"fcvt.s.w":  fcvt,
-	"fcvt.s.wu": fcvt,
-
-	/** fused */
-	"fmadd.s":  fmadd,
-	"fmsub.s":  fmsub,
-	"fnmadd.s": fnmadd,
-	"fnmsub.s": fnmsub,
 }
 var directives = map[string]func(*OutputWriter, []string){
 	".asciz":  asciz,

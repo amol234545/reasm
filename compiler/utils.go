@@ -56,22 +56,31 @@ func CompileRegister(argument Argument) string {
 	return compiled
 }
 func JumpTo(w *OutputWriter, label string, link bool) {
-	WriteIndentedString(w, "do\n")
-	w.Depth++
-	if link {
-		WriteIndentedString(w, "registers.ra = %d\n", w.MaxPC)
-	}
-	if w.DebugComments {
-		WriteIndentedString(w, "PC = %d -- %s\n", FindLabelAddress(w, label), label)
+	address := FindLabelAddress(w, label)
+
+	if address != -1 {
+		WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
+		w.Depth++
+		if link {
+			WriteIndentedString(w, "registers.ra = %d\n", w.MaxPC)
+		}
+
+		if w.DebugComments {
+			WriteIndentedString(w, "PC = %d -- %s\n", address, label)
+		} else {
+			WriteIndentedString(w, "PC = %d\n", address)
+		}
+
+		if w.DebugPC {
+			WriteIndentedString(w, "print(PC)\n")
+		}
+
+		WriteIndentedString(w, "continue\n")
+		w.Depth--
+		WriteIndentedString(w, "end\n")
 	} else {
-		WriteIndentedString(w, "PC = %d\n", FindLabelAddress(w, label))
+		WriteIndentedString(w, "error(\"No bindings for functions '%s'\")\n", label)
 	}
-	if w.DebugPC {
-		WriteIndentedString(w, "print(PC)\n")
-	}
-	WriteIndentedString(w, "continue\n")
-	w.Depth--
-	WriteIndentedString(w, "end\n")
 }
 func CutAndLink(w *OutputWriter) {
 	AddEnd(w)

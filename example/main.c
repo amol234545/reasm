@@ -1,12 +1,13 @@
 void printf(const char *, ...);
 
 int main() {
-    int i;
+    float x = 10;
+    float y = 20;
+    float z = x + y;
 
-    printf("For loop:");
-    for(i = 1; i <= 5; i++) {
-        printf("%d", i);
-    }
+    printf("x = %f\n", x);
+    printf("y = %f\n", y);
+    printf("z = %f\n", z);
 
     return 0;
 }

@@ -12,39 +12,7 @@ local registers = {
     ["a5"] = 0,
     ["a6"] = 0,
     ["a7"] = 0,
-    ["fa0"] = 0,
-    ["fa1"] = 0,
-    ["fa2"] = 0,
-    ["fa3"] = 0,
-    ["fa4"] = 0,
-    ["fa5"] = 0,
-    ["fa6"] = 0,
-    ["fa7"] = 0,
     ["fp"] = 0,
-    ["fs0"] = 0,
-    ["fs1"] = 0,
-    ["fs10"] = 0,
-    ["fs11"] = 0,
-    ["fs2"] = 0,
-    ["fs3"] = 0,
-    ["fs4"] = 0,
-    ["fs5"] = 0,
-    ["fs6"] = 0,
-    ["fs7"] = 0,
-    ["fs8"] = 0,
-    ["fs9"] = 0,
-    ["ft0"] = 0,
-    ["ft1"] = 0,
-    ["ft10"] = 0,
-    ["ft11"] = 0,
-    ["ft2"] = 0,
-    ["ft3"] = 0,
-    ["ft4"] = 0,
-    ["ft5"] = 0,
-    ["ft6"] = 0,
-    ["ft7"] = 0,
-    ["ft8"] = 0,
-    ["ft9"] = 0,
     ["gp"] = 0,
     ["ra"] = 0,
     ["s0"] = 0,
@@ -103,6 +71,24 @@ local registers = {
     ["zero"] = 0,
 
 }
+
+--- Variables
+local PC = 1 -- current position
+
+--- Utility
+local function idiv_trunc(a, b)
+  if b == 0 then error("division by zero") end
+  local q = math.modf(a / b) -- truncated toward zero
+  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
+end
+local function hi(addr)
+    return bit32.lshift(bit32.rshift(addr, 12), 12)
+end
+local function lo(addr)
+    return bit32.band(addr, 0xFFF)
+end
+
+-- Functions
 local functions = {
     ["printf"] = function()
         -- read string
@@ -130,58 +116,8 @@ local functions = {
 
         -- print
         print(str)
-    end
+    end,
 }
-
---- Variables
-local PC = 1 -- current position
-
---- Utility
-local function idiv_trunc(a, b)
-  if b == 0 then error("division by zero") end
-  local q = math.modf(a / b) -- truncated toward zero
-  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
-end
-local function hi(addr)
-    return bit32.lshift(bit32.rshift(addr, 12), 12)
-end
-local function lo(addr)
-    return bit32.band(addr, 0xFFF)
-end
-function fclass(x)
-    local result = 0
-
-    if x ~= x then           -- NaN
-        result = 2^9
-    elseif x == math.huge then
-        result = 2^7           -- positive infinity
-    elseif x == -math.huge then
-        result = 2^0           -- negative infinity
-    elseif x == 0 then
-        if 1/x > 0 then
-            result = 2^4       -- positive zero
-        else
-            result = 2^3       -- negative zero
-        end
-    else
-        local abs_x = math.abs(x)
-        if abs_x < 2.2250738585072014e-308 then  -- subnormal range for double
-            if x > 0 then
-                result = 2^5   -- positive subnormal
-            else
-                result = 2^2   -- negative subnormal
-            end
-        else
-            if x > 0 then
-                result = 2^6   -- positive normal
-            else
-                result = 2^1   -- negative normal
-            end
-        end
-    end
-
-    return result
-end
 
 -- Localized Functions
 --- bit32
@@ -222,96 +158,117 @@ local floor = math.floor
 registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
 PC = 1
-writestring(memory, 0, "For loop:\0")
+writestring(memory, 0, "x = %f\n\0")
 data[".L.str"] = 0
-writestring(memory, 10, "%d\0")
-data[".L.str.1"] = 10
+writestring(memory, 9, "y = %f\n\0")
+data[".L.str.1"] = 9
+writestring(memory, 18, "z = %f\n\0")
+data[".L.str.2"] = 18
 while PC ~= 0 do
 	if PC == 1 then -- main
-		registers.sp = registers.sp + -16
-		writei32(memory, registers.sp+12, registers.ra)
-		writei32(memory, registers.sp+8, registers.s0)
-		registers.s0 = registers.sp + 16
+		registers.sp = registers.sp + -32
+		writei32(memory, registers.sp+28, registers.ra)
+		writei32(memory, registers.sp+24, registers.s0)
+		registers.s0 = registers.sp + 32
 		registers.a0 = 0
+		writei32(memory, registers.s0+-28, registers.a0)
 		writei32(memory, registers.s0+-12, registers.a0)
-		registers.a0 = hi(data[".L.str"])
-		registers.a0 = registers.a0 + lo(data[".L.str"])
-		if functions["printf"] then
-			functions["printf"]()
+		registers.a0 = 266752
+		writei32(memory, registers.s0+-16, registers.a0)
+		registers.a0 = 268800
+		writei32(memory, registers.s0+-20, registers.a0)
+		registers.a0 = readi32(memory, registers.s0+-16)
+		registers.a1 = readi32(memory, registers.s0+-20)
+		if functions["__addsf3"] then
+			functions["__addsf3"]()
 			PC = 2
 			continue
 		else
-			do
-				registers.ra = 2
-				PC = -1
-				continue
-			end
+			error("No bindings for functions '__addsf3'")
 		end
 		PC += 1
 	end
 	if PC == 2 then -- main (extended) 
-		registers.a0 = 1
-		writei32(memory, registers.s0+-16, registers.a0)
-		do
+		writei32(memory, registers.s0+-24, registers.a0)
+		registers.a0 = readi32(memory, registers.s0+-16)
+		if functions["__extendsfdf2"] then
+			functions["__extendsfdf2"]()
 			PC = 3
 			continue
+		else
+			error("No bindings for functions '__extendsfdf2'")
 		end
 		PC += 1
 	end
-	if PC == 3 then -- .LBB0_1
-		registers.a1 = readi32(memory, registers.s0+-16)
-		registers.a0 = 5
-		if registers.a0 < registers.a1 then
-			do
-				PC = 7
-				continue
-			end
-		end
-		do
+	if PC == 3 then -- main_end (extended) 
+		registers.a2 = registers.a0
+		registers.a3 = registers.a1
+		registers.a0 = hi(data[".L.str"])
+		registers.a0 = registers.a0 + lo(data[".L.str"])
+		if functions["printf"] then
+			functions["printf"]()
 			PC = 4
 			continue
+		else
+			error("No bindings for functions 'printf'")
 		end
 		PC += 1
 	end
-	if PC == 4 then -- .LBB0_2
-		registers.a1 = readi32(memory, registers.s0+-16)
+	if PC == 4 then -- main_end_end (extended) 
+		registers.a0 = readi32(memory, registers.s0+-20)
+		if functions["__extendsfdf2"] then
+			functions["__extendsfdf2"]()
+			PC = 5
+			continue
+		else
+			error("No bindings for functions '__extendsfdf2'")
+		end
+		PC += 1
+	end
+	if PC == 5 then -- main_end_end_end (extended) 
+		registers.a2 = registers.a0
+		registers.a3 = registers.a1
 		registers.a0 = hi(data[".L.str.1"])
 		registers.a0 = registers.a0 + lo(data[".L.str.1"])
 		if functions["printf"] then
 			functions["printf"]()
-			PC = 5
-			continue
-		else
-			do
-				registers.ra = 5
-				PC = -1
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 5 then -- .LBB0_2 (extended) 
-		do
 			PC = 6
 			continue
+		else
+			error("No bindings for functions 'printf'")
 		end
 		PC += 1
 	end
-	if PC == 6 then -- .LBB0_3
-		registers.a0 = readi32(memory, registers.s0+-16)
-		registers.a0 = registers.a0 + 1
-		writei32(memory, registers.s0+-16, registers.a0)
-		do
-			PC = 3
+	if PC == 6 then -- main_end_end_end_end (extended) 
+		registers.a0 = readi32(memory, registers.s0+-24)
+		if functions["__extendsfdf2"] then
+			functions["__extendsfdf2"]()
+			PC = 7
 			continue
+		else
+			error("No bindings for functions '__extendsfdf2'")
 		end
 		PC += 1
 	end
-	if PC == 7 then -- .LBB0_4
-		registers.a0 = 0
-		registers.ra = readi32(memory, registers.sp+12)
-		registers.s0 = readi32(memory, registers.sp+8)
-		registers.sp = registers.sp + 16
+	if PC == 7 then -- main_end_end_end_end_end (extended) 
+		registers.a2 = registers.a0
+		registers.a3 = registers.a1
+		registers.a0 = hi(data[".L.str.2"])
+		registers.a0 = registers.a0 + lo(data[".L.str.2"])
+		if functions["printf"] then
+			functions["printf"]()
+			PC = 8
+			continue
+		else
+			error("No bindings for functions 'printf'")
+		end
+		PC += 1
+	end
+	if PC == 8 then -- main_end_end_end_end_end_end (extended) 
+		registers.a0 = readi32(memory, registers.s0+-28)
+		registers.ra = readi32(memory, registers.sp+28)
+		registers.s0 = readi32(memory, registers.sp+24)
+		registers.sp = registers.sp + 32
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
@@ -322,16 +279,19 @@ while PC ~= 0 do
 		end
 		PC += 1
 	end
-	if PC == 8 then -- .Lfunc_end0
+	if PC == 9 then -- .Lfunc_end0
 		PC += 1
 	end
-	if PC == 9 then -- .L.str
+	if PC == 10 then -- .L.str
 		PC += 1
 	end
-	if PC == 10 then -- .L.str.1
+	if PC == 11 then -- .L.str.1
 		PC += 1
 	end
-	if (not PC) or PC == 0 or PC > 10 then
+	if PC == 12 then -- .L.str.2
+		PC += 1
+	end
+	if (not PC) or PC == 0 or PC > 12 then
 		break
 	end
 end

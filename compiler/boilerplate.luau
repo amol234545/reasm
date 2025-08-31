@@ -6,6 +6,24 @@ local data = {} -- pointers in memory to data, ex: strings
 local registers = {
 --{registers here}
 }
+
+--- Variables
+local PC = 1 -- current position
+
+--- Utility
+local function idiv_trunc(a, b)
+  if b == 0 then error("division by zero") end
+  local q = math.modf(a / b) -- truncated toward zero
+  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
+end
+local function hi(addr)
+    return bit32.lshift(bit32.rshift(addr, 12), 12)
+end
+local function lo(addr)
+    return bit32.band(addr, 0xFFF)
+end
+
+-- Functions
 local functions = {
     ["printf"] = function()
         -- read string
@@ -33,58 +51,8 @@ local functions = {
 
         -- print
         print(str)
-    end
+    end,
 }
-
---- Variables
-local PC = 1 -- current position
-
---- Utility
-local function idiv_trunc(a, b)
-  if b == 0 then error("division by zero") end
-  local q = math.modf(a / b) -- truncated toward zero
-  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
-end
-local function hi(addr)
-    return bit32.lshift(bit32.rshift(addr, 12), 12)
-end
-local function lo(addr)
-    return bit32.band(addr, 0xFFF)
-end
-function fclass(x)
-    local result = 0
-
-    if x ~= x then           -- NaN
-        result = 2^9
-    elseif x == math.huge then
-        result = 2^7           -- positive infinity
-    elseif x == -math.huge then
-        result = 2^0           -- negative infinity
-    elseif x == 0 then
-        if 1/x > 0 then
-            result = 2^4       -- positive zero
-        else
-            result = 2^3       -- negative zero
-        end
-    else
-        local abs_x = math.abs(x)
-        if abs_x < 2.2250738585072014e-308 then  -- subnormal range for double
-            if x > 0 then
-                result = 2^5   -- positive subnormal
-            else
-                result = 2^2   -- negative subnormal
-            end
-        else
-            if x > 0 then
-                result = 2^6   -- positive normal
-            else
-                result = 2^1   -- negative normal
-            end
-        end
-    end
-
-    return result
-end
 
 -- Localized Functions
 --- bit32

@@ -153,16 +153,6 @@ var regs = map[string]bool{
 	"t4": true, "x29": true,
 	"t5": true, "x30": true,
 	"t6": true, "x31": true,
-
-	// Floating point registers
-	"ft0": true, "ft1": true, "ft2": true, "ft3": true,
-	"ft4": true, "ft5": true, "ft6": true, "ft7": true,
-	"ft8": true, "ft9": true, "ft10": true, "ft11": true,
-	"fs0": true, "fs1": true, "fs2": true, "fs3": true,
-	"fs4": true, "fs5": true, "fs6": true, "fs7": true,
-	"fs8": true, "fs9": true, "fs10": true, "fs11": true,
-	"fa0": true, "fa1": true, "fa2": true, "fa3": true,
-	"fa4": true, "fa5": true, "fa6": true, "fa7": true,
 }
 
 func isRegister(s string) bool {

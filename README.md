@@ -4,8 +4,7 @@
 
 ## TODO:
 - Floating point & Double support
-- Work on support with a linker, need to figure out system calls & defining calls that ASM will presume exist (ex: `printf`).
-- Add all pseudo-instructions.
+- Work on support with multiple files sharing symbols.
 - Handle overflows correctly.
 - Float storage.
 ## Example:

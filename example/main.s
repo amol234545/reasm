@@ -7,39 +7,46 @@
 	.type	main,@function
 main:                                   # @main
 # %bb.0:
-	addi	sp, sp, -16
-	sw	ra, 12(sp)                      # 4-byte Folded Spill
-	sw	s0, 8(sp)                       # 4-byte Folded Spill
-	addi	s0, sp, 16
+	addi	sp, sp, -32
+	sw	ra, 28(sp)                      # 4-byte Folded Spill
+	sw	s0, 24(sp)                      # 4-byte Folded Spill
+	addi	s0, sp, 32
 	li	a0, 0
+	sw	a0, -28(s0)                     # 4-byte Folded Spill
 	sw	a0, -12(s0)
+	lui	a0, 266752
+	sw	a0, -16(s0)
+	lui	a0, 268800
+	sw	a0, -20(s0)
+	lw	a0, -16(s0)
+	lw	a1, -20(s0)
+	call	__addsf3
+	sw	a0, -24(s0)
+	lw	a0, -16(s0)
+	call	__extendsfdf2
+	mv	a2, a0
+	mv	a3, a1
 	lui	a0, %hi(.L.str)
 	addi	a0, a0, %lo(.L.str)
 	call	printf
-	li	a0, 1
-	sw	a0, -16(s0)
-	j	.LBB0_1
-.LBB0_1:                                # =>This Inner Loop Header: Depth=1
-	lw	a1, -16(s0)
-	li	a0, 5
-	blt	a0, a1, .LBB0_4
-	j	.LBB0_2
-.LBB0_2:                                #   in Loop: Header=BB0_1 Depth=1
-	lw	a1, -16(s0)
+	lw	a0, -20(s0)
+	call	__extendsfdf2
+	mv	a2, a0
+	mv	a3, a1
 	lui	a0, %hi(.L.str.1)
 	addi	a0, a0, %lo(.L.str.1)
 	call	printf
-	j	.LBB0_3
-.LBB0_3:                                #   in Loop: Header=BB0_1 Depth=1
-	lw	a0, -16(s0)
-	addi	a0, a0, 1
-	sw	a0, -16(s0)
-	j	.LBB0_1
-.LBB0_4:
-	li	a0, 0
-	lw	ra, 12(sp)                      # 4-byte Folded Reload
-	lw	s0, 8(sp)                       # 4-byte Folded Reload
-	addi	sp, sp, 16
+	lw	a0, -24(s0)
+	call	__extendsfdf2
+	mv	a2, a0
+	mv	a3, a1
+	lui	a0, %hi(.L.str.2)
+	addi	a0, a0, %lo(.L.str.2)
+	call	printf
+	lw	a0, -28(s0)                     # 4-byte Folded Reload
+	lw	ra, 28(sp)                      # 4-byte Folded Reload
+	lw	s0, 24(sp)                      # 4-byte Folded Reload
+	addi	sp, sp, 32
 	ret
 .Lfunc_end0:
 	.size	main, .Lfunc_end0-main
@@ -47,13 +54,18 @@ main:                                   # @main
 	.type	.L.str,@object                  # @.str
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .L.str:
-	.asciz	"For loop:"
-	.size	.L.str, 10
+	.asciz	"x = %f\n"
+	.size	.L.str, 8
 
 	.type	.L.str.1,@object                # @.str.1
 .L.str.1:
-	.asciz	"%d"
-	.size	.L.str.1, 3
+	.asciz	"y = %f\n"
+	.size	.L.str.1, 8
+
+	.type	.L.str.2,@object                # @.str.2
+.L.str.2:
+	.asciz	"z = %f\n"
+	.size	.L.str.2, 8
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits
