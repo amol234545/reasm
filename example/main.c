@@ -1,7 +1,5 @@
 int printf(const char *, ...);
 
-#include <stdio.h>
-
 int main() {
     int n, i;
     n=10;

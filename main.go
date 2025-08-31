@@ -30,18 +30,18 @@ func main() {
 			}
 
 			/* read input file */
-			var allData [][]byte
-
-			for _, inputFile := range inputFiles {
-				data, err := os.ReadFile(inputFile)
-				if err != nil {
-					return fmt.Errorf("failed to read input file: %w", err)
-				}
-				allData = append(allData, data)
+			if len(inputFiles) > 1 {
+				panic("Only one input file is supported at the moment, if you want to compile multiple files link before hand using an ELF file.")
 			}
 
+			file, err := os.Open(inputFiles[0])
+			if err != nil {
+				return fmt.Errorf("failed to read input file: %w", err)
+			}
+			defer file.Close()
+
 			/* compile with options */
-			processed := compiler.Compile(allData, lang, compiler.Options{
+			processed := compiler.Compile(file, lang, compiler.Options{
 				Comments:   enableComments,
 				Trace:      enableTrace,
 				Mode:       modeLower,
@@ -49,7 +49,7 @@ func main() {
 			})
 
 			/* write output file */
-			err := os.WriteFile(outputFile, processed, 0644)
+			err = os.WriteFile(outputFile, processed, 0644)
 			if err != nil {
 				return fmt.Errorf("failed to write output file: %w", err)
 			}

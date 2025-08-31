@@ -1,6 +1,9 @@
 package compiler
 
 import (
+	"debug/elf"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -11,12 +14,23 @@ type Options struct {
 	MainSymbol string
 }
 
-func Compile(assemblyFiles [][]byte, lang string, options Options) []byte {
+func Compile(executable *os.File, lang string, options Options) []byte {
 	/* prepare */
-	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0, MaxPC: 1, DebugPC: options.Trace, DebugComments: options.Comments, Mode: options.Mode, MainSymbol: options.MainSymbol}
+	var writer = &OutputWriter{
+		Buffer:                   []byte(""),
+		CurrentLabel:             "",
+		MemoryDevelopmentPointer: 0,
+		MaxPC:                    1,
+		DebugPC:                  options.Trace,
+		DebugComments:            options.Comments,
+		Mode:                     options.Mode,
+		MainSymbol:               options.MainSymbol,
+	}
 
-	for _, assembly := range assemblyFiles {
-		var assembly_str string = string(assembly)
+	elf, err := elf.NewFile(executable)
+	if err != nil {
+		assembly, _ := io.ReadAll(executable)
+		assembly_str := string(assembly)
 		lines := strings.Split(assembly_str, "\n")
 
 		/* parse */
@@ -24,6 +38,8 @@ func Compile(assemblyFiles [][]byte, lang string, options Options) []byte {
 			var command AssemblyCommand = Parse(writer, line)
 			writer.Commands = append(writer.Commands, command)
 		}
+	} else {
+		writer.Commands = ParseFromElf(elf)
 	}
 
 	/* compilation */
