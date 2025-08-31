@@ -1,6 +1,7 @@
 package compiler
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -31,7 +32,7 @@ func size(w *OutputWriter, components []string) {
 	data := w.PendingData.Data
 	dataType := w.PendingData.Type
 
-	macro := CompileMacro(components[1])
+	macro := fmt.Sprintf("data[\"%s\"]", components[1])
 
 	if macro == "" {
 		return

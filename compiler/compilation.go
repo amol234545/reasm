@@ -2,6 +2,8 @@ package compiler
 
 import (
 	_ "embed"
+	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -155,6 +157,24 @@ var attributes = map[string]func(*OutputWriter, []string){
 	".half":   half,
 }
 
+func generateRegistryMap(m map[string]bool) string {
+	var sb strings.Builder
+
+	// Sort keys for consistent output
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		// All values are zero
+		sb.WriteString(fmt.Sprintf("    [\"%s\"] = 0,\n", k))
+	}
+
+	return sb.String()
+}
+
 /* main */
 func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 	switch command.Type {
@@ -221,5 +241,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	writer.Depth--
 	WriteIndentedString(writer, "end")
 
-	return []byte(strings.Replace(luau_boilerplate, "--{code here}", string(writer.Buffer), 1))
+	code := string(writer.Buffer)
+	registers := generateRegistryMap(regs)
+	return []byte(strings.Replace(strings.Replace(luau_boilerplate, "--{registers here}", registers, 1), "--{code here}", code, 1))
 }

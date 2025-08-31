@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"unicode"
 )
 
 var offsetReg = regexp.MustCompile(`^(-?\d+)?\((\w+)\)$`)
@@ -120,12 +119,52 @@ func parseArguments(parts []string) []Argument {
 	return args
 }
 
+var regs = map[string]bool{
+	// Integer registers
+	"zero": true, "x0": true,
+	"ra": true, "x1": true,
+	"sp": true, "x2": true,
+	"gp": true, "x3": true,
+	"tp": true, "x4": true,
+	"t0": true, "x5": true,
+	"t1": true, "x6": true,
+	"t2": true, "x7": true,
+	"s0": true, "fp": true, "x8": true,
+	"s1": true, "x9": true,
+	"a0": true, "x10": true,
+	"a1": true, "x11": true,
+	"a2": true, "x12": true,
+	"a3": true, "x13": true,
+	"a4": true, "x14": true,
+	"a5": true, "x15": true,
+	"a6": true, "x16": true,
+	"a7": true, "x17": true,
+	"s2": true, "x18": true,
+	"s3": true, "x19": true,
+	"s4": true, "x20": true,
+	"s5": true, "x21": true,
+	"s6": true, "x22": true,
+	"s7": true, "x23": true,
+	"s8": true, "x24": true,
+	"s9": true, "x25": true,
+	"s10": true, "x26": true,
+	"s11": true, "x27": true,
+	"t3": true, "x28": true,
+	"t4": true, "x29": true,
+	"t5": true, "x30": true,
+	"t6": true, "x31": true,
+
+	// Floating point registers
+	"ft0": true, "ft1": true, "ft2": true, "ft3": true,
+	"ft4": true, "ft5": true, "ft6": true, "ft7": true,
+	"ft8": true, "ft9": true, "ft10": true, "ft11": true,
+	"fs0": true, "fs1": true, "fs2": true, "fs3": true,
+	"fs4": true, "fs5": true, "fs6": true, "fs7": true,
+	"fs8": true, "fs9": true, "fs10": true, "fs11": true,
+	"fa0": true, "fa1": true, "fa2": true, "fa3": true,
+	"fa4": true, "fa5": true, "fa6": true, "fa7": true,
+}
+
 func isRegister(s string) bool {
-	// very naive: treat strings starting with letter and containing digit as register
-	for _, r := range s {
-		if unicode.IsDigit(r) {
-			return true
-		}
-	}
-	return false
+	return regs[s]
 }

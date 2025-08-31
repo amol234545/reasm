@@ -1,4 +1,7 @@
 # ASM-Decomp (no name yet)
+> [!NOTE]
+> Heavy optimizations (like `-O2`) will not work, it tends to use MIPS instructions rather than RISCV which are not supported.
+
 ## TODO:
 - Analyze and remove labels automatically if they are empty or only filled with directives
 - Allow toplevel directives so we dont need a `init` variable in the cycle.
@@ -7,7 +10,7 @@
 - Work on support with a linker, need to figure out system calls & defining calls that ASM will presume exist (ex: `printf`).
 - Add all pseudo-instructions.
 - Handle overflows correctly.
-- Float storage
+- Float storage.
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h which does often include unsupported functions */

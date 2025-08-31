@@ -32,15 +32,6 @@ func AddEnd(w *OutputWriter) {
 		WriteIndentedString(w, "end\n")
 	}
 }
-func CompileMacro(data string) string {
-	var compiled string
-	if strings.HasPrefix(data, ".L") { /* string */
-		cut, _ := strings.CutPrefix(data, ".L")
-		compiled = fmt.Sprintf("data[\"%s\"]", cut)
-	}
-
-	return compiled
-}
 func CompileRegister(argument Argument) string {
 	/* does it work as a integer (its a plain) */
 	_, err := strconv.Atoi(argument.Source)
@@ -48,22 +39,20 @@ func CompileRegister(argument Argument) string {
 		return argument.Source
 	}
 
-	/* Try macros (.L.) */
-	var compiled = CompileMacro(argument.Source)
-	if compiled == "" {
+	var compiled string = fmt.Sprintf("data[\"%s\"]", argument.Source) /* assume it is raw data originally */
+	if isRegister(argument.Source) {                                   /* it is a register! */
 		compiled = fmt.Sprintf("registers.%s", argument.Source)
-	}
 
-	/** Offset */
-	if argument.Offset != 0 {
-		compiled = fmt.Sprintf("%s+%d", compiled, argument.Offset)
+		/** Offset */
+		if argument.Offset != 0 {
+			compiled = fmt.Sprintf("%s+%d", compiled, argument.Offset)
+		}
 	}
 
 	/** Modifier */
 	if argument.Modifier != "" {
 		compiled = fmt.Sprintf("%s(%s)", argument.Modifier, compiled)
 	}
-
 	return compiled
 }
 func JumpTo(w *OutputWriter, label string, link bool) {

@@ -5,41 +5,7 @@ local memory = buffer.create(mem) -- our memory!
 local data = {} -- pointers in memory to static data, ex: strings
 local labels = {}
 local registers = {
-    ["zero"] = 0,    ["x0"]  = 0,     ["ra"]   = 0,    ["x1"]  = 0,
-    ["sp"]   = mem/2,  ["x2"]  = 0,     ["gp"]   = 0,    ["x3"]  = 0,
-    ["tp"]   = 0,    ["x4"]  = 0,     ["t0"]   = 0,    ["x5"]  = 0,
-    ["t1"]   = 0,    ["x6"]  = 0,     ["t2"]   = 0,    ["x7"]  = 0,
-
-    ["s0"]   = 0,    ["fp"]  = 0,     ["x8"]   = 0,    ["s1"]  = 0,
-    ["x9"]   = 0,    ["a0"]  = 0,     ["x10"]  = 0,    ["a1"]  = 0,
-
-    ["x11"]  = 0,    ["a2"]  = 0,     ["x12"]  = 0,    ["a3"]  = 0,
-    ["x13"]  = 0,    ["a4"]  = 0,     ["x14"]  = 0,    ["a5"]  = 0,
-
-    ["x15"]  = 0,    ["a6"]  = 0,     ["x16"]  = 0,    ["a7"]  = 0,
-    ["x17"]  = 0,    ["s2"]  = 0,     ["x18"]  = 0,    ["s3"]  = 0,
-
-    ["x19"]  = 0,    ["s4"]  = 0,     ["x20"]  = 0,    ["s5"]  = 0,
-    ["x21"]  = 0,    ["s6"]  = 0,     ["x22"]  = 0,    ["s7"]  = 0,
-
-    ["x23"]  = 0,    ["s8"]  = 0,     ["x24"]  = 0,    ["s9"]  = 0,
-    ["x25"]  = 0,    ["s10"] = 0,     ["x26"]  = 0,    ["s11"] = 0,
-
-    ["x27"]  = 0,    ["t3"]  = 0,     ["x28"]  = 0,    ["t4"]  = 0,
-    ["x29"]  = 0,    ["t5"]  = 0,     ["x30"]  = 0,    ["t6"]  = 0,
-    ["x31"]  = 0,
-
-    -- Floating point
-    ["ft0"]  = 0, ["ft1"]  = 0, ["ft2"]  = 0, ["ft3"]  = 0,
-    ["ft4"]  = 0, ["ft5"]  = 0, ["ft6"]  = 0, ["ft7"]  = 0,
-    ["ft8"]  = 0, ["ft9"]  = 0, ["ft10"] = 0, ["ft11"] = 0,
-
-    ["fs0"]  = 0, ["fs1"]  = 0, ["fs2"]  = 0, ["fs3"]  = 0,
-    ["fs4"]  = 0, ["fs5"]  = 0, ["fs6"]  = 0, ["fs7"]  = 0,
-    ["fs8"]  = 0, ["fs9"]  = 0, ["fs10"] = 0, ["fs11"] = 0,
-
-    ["fa0"]  = 0, ["fa1"]  = 0, ["fa2"]  = 0, ["fa3"]  = 0,
-    ["fa4"]  = 0, ["fa5"]  = 0, ["fa6"]  = 0, ["fa7"]  = 0
+--{registers here}
 }
 local functions = {
     ["printf"] = function()
@@ -158,5 +124,6 @@ local min = math.min
 local max = math.max
 local floor = math.floor
 
+registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
 --{code here}
