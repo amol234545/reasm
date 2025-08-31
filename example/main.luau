@@ -117,6 +117,13 @@ local functions = {
         -- print
         print(str)
     end,
+    ["memcpy"] = function()
+        local dest = registers["a0"]
+        local src = registers["a1"]
+        local count = registers["a2"]
+
+        buffer.copy(memory, dest, memory, src, count)
+    end,
 }
 
 -- Localized Functions
@@ -158,117 +165,289 @@ local floor = math.floor
 registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
 PC = 1
-writestring(memory, 0, "x = %f\n\0")
-data[".L.str"] = 0
-writestring(memory, 9, "y = %f\n\0")
-data[".L.str.1"] = 9
-writestring(memory, 18, "z = %f\n\0")
-data[".L.str.2"] = 18
+writei32(memory, 0, 1)
+writei32(memory, 4, 2)
+writei32(memory, 8, 3)
+writei32(memory, 12, 4)
+writei32(memory, 16, 5)
+writei32(memory, 20, 6)
+writei32(memory, 24, 7)
+writei32(memory, 28, 8)
+writei32(memory, 32, 9)
+data[".L__const.main.matrix1"] = 0
+writei32(memory, 36, 9)
+writei32(memory, 40, 8)
+writei32(memory, 44, 7)
+writei32(memory, 48, 6)
+writei32(memory, 52, 6)
+writei32(memory, 56, 4)
+writei32(memory, 60, 3)
+writei32(memory, 64, 2)
+writei32(memory, 68, 1)
+data[".L__const.main.matrix2"] = 36
+writestring(memory, 72, "Result of matrix addition:\0")
+data[".L.str"] = 72
+writestring(memory, 99, "%d\0")
+data[".L.str.1"] = 99
 while PC ~= 0 do
 	if PC == 1 then -- main
-		registers.sp = registers.sp + -32
-		writei32(memory, registers.sp+28, registers.ra)
-		writei32(memory, registers.sp+24, registers.s0)
-		registers.s0 = registers.sp + 32
+		registers.sp = registers.sp + -144
+		writei32(memory, registers.sp+-116, registers.ra)
+		writei32(memory, registers.sp+-120, registers.s0)
+		registers.s0 = registers.sp + 144
 		registers.a0 = 0
-		writei32(memory, registers.s0+-28, registers.a0)
+		writei32(memory, registers.s0+116, registers.a0)
 		writei32(memory, registers.s0+-12, registers.a0)
-		registers.a0 = 266752
-		writei32(memory, registers.s0+-16, registers.a0)
-		registers.a0 = 268800
-		writei32(memory, registers.s0+-20, registers.a0)
-		registers.a0 = readi32(memory, registers.s0+-16)
-		registers.a1 = readi32(memory, registers.s0+-20)
-		if functions["__addsf3"] then
-			functions["__addsf3"]()
+		registers.a1 = hi(data[".L__const.main.matrix1"])
+		registers.a1 = registers.a1 + lo(data[".L__const.main.matrix1"])
+		registers.a0 = registers.s0 + -48
+		registers.a2 = 36
+		writei32(memory, registers.s0+112, registers.a2)
+		if functions["memcpy"] then
+			functions["memcpy"]()
 			PC = 2
 			continue
 		else
-			error("No bindings for functions '__addsf3'")
+			error("No bindings for functions 'memcpy'")
 		end
 		PC += 1
 	end
 	if PC == 2 then -- main (extended) 
-		writei32(memory, registers.s0+-24, registers.a0)
-		registers.a0 = readi32(memory, registers.s0+-16)
-		if functions["__extendsfdf2"] then
-			functions["__extendsfdf2"]()
+		registers.a2 = readi32(memory, registers.s0+112)
+		registers.a1 = hi(data[".L__const.main.matrix2"])
+		registers.a1 = registers.a1 + lo(data[".L__const.main.matrix2"])
+		registers.a0 = registers.s0 + -84
+		if functions["memcpy"] then
+			functions["memcpy"]()
 			PC = 3
 			continue
 		else
-			error("No bindings for functions '__extendsfdf2'")
+			error("No bindings for functions 'memcpy'")
 		end
 		PC += 1
 	end
 	if PC == 3 then -- main_end (extended) 
-		registers.a2 = registers.a0
-		registers.a3 = registers.a1
+		registers.a0 = readi32(memory, registers.s0+116)
+		writei32(memory, registers.s0+-124, registers.a0)
+		do
+			PC = 4
+			continue
+		end
+		PC += 1
+	end
+	if PC == 4 then -- .LBB0_1
+		registers.a1 = readi32(memory, registers.s0+-124)
+		registers.a0 = 2
+		if registers.a0 < registers.a1 then
+			do
+				PC = 11
+				continue
+			end
+		end
+		do
+			PC = 5
+			continue
+		end
+		PC += 1
+	end
+	if PC == 5 then -- .LBB0_2
+		registers.a0 = 0
+		writei32(memory, registers.s0+-128, registers.a0)
+		do
+			PC = 6
+			continue
+		end
+		PC += 1
+	end
+	if PC == 6 then -- .LBB0_3
+		registers.a1 = readi32(memory, registers.s0+-128)
+		registers.a0 = 2
+		if registers.a0 < registers.a1 then
+			do
+				PC = 9
+				continue
+			end
+		end
+		do
+			PC = 7
+			continue
+		end
+		PC += 1
+	end
+	if PC == 7 then -- .LBB0_4
+		registers.a0 = readi32(memory, registers.s0+-124)
+		registers.a1 = band(lshift(registers.a0, 2), 0xFFFFFFFF)
+		registers.a0 = band(lshift(registers.a0, 4), 0xFFFFFFFF)
+		registers.a3 = registers.a0 - registers.a1
+		registers.a0 = registers.s0 + -48
+		registers.a0 = registers.a0 + registers.a3
+		registers.a1 = readi32(memory, registers.s0+-128)
+		registers.a2 = band(lshift(registers.a1, 2), 0xFFFFFFFF)
+		registers.a0 = registers.a0 + registers.a2
+		registers.a0 = readi32(memory, registers.a0)
+		registers.a1 = registers.s0 + -84
+		registers.a1 = registers.a1 + registers.a3
+		registers.a1 = registers.a1 + registers.a2
+		registers.a1 = readi32(memory, registers.a1)
+		registers.a0 = registers.a0 + registers.a1
+		registers.a1 = registers.s0 + -120
+		registers.a1 = registers.a1 + registers.a3
+		registers.a1 = registers.a1 + registers.a2
+		writei32(memory, registers.a1, registers.a0)
+		do
+			PC = 8
+			continue
+		end
+		PC += 1
+	end
+	if PC == 8 then -- .LBB0_5
+		registers.a0 = readi32(memory, registers.s0+-128)
+		registers.a0 = registers.a0 + 1
+		writei32(memory, registers.s0+-128, registers.a0)
+		do
+			PC = 6
+			continue
+		end
+		PC += 1
+	end
+	if PC == 9 then -- .LBB0_6
+		do
+			PC = 10
+			continue
+		end
+		PC += 1
+	end
+	if PC == 10 then -- .LBB0_7
+		registers.a0 = readi32(memory, registers.s0+-124)
+		registers.a0 = registers.a0 + 1
+		writei32(memory, registers.s0+-124, registers.a0)
+		do
+			PC = 4
+			continue
+		end
+		PC += 1
+	end
+	if PC == 11 then -- .LBB0_8
 		registers.a0 = hi(data[".L.str"])
 		registers.a0 = registers.a0 + lo(data[".L.str"])
 		if functions["printf"] then
 			functions["printf"]()
-			PC = 4
+			PC = 12
 			continue
 		else
 			error("No bindings for functions 'printf'")
 		end
 		PC += 1
 	end
-	if PC == 4 then -- main_end_end (extended) 
-		registers.a0 = readi32(memory, registers.s0+-20)
-		if functions["__extendsfdf2"] then
-			functions["__extendsfdf2"]()
-			PC = 5
+	if PC == 12 then -- .LBB0_8 (extended) 
+		registers.a0 = 0
+		writei32(memory, registers.s0+124, registers.a0)
+		do
+			PC = 13
 			continue
-		else
-			error("No bindings for functions '__extendsfdf2'")
 		end
 		PC += 1
 	end
-	if PC == 5 then -- main_end_end_end (extended) 
-		registers.a2 = registers.a0
-		registers.a3 = registers.a1
+	if PC == 13 then -- .LBB0_9
+		registers.a1 = readi32(memory, registers.s0+124)
+		registers.a0 = 2
+		if registers.a0 < registers.a1 then
+			do
+				PC = 21
+				continue
+			end
+		end
+		do
+			PC = 14
+			continue
+		end
+		PC += 1
+	end
+	if PC == 14 then -- .LBB0_10
+		registers.a0 = 0
+		writei32(memory, registers.s0+120, registers.a0)
+		do
+			PC = 15
+			continue
+		end
+		PC += 1
+	end
+	if PC == 15 then -- .LBB0_11
+		registers.a1 = readi32(memory, registers.s0+120)
+		registers.a0 = 2
+		if registers.a0 < registers.a1 then
+			do
+				PC = 19
+				continue
+			end
+		end
+		do
+			PC = 16
+			continue
+		end
+		PC += 1
+	end
+	if PC == 16 then -- .LBB0_12
+		registers.a0 = readi32(memory, registers.s0+124)
+		registers.a1 = band(lshift(registers.a0, 2), 0xFFFFFFFF)
+		registers.a0 = band(lshift(registers.a0, 4), 0xFFFFFFFF)
+		registers.a1 = registers.a0 - registers.a1
+		registers.a0 = registers.s0 + -120
+		registers.a0 = registers.a0 + registers.a1
+		registers.a1 = readi32(memory, registers.s0+120)
+		registers.a1 = band(lshift(registers.a1, 2), 0xFFFFFFFF)
+		registers.a0 = registers.a0 + registers.a1
+		registers.a1 = readi32(memory, registers.a0)
 		registers.a0 = hi(data[".L.str.1"])
 		registers.a0 = registers.a0 + lo(data[".L.str.1"])
 		if functions["printf"] then
 			functions["printf"]()
-			PC = 6
+			PC = 17
 			continue
 		else
 			error("No bindings for functions 'printf'")
 		end
 		PC += 1
 	end
-	if PC == 6 then -- main_end_end_end_end (extended) 
-		registers.a0 = readi32(memory, registers.s0+-24)
-		if functions["__extendsfdf2"] then
-			functions["__extendsfdf2"]()
-			PC = 7
+	if PC == 17 then -- .LBB0_12 (extended) 
+		do
+			PC = 18
 			continue
-		else
-			error("No bindings for functions '__extendsfdf2'")
 		end
 		PC += 1
 	end
-	if PC == 7 then -- main_end_end_end_end_end (extended) 
-		registers.a2 = registers.a0
-		registers.a3 = registers.a1
-		registers.a0 = hi(data[".L.str.2"])
-		registers.a0 = registers.a0 + lo(data[".L.str.2"])
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 8
+	if PC == 18 then -- .LBB0_13
+		registers.a0 = readi32(memory, registers.s0+120)
+		registers.a0 = registers.a0 + 1
+		writei32(memory, registers.s0+120, registers.a0)
+		do
+			PC = 15
 			continue
-		else
-			error("No bindings for functions 'printf'")
 		end
 		PC += 1
 	end
-	if PC == 8 then -- main_end_end_end_end_end_end (extended) 
-		registers.a0 = readi32(memory, registers.s0+-28)
-		registers.ra = readi32(memory, registers.sp+28)
-		registers.s0 = readi32(memory, registers.sp+24)
-		registers.sp = registers.sp + 32
+	if PC == 19 then -- .LBB0_14
+		do
+			PC = 20
+			continue
+		end
+		PC += 1
+	end
+	if PC == 20 then -- .LBB0_15
+		registers.a0 = readi32(memory, registers.s0+124)
+		registers.a0 = registers.a0 + 1
+		writei32(memory, registers.s0+124, registers.a0)
+		do
+			PC = 13
+			continue
+		end
+		PC += 1
+	end
+	if PC == 21 then -- .LBB0_16
+		registers.a0 = 0
+		registers.ra = readi32(memory, registers.sp+-116)
+		registers.s0 = readi32(memory, registers.sp+-120)
+		registers.sp = registers.sp + 144
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
@@ -279,19 +458,22 @@ while PC ~= 0 do
 		end
 		PC += 1
 	end
-	if PC == 9 then -- .Lfunc_end0
+	if PC == 22 then -- .Lfunc_end0
 		PC += 1
 	end
-	if PC == 10 then -- .L.str
+	if PC == 23 then -- .L__const.main.matrix1
 		PC += 1
 	end
-	if PC == 11 then -- .L.str.1
+	if PC == 24 then -- .L__const.main.matrix2
 		PC += 1
 	end
-	if PC == 12 then -- .L.str.2
+	if PC == 25 then -- .L.str
 		PC += 1
 	end
-	if (not PC) or PC == 0 or PC > 12 then
+	if PC == 26 then -- .L.str.1
+		PC += 1
+	end
+	if (not PC) or PC == 0 or PC > 26 then
 		break
 	end
 end

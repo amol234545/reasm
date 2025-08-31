@@ -6,7 +6,6 @@
 - Floating point & Double support
 - Work on support with multiple files sharing symbols.
 - Handle overflows correctly.
-- Float storage.
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h which does often include unsupported functions */

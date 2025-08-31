@@ -52,6 +52,13 @@ local functions = {
         -- print
         print(str)
     end,
+    ["memcpy"] = function()
+        local dest = registers["a0"]
+        local src = registers["a1"]
+        local count = registers["a2"]
+
+        buffer.copy(memory, dest, memory, src, count)
+    end,
 }
 
 -- Localized Functions

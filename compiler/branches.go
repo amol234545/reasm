@@ -69,28 +69,28 @@ func ble(w *OutputWriter, command AssemblyCommand) {
 func bltz(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s < 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
-	JumpTo(w, command.Arguments[2].Source, false)
+	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgtz(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s > 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
-	JumpTo(w, command.Arguments[2].Source, false)
+	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func blez(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s <= 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
-	JumpTo(w, command.Arguments[2].Source, false)
+	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgez(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if %s >= 0 then\n", CompileRegister(command.Arguments[0]))
 	w.Depth++
-	JumpTo(w, command.Arguments[2].Source, false)
+	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
