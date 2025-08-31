@@ -4,30 +4,37 @@ import (
 	"debug/elf"
 	"fmt"
 
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/arch/riscv64/riscv64asm"
 )
 
 func ParseFromElf(f *elf.File) []AssemblyCommand {
 	/* validate file */
-	if f.Class != elf.ELFCLASS32 {
-		panic("ELF file is not 32-bit.")
+	if f.Class != elf.ELFCLASS64 {
+		log.Error("ELF file is not 32-bit.")
+		return []AssemblyCommand{}
 	} else if f.Machine != elf.EM_RISCV {
-		panic("ELF file is not RISC-V.")
+		log.Error("ELF file is not RISC-V.")
+		return []AssemblyCommand{}
 	} else if f.Data != elf.ELFDATA2LSB {
-		panic("ELF file is not little-endian.")
+		log.Error("ELF file is not little-endian.")
+		return []AssemblyCommand{}
 	} else if f.Type != elf.ET_EXEC {
-		panic("ELF file is not an executable.")
+		log.Error("ELF file is not an executable.")
+		return []AssemblyCommand{}
 	}
 
 	/* look for bytecode */
 	text := f.Section(".text")
 	if text == nil {
-		panic(".text section not found")
+		log.Error(".text section not found")
+		return []AssemblyCommand{}
 	}
 
 	code, err := text.Data()
 	if err != nil {
-		panic(err)
+		log.Error(err)
+		return []AssemblyCommand{}
 	}
 
 	/* TODO: parse the actual data of the file  */

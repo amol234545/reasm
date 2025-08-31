@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"slices"
 	"strings"
 
 	"github.com/AsynchronousAI/asm-decomp/compiler"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +18,13 @@ func main() {
 	var outputFile string
 	var mainSymbol string
 
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:   true, // force color output
+		FullTimestamp: true, // show timestamps
+	})
+
+	log.SetLevel(log.DebugLevel)
+
 	var rootCmd = &cobra.Command{
 		Use:   "cli [input] [output]",
 		Short: "CLI tool to decompile assembly.",
@@ -26,17 +33,20 @@ func main() {
 			validModes := []string{"module", "main", "bench"}
 			modeLower := strings.ToLower(mode)
 			if !slices.Contains(validModes, modeLower) {
-				return fmt.Errorf("invalid mode: %s. Valid modes are: module, main, bench", mode)
+				log.Error("invalid mode. Valid modes are: module, main, bench")
+				return nil
 			}
 
 			/* read input file */
 			if len(inputFiles) > 1 {
-				panic("Only one input file is supported at the moment, if you want to compile multiple files link before hand using an ELF file.")
+				log.Error("Only one input file is supported at the moment, if you want to compile multiple files link before hand using an ELF file.")
+				return nil
 			}
 
 			file, err := os.Open(inputFiles[0])
 			if err != nil {
-				return fmt.Errorf("failed to read input file: %w", err)
+				log.Error("failed to read input file: %w", err)
+				return nil
 			}
 			defer file.Close()
 
@@ -51,7 +61,8 @@ func main() {
 			/* write output file */
 			err = os.WriteFile(outputFile, processed, 0644)
 			if err != nil {
-				return fmt.Errorf("failed to write output file: %w", err)
+				log.Error("failed to write output file: %w", err)
+				return nil
 			}
 
 			return nil

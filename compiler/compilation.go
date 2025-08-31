@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+
+	log "github.com/sirupsen/logrus"
 )
 
 //go:embed boilerplate.luau
@@ -156,7 +158,7 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 
 			cmdFunc(writer, command)
 		} else {
-			panic("unknown instruction: " + command.Name)
+			log.Warn("unknown instruction: " + command.Name)
 		}
 	case Label:
 		label(writer, command)

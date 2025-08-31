@@ -1,5 +1,7 @@
 package compiler
 
+import log "github.com/sirupsen/logrus"
+
 func ret(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "if registers.ra ~= 0 then\n")
 	w.Depth++
@@ -46,14 +48,14 @@ func move(w *OutputWriter, command AssemblyCommand) {
 
 /* unimplemented */
 func auipc(w *OutputWriter, command AssemblyCommand) {
-	panic("AUIPC cannot be used.")
+	log.Warn("AUIPC cannot be used.")
 }
 func ebreak(w *OutputWriter, command AssemblyCommand) {
-	panic("EBREAK cannot be used (yet).")
+	log.Warn("EBREAK cannot be used (yet).")
 }
 func ecall(w *OutputWriter, command AssemblyCommand) {
-	panic("ECALL cannot be used (yet).")
+	log.Warn("ECALL cannot be used (yet).")
 }
 func fence(w *OutputWriter, command AssemblyCommand) {
-	panic("FENCE cannot be used.")
+	log.Warn("FENCE cannot be used.")
 }
