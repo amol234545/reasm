@@ -187,9 +187,6 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
 
 	// check if invalid PC, then break
-	if writer.DebugComments {
-		WriteIndentedString(writer, "-- if no PC, or invalid PC then break (look into alternative implementations in the future) \n")
-	}
 	WriteIndentedString(writer, "if (not PC) or PC == 0 or PC > %d then\n", writer.MaxPC-1)
 	writer.Depth++
 	WriteIndentedString(writer, "break\n")

@@ -8,40 +8,58 @@
 main:                                   # @main
 	.cfi_startproc
 # %bb.0:
-	addi	sp, sp, -32
-	.cfi_def_cfa_offset 32
-	sw	ra, 28(sp)                      # 4-byte Folded Spill
-	sw	s0, 24(sp)                      # 4-byte Folded Spill
+	addi	sp, sp, -48
+	.cfi_def_cfa_offset 48
+	sw	ra, 44(sp)                      # 4-byte Folded Spill
+	sw	s0, 40(sp)                      # 4-byte Folded Spill
 	.cfi_offset ra, -4
 	.cfi_offset s0, -8
-	addi	s0, sp, 32
+	addi	s0, sp, 48
 	.cfi_def_cfa s0, 0
 	li	a0, 0
-	sw	a0, -24(s0)                     # 4-byte Folded Spill
+	sw	a0, -32(s0)                     # 4-byte Folded Spill
 	sw	a0, -12(s0)
 	lui	a1, %hi(.L.str)
 	addi	a1, a1, %lo(.L.str)
 	addi	a0, s0, -20
-	sw	a0, -28(s0)                     # 4-byte Folded Spill
+	sw	a0, -48(s0)                     # 4-byte Folded Spill
 	li	a2, 1000
 	call	_ZN11BankAccountC2EPKci
-	lw	a0, -28(s0)                     # 4-byte Folded Reload
+	lw	a0, -48(s0)                     # 4-byte Folded Reload
 	call	_ZNK11BankAccount11showBalanceEv
-	lw	a0, -28(s0)                     # 4-byte Folded Reload
+	lw	a0, -48(s0)                     # 4-byte Folded Reload
 	li	a1, 250
+	sw	a1, -44(s0)                     # 4-byte Folded Spill
 	call	_ZN11BankAccount7depositEi
-	lw	a0, -28(s0)                     # 4-byte Folded Reload
+	lw	a0, -48(s0)                     # 4-byte Folded Reload
 	li	a1, 500
+	sw	a1, -40(s0)                     # 4-byte Folded Spill
 	call	_ZN11BankAccount8withdrawEi
-	lw	a0, -28(s0)                     # 4-byte Folded Reload
+	lw	a0, -48(s0)                     # 4-byte Folded Reload
 	call	_ZNK11BankAccount11showBalanceEv
-	lw	a0, -24(s0)                     # 4-byte Folded Reload
-	.cfi_def_cfa sp, 32
-	lw	ra, 28(sp)                      # 4-byte Folded Reload
-	lw	s0, 24(sp)                      # 4-byte Folded Reload
+	lui	a1, %hi(.L.str.1)
+	addi	a1, a1, %lo(.L.str.1)
+	addi	a0, s0, -28
+	sw	a0, -36(s0)                     # 4-byte Folded Spill
+	li	a2, 1250
+	call	_ZN11BankAccountC2EPKci
+	lw	a0, -36(s0)                     # 4-byte Folded Reload
+	call	_ZNK11BankAccount11showBalanceEv
+	lw	a1, -44(s0)                     # 4-byte Folded Reload
+	lw	a0, -36(s0)                     # 4-byte Folded Reload
+	call	_ZN11BankAccount7depositEi
+	lw	a1, -40(s0)                     # 4-byte Folded Reload
+	lw	a0, -36(s0)                     # 4-byte Folded Reload
+	call	_ZN11BankAccount8withdrawEi
+	lw	a0, -36(s0)                     # 4-byte Folded Reload
+	call	_ZNK11BankAccount11showBalanceEv
+	lw	a0, -32(s0)                     # 4-byte Folded Reload
+	.cfi_def_cfa sp, 48
+	lw	ra, 44(sp)                      # 4-byte Folded Reload
+	lw	s0, 40(sp)                      # 4-byte Folded Reload
 	.cfi_restore ra
 	.cfi_restore s0
-	addi	sp, sp, 32
+	addi	sp, sp, 48
 	.cfi_def_cfa_offset 0
 	ret
 .Lfunc_end0:
@@ -92,8 +110,8 @@ _ZNK11BankAccount11showBalanceEv:       # @_ZNK11BankAccount11showBalanceEv
 	lw	a0, -12(s0)
 	lw	a1, 0(a0)
 	lw	a2, 4(a0)
-	lui	a0, %hi(.L.str.1)
-	addi	a0, a0, %lo(.L.str.1)
+	lui	a0, %hi(.L.str.2)
+	addi	a0, a0, %lo(.L.str.2)
 	call	printf
 	.cfi_def_cfa sp, 16
 	lw	ra, 12(sp)                      # 4-byte Folded Reload
@@ -137,13 +155,13 @@ _ZN11BankAccount7depositEi:             # @_ZN11BankAccount7depositEi
 	add	a0, a0, a2
 	sw	a0, 4(a1)
 	lw	a1, -16(s0)
-	lui	a0, %hi(.L.str.2)
-	addi	a0, a0, %lo(.L.str.2)
+	lui	a0, %hi(.L.str.3)
+	addi	a0, a0, %lo(.L.str.3)
 	call	printf
 	j	.LBB3_3
 .LBB3_2:
-	lui	a0, %hi(.L.str.3)
-	addi	a0, a0, %lo(.L.str.3)
+	lui	a0, %hi(.L.str.4)
+	addi	a0, a0, %lo(.L.str.4)
 	call	printf
 	j	.LBB3_3
 .LBB3_3:
@@ -195,13 +213,13 @@ _ZN11BankAccount8withdrawEi:            # @_ZN11BankAccount8withdrawEi
 	sub	a0, a0, a2
 	sw	a0, 4(a1)
 	lw	a1, -16(s0)
-	lui	a0, %hi(.L.str.4)
-	addi	a0, a0, %lo(.L.str.4)
+	lui	a0, %hi(.L.str.5)
+	addi	a0, a0, %lo(.L.str.5)
 	call	printf
 	j	.LBB4_4
 .LBB4_3:
-	lui	a0, %hi(.L.str.5)
-	addi	a0, a0, %lo(.L.str.5)
+	lui	a0, %hi(.L.str.6)
+	addi	a0, a0, %lo(.L.str.6)
 	call	printf
 	j	.LBB4_4
 .LBB4_4:
@@ -225,28 +243,33 @@ _ZN11BankAccount8withdrawEi:            # @_ZN11BankAccount8withdrawEi
 
 	.type	.L.str.1,@object                # @.str.1
 .L.str.1:
-	.asciz	"%s's balance: $%d"
-	.size	.L.str.1, 18
+	.asciz	"Bob"
+	.size	.L.str.1, 4
 
 	.type	.L.str.2,@object                # @.str.2
 .L.str.2:
-	.asciz	"Deposited: $%d"
-	.size	.L.str.2, 15
+	.asciz	"%s's balance: $%d"
+	.size	.L.str.2, 18
 
 	.type	.L.str.3,@object                # @.str.3
 .L.str.3:
-	.asciz	"Invalid deposit amount."
-	.size	.L.str.3, 24
+	.asciz	"Deposited: $%d"
+	.size	.L.str.3, 15
 
 	.type	.L.str.4,@object                # @.str.4
 .L.str.4:
-	.asciz	"Withdrew: $%d"
-	.size	.L.str.4, 14
+	.asciz	"Invalid deposit amount."
+	.size	.L.str.4, 24
 
 	.type	.L.str.5,@object                # @.str.5
 .L.str.5:
+	.asciz	"Withdrew: $%d"
+	.size	.L.str.5, 14
+
+	.type	.L.str.6,@object                # @.str.6
+.L.str.6:
 	.asciz	"Insufficient funds or invalid amount."
-	.size	.L.str.5, 38
+	.size	.L.str.6, 38
 
 	.ident	"Homebrew clang version 20.1.8"
 	.section	".note.GNU-stack","",@progbits

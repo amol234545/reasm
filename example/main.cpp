@@ -40,5 +40,13 @@ int main() {
     account.withdraw(500);
     account.showBalance();
 
+
+    BankAccount account2("Bob", 1250);  // initial balance is integer
+
+    account2.showBalance();
+    account2.deposit(250);
+    account2.withdraw(500);
+    account2.showBalance();
+
     return 0;
 }
