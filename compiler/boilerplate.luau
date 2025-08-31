@@ -22,35 +22,57 @@ end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+local function extract_args()
+    -- turn arguments from registers a0-a7 into a table
+    local args = {}
+    for key, value in pairs(registers) do
+       	if string.match(key, "^a%d+$") then
+      		local index = tonumber(string.match(key, "%d+"))
+      		args[index] = value
+       	end
+    end
+    return args
+end
+local function read_string(startPointer)
+    -- read null terminated strings from memory
+    local pointer = startPointer
+    local str = ""
+    local byte
+    repeat
+        byte = buffer.readbits(memory, pointer * 8, 8)
+        if byte == 0 then break end
+        str = str .. string.char(byte)
+        pointer = pointer + 1
+        if pointer >= mem then error("Exceeded buffer size when reading string.") end
+    until false
+    return str
+end
+local function format_string(fmt, args)
+    -- custom format string because strings are stored as pointers, and floats as ints.
+    local arg_index = 1
+
+    local result = fmt:gsub("%%([%d%.]*[dfs])", function(spec)
+        local val = args[arg_index]
+        arg_index = arg_index + 1
+
+        if spec:sub(-1) == "d" then
+            return string.format("%d", val)
+        elseif spec:sub(-1) == "f" then
+            return string.format("%"..spec, string.unpack("f", val))
+        elseif spec:sub(-1) == "s" then
+            return read_string(val)
+        else
+            return spec
+        end
+    end)
+
+    return result
+end
 
 -- Functions
 local functions = {
     ["printf"] = function()
-        -- read string
-        local pointer = registers["a0"]
-        local str = ""
-        local byte
-        repeat
-            byte = buffer.readbits(memory, pointer * 8, 8)
-            if byte == 0 then break end
-            str = str .. string.char(byte)
-            pointer = pointer + 1
-            if pointer >= mem then error("Buffer overflow in printf string read") end
-        until false
-
-        -- format string
-        --- extract args
-        local args = {}
-        for key, value in pairs(registers) do
-           	if string.match(key, "^a%d+$") then
-          		local index = tonumber(string.match(key, "%d+"))
-          		args[index] = value
-           	end
-        end
-        str = string.format(str, unpack(args))
-
-        -- print
-        print(str)
+        print(format_string(read_string(registers["a0"]), extract_args()))
     end,
     ["memcpy"] = function()
         local dest = registers["a0"]
