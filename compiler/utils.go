@@ -72,7 +72,7 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 		}
 
 		if w.DebugPC {
-			WriteIndentedString(w, "print(PC)\n")
+			WriteIndentedString(w, "print('JUMP: ', PC)\n")
 		}
 
 		WriteIndentedString(w, "continue\n")

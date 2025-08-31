@@ -6,7 +6,7 @@ func ret(w *OutputWriter, command AssemblyCommand) {
 	//WriteIndentedString(w, "print('ret', RETURN)\n")
 	WriteIndentedString(w, "PC = registers.ra\n")
 	if w.DebugPC {
-		WriteIndentedString(w, "print(PC)\n")
+		WriteIndentedString(w, "print('RET: ', PC)\n")
 	}
 	WriteIndentedString(w, "registers.ra = 0\n")
 	WriteIndentedString(w, "continue\n")
@@ -27,7 +27,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "functions[\"%s\"]()\n", function)
 	WriteIndentedString(w, "PC = %d\n", w.MaxPC)
 	if w.DebugPC {
-		WriteIndentedString(w, "print(PC)\n")
+		WriteIndentedString(w, "print('CALL: ', PC)\n")
 	}
 	WriteIndentedString(w, "continue\n")
 	w.Depth--
@@ -47,9 +47,6 @@ func move(w *OutputWriter, command AssemblyCommand) {
 /* unimplemented */
 func auipc(w *OutputWriter, command AssemblyCommand) {
 	panic("AUIPC cannot be used.")
-}
-func jalr(w *OutputWriter, command AssemblyCommand) {
-	panic("JALR cannot be used.")
 }
 func ebreak(w *OutputWriter, command AssemblyCommand) {
 	panic("EBREAK cannot be used (yet).")

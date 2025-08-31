@@ -1,5 +1,7 @@
 package compiler
 
+import "fmt"
+
 /** Jump */
 func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
 	JumpTo(w, command.Arguments[0].Source, false)
@@ -7,6 +9,40 @@ func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
 func jal(w *OutputWriter, command AssemblyCommand) { /* jal instructions */
 	JumpTo(w, command.Arguments[0].Source, true)
 	CutAndLink(w)
+}
+func jalr(w *OutputWriter, command AssemblyCommand) {
+	returnAddress := CompileRegister(command.Arguments[0])
+	sourceRegister := CompileRegister(command.Arguments[1])
+	offset := CompileRegister(command.Arguments[2])
+
+	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
+	w.Depth++
+	WriteIndentedString(w, "%s = PC\n", returnAddress)
+	WriteIndentedString(w, "PC = %s + %s\n", sourceRegister, offset)
+
+	if w.DebugPC {
+		WriteIndentedString(w, "print('JALR: ', PC)\n")
+	}
+
+	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
+	AddEnd(w)
+	WriteIndentedString(w, "if PC == %d then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
+	w.Depth++
+	w.MaxPC++
+	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
+}
+func jr(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
+	w.Depth++
+	WriteIndentedString(w, "PC = %s\n", CompileRegister(command.Arguments[0]))
+	if w.DebugPC {
+		WriteIndentedString(w, "print('JR: ', PC)\n")
+	}
+	WriteIndentedString(w, "continue\n")
+	w.Depth--
+	WriteIndentedString(w, "end\n")
 }
 
 /** Branching */

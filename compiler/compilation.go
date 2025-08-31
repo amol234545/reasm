@@ -89,6 +89,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	/* jump */
 	"j":    jump,
 	"jalr": jalr,
+	"jr":   jr,
 	"jal":  jal,
 
 	/* os */
