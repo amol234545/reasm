@@ -6,7 +6,7 @@ local data = {} -- pointers in memory to static data, ex: strings
 local labels = {}
 local registers = {
     ["zero"] = 0,    ["x0"]  = 0,     ["ra"]   = 0,    ["x1"]  = 0,
-    ["sp"]   = mem,  ["x2"]  = 0,     ["gp"]   = 0,    ["x3"]  = 0,
+    ["sp"]   = mem/2,  ["x2"]  = 0,     ["gp"]   = 0,    ["x3"]  = 0,
     ["tp"]   = 0,    ["x4"]  = 0,     ["t0"]   = 0,    ["x5"]  = 0,
     ["t1"]   = 0,    ["x6"]  = 0,     ["t2"]   = 0,    ["x7"]  = 0,
 
