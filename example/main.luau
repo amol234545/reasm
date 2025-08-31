@@ -27,7 +27,19 @@ local registers = {
 
     ["x27"]  = 0,    ["t3"]  = 0,     ["x28"]  = 0,    ["t4"]  = 0,
     ["x29"]  = 0,    ["t5"]  = 0,     ["x30"]  = 0,    ["t6"]  = 0,
-    ["x31"]  = 0
+    ["x31"]  = 0,
+
+    -- Floating point
+    ["ft0"]  = 0, ["ft1"]  = 0, ["ft2"]  = 0, ["ft3"]  = 0,
+    ["ft4"]  = 0, ["ft5"]  = 0, ["ft6"]  = 0, ["ft7"]  = 0,
+    ["ft8"]  = 0, ["ft9"]  = 0, ["ft10"] = 0, ["ft11"] = 0,
+
+    ["fs0"]  = 0, ["fs1"]  = 0, ["fs2"]  = 0, ["fs3"]  = 0,
+    ["fs4"]  = 0, ["fs5"]  = 0, ["fs6"]  = 0, ["fs7"]  = 0,
+    ["fs8"]  = 0, ["fs9"]  = 0, ["fs10"] = 0, ["fs11"] = 0,
+
+    ["fa0"]  = 0, ["fa1"]  = 0, ["fa2"]  = 0, ["fa3"]  = 0,
+    ["fa4"]  = 0, ["fa5"]  = 0, ["fa6"]  = 0, ["fa7"]  = 0
 }
 local functions = {
     ["printf"] = function()
@@ -75,6 +87,40 @@ end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+function fclass(x)
+    local result = 0
+
+    if x ~= x then           -- NaN
+        result = 2^9
+    elseif x == math.huge then
+        result = 2^7           -- positive infinity
+    elseif x == -math.huge then
+        result = 2^0           -- negative infinity
+    elseif x == 0 then
+        if 1/x > 0 then
+            result = 2^4       -- positive zero
+        else
+            result = 2^3       -- negative zero
+        end
+    else
+        local abs_x = math.abs(x)
+        if abs_x < 2.2250738585072014e-308 then  -- subnormal range for double
+            if x > 0 then
+                result = 2^5   -- positive subnormal
+            else
+                result = 2^2   -- negative subnormal
+            end
+        else
+            if x > 0 then
+                result = 2^6   -- positive normal
+            else
+                result = 2^1   -- negative normal
+            end
+        end
+    end
+
+    return result
+end
 
 -- Localized Functions
 --- bit32
@@ -99,137 +145,203 @@ local writeu32 = buffer.writeu32
 local readu8 = buffer.readu8
 local readu16 = buffer.readu16
 local readu32 = buffer.readu32
+local writef32 = buffer.writef32
+local writef64 = buffer.writef64
+local readf32 = buffer.readf32
+local readf64 = buffer.readf64
+
+-- math
+local sqrt = math.sqrt
+local abs = math.abs
+local sgn = math.sign
+local min = math.min
+local max = math.max
+local floor = math.floor
 
 ---- Auto generated code starts here
 while PC ~= 0 do
-	if PC == 1 and not init then -- fib (runtime) 
-		registers.sp = registers.sp + -16
-		writei32(memory, registers.sp+12, registers.ra)
-		writei32(memory, registers.sp+8, registers.s0)
-		writei32(memory, registers.sp+4, registers.s1)
-		writei32(memory, registers.sp, registers.s2)
-		registers.s0 = registers.a0
-		registers.s1 = 0
-		registers.s2 = 2
-		if registers.s0 < registers.s2 then
+	-- ASM ATTRIBUTE: .attribute	4, 16
+	-- ASM ATTRIBUTE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
+	-- ASM ATTRIBUTE: .file	"main.c"
+	-- ASM ATTRIBUTE: .text
+	-- ASM ATTRIBUTE: .globl	main
+	-- ASM ATTRIBUTE: .p2align	2
+	-- ASM ATTRIBUTE: .type	main,@function
+	if PC == 1 and not init then -- main (runtime) 
+		-- addi ([{0 false sp } {0 false sp } {0 true -48 }])
+		registers.sp = registers.sp + -48
+		-- sw ([{0 false ra } {44 true sp }])
+		writei32(memory, registers.sp+44, registers.ra)
+		-- sw ([{0 true s0 } {40 true sp }])
+		writei32(memory, registers.sp+40, registers.s0)
+		-- addi ([{0 true s0 } {0 false sp } {0 true 48 }])
+		registers.s0 = registers.sp + 48
+		-- li ([{0 true a0 } {0 true 0 }])
+		registers.a0 = 0
+		-- sw ([{0 true a0 } {-28 true s0 }])
+		writei32(memory, registers.s0+-28, registers.a0)
+		-- sw ([{0 true a0 } {-12 true s0 }])
+		writei32(memory, registers.s0+-12, registers.a0)
+		-- lui ([{0 true a0 } {0 true 263680 }])
+		registers.a0 = 263680
+		-- sw ([{0 true a0 } {-16 true s0 }])
+		writei32(memory, registers.s0+-16, registers.a0)
+		-- lui ([{0 true a0 } {0 true 262144 }])
+		registers.a0 = 262144
+		-- sw ([{0 true a0 } {-20 true s0 }])
+		writei32(memory, registers.s0+-20, registers.a0)
+		-- lw ([{0 true a0 } {-16 true s0 }])
+		registers.a0 = readi32(memory, registers.s0+-16)
+		-- sw ([{0 true a0 } {-44 true s0 }])
+		writei32(memory, registers.s0+-44, registers.a0)
+		-- lw ([{0 true a1 } {-20 true s0 }])
+		registers.a1 = readi32(memory, registers.s0+-20)
+		-- mv ([{0 true a0 } {0 true a1 }])
+		registers.a0 = registers.a1
+		-- call ([{0 true __mulsf3 }])
+		if functions["__mulsf3"] then
+			functions["__mulsf3"]()
+			PC = 2
+			continue
+		else
 			do
-				PC = labels[".LBB0_2"]
+				registers.ra = 2
+				PC = labels["__mulsf3"]
 				continue
 			end
 		end
 		PC += 1
-	end
-	if PC == 2 and not init then -- .LBB0_1 (runtime) 
-		registers.a0 = registers.s0 + -1
-		if functions["fib"] then
-			functions["fib"]()
+	end -- main (main)
+	if PC == 2 and not init then -- main (extended) 
+		-- lw ([{0 true a1 } {-44 true s0 }])
+		registers.a1 = readi32(memory, registers.s0+-44)
+		-- sw ([{0 true a0 } {-40 true s0 }])
+		writei32(memory, registers.s0+-40, registers.a0)
+		-- mv ([{0 true a0 } {0 true a1 }])
+		registers.a0 = registers.a1
+		-- call ([{0 true __mulsf3 }])
+		if functions["__mulsf3"] then
+			functions["__mulsf3"]()
 			PC = 3
 			continue
 		else
 			do
 				registers.ra = 3
-				PC = labels["fib"]
+				PC = labels["__mulsf3"]
 				continue
 			end
 		end
 		PC += 1
-	end
-	if PC == 3 and not init then -- .LBB0_1 (extended) 
-		registers.s1 = registers.s1 + registers.a0
-		registers.s0 = registers.s0 + -2
-		if registers.s0 >= registers.s2 then
-			do
-				PC = labels[".LBB0_1"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 4 and not init then -- .LBB0_2 (runtime) 
-		registers.a0 = registers.s0 + registers.s1
-		registers.ra = readi32(memory, registers.sp+12)
-		registers.s0 = readi32(memory, registers.sp+8)
-		registers.s1 = readi32(memory, registers.sp+4)
-		registers.s2 = readi32(memory, registers.sp)
-		registers.sp = registers.sp + 16
-		if registers.ra ~= 0 then
-			PC = registers.ra
-			registers.ra = 0
+	end -- main_end (main_end)
+	if PC == 3 and not init then -- main_end (extended) 
+		-- lw ([{0 true a1 } {-40 true s0 }])
+		registers.a1 = readi32(memory, registers.s0+-40)
+		-- call ([{0 true __addsf3 }])
+		if functions["__addsf3"] then
+			functions["__addsf3"]()
+			PC = 4
 			continue
 		else
-			PC = 0
-			continue
-		end
-		PC += 1
-	end
-	if PC == 5 and not init then -- .Lfunc_end0 (runtime) 
-		PC += 1
-	end
-	if PC == 6 and not init then -- printFib (runtime) 
-		registers.sp = registers.sp + -16
-		writei32(memory, registers.sp+12, registers.ra)
-		writei32(memory, registers.sp+8, registers.s0)
-		writei32(memory, registers.sp+4, registers.s1)
-		writei32(memory, registers.sp, registers.s2)
-		registers.s0 = registers.a1
-		registers.s1 = registers.a0
-		registers.s2 = hi(data[".str"])
-		registers.s2 = registers.s2 + lo(data[".str"])
-		if registers.s0 >= registers.s1 then
 			do
-				PC = labels[".LBB1_2"]
+				registers.ra = 4
+				PC = labels["__addsf3"]
 				continue
 			end
 		end
 		PC += 1
-	end
-	if PC == 7 and not init then -- .LBB1_1 (runtime) 
-		registers.a0 = registers.s0
-		if functions["fib"] then
-			functions["fib"]()
+	end -- main_end_end (main_end_end)
+	if PC == 4 and not init then -- main_end_end (extended) 
+		-- sw ([{0 true a0 } {-24 true s0 }])
+		writei32(memory, registers.s0+-24, registers.a0)
+		-- lw ([{0 true a0 } {-16 true s0 }])
+		registers.a0 = readi32(memory, registers.s0+-16)
+		-- call ([{0 false __fixsfsi }])
+		if functions["__fixsfsi"] then
+			functions["__fixsfsi"]()
+			PC = 5
+			continue
+		else
+			do
+				registers.ra = 5
+				PC = labels["__fixsfsi"]
+				continue
+			end
+		end
+		PC += 1
+	end -- main_end_end_end (main_end_end_end)
+	if PC == 5 and not init then -- main_end_end_end (extended) 
+		-- sw ([{0 true a0 } {-36 true s0 }])
+		writei32(memory, registers.s0+-36, registers.a0)
+		-- lw ([{0 true a0 } {-20 true s0 }])
+		registers.a0 = readi32(memory, registers.s0+-20)
+		-- call ([{0 false __fixsfsi }])
+		if functions["__fixsfsi"] then
+			functions["__fixsfsi"]()
+			PC = 6
+			continue
+		else
+			do
+				registers.ra = 6
+				PC = labels["__fixsfsi"]
+				continue
+			end
+		end
+		PC += 1
+	end -- main_end_end_end_end (main_end_end_end_end)
+	if PC == 6 and not init then -- main_end_end_end_end (extended) 
+		-- sw ([{0 true a0 } {-32 true s0 }])
+		writei32(memory, registers.s0+-32, registers.a0)
+		-- lw ([{0 true a0 } {-24 true s0 }])
+		registers.a0 = readi32(memory, registers.s0+-24)
+		-- call ([{0 false __fixsfsi }])
+		if functions["__fixsfsi"] then
+			functions["__fixsfsi"]()
+			PC = 7
+			continue
+		else
+			do
+				registers.ra = 7
+				PC = labels["__fixsfsi"]
+				continue
+			end
+		end
+		PC += 1
+	end -- main_end_end_end_end_end (main_end_end_end_end_end)
+	if PC == 7 and not init then -- main_end_end_end_end_end (extended) 
+		-- lw ([{0 true a1 } {-36 true s0 }])
+		registers.a1 = readi32(memory, registers.s0+-36)
+		-- lw ([{0 true a2 } {-32 true s0 }])
+		registers.a2 = readi32(memory, registers.s0+-32)
+		-- mv ([{0 true a3 } {0 true a0 }])
+		registers.a3 = registers.a0
+		-- lui ([{0 true a0 } {0 false .L.str hi}])
+		registers.a0 = hi(data[".str"])
+		-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
+		registers.a0 = registers.a0 + lo(data[".str"])
+		-- call ([{0 false printf }])
+		if functions["printf"] then
+			functions["printf"]()
 			PC = 8
 			continue
 		else
 			do
 				registers.ra = 8
-				PC = labels["fib"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 8 and not init then -- .LBB1_1 (extended) 
-		registers.a1 = registers.a0
-		registers.a0 = registers.s2
-		if functions["printf"] then
-			functions["printf"]()
-			PC = 9
-			continue
-		else
-			do
-				registers.ra = 9
 				PC = labels["printf"]
 				continue
 			end
 		end
 		PC += 1
-	end
-	if PC == 9 and not init then -- .LBB1_1_end (extended) 
-		registers.s0 = registers.s0 + 1
-		if registers.s0 < registers.s1 then
-			do
-				PC = labels[".LBB1_1"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 10 and not init then -- .LBB1_2 (runtime) 
-		registers.ra = readi32(memory, registers.sp+12)
-		registers.s0 = readi32(memory, registers.sp+8)
-		registers.s1 = readi32(memory, registers.sp+4)
-		registers.s2 = readi32(memory, registers.sp)
-		registers.sp = registers.sp + 16
+	end -- main_end_end_end_end_end_end (main_end_end_end_end_end_end)
+	if PC == 8 and not init then -- main_end_end_end_end_end_end (extended) 
+		-- lw ([{0 true a0 } {-28 true s0 }])
+		registers.a0 = readi32(memory, registers.s0+-28)
+		-- lw ([{0 false ra } {44 true sp }])
+		registers.ra = readi32(memory, registers.sp+44)
+		-- lw ([{0 true s0 } {40 true sp }])
+		registers.s0 = readi32(memory, registers.sp+40)
+		-- addi ([{0 false sp } {0 false sp } {0 true 48 }])
+		registers.sp = registers.sp + 48
+		-- ret ([])
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
@@ -239,72 +351,39 @@ while PC ~= 0 do
 			continue
 		end
 		PC += 1
-	end
-	if PC == 11 and not init then -- .Lfunc_end1 (runtime) 
+	end -- main_end_end_end_end_end_end_end (main_end_end_end_end_end_end_end)
+	if PC == 9 and not init then -- .Lfunc_end0 (runtime) 
+		-- ASM ATTRIBUTE: .type	.L.str,@object
+		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
 		PC += 1
-	end
-	if PC == 12 and not init then -- main (runtime) 
-		registers.sp = registers.sp + -16
-		writei32(memory, registers.sp+12, registers.ra)
-		registers.a0 = 10
-		registers.a1 = 0
-		if functions["printFib"] then
-			functions["printFib"]()
-			PC = 13
-			continue
-		else
-			do
-				registers.ra = 13
-				PC = labels["printFib"]
-				continue
-			end
-		end
-		PC += 1
-	end
-	if PC == 13 and not init then -- main (extended) 
-		registers.a0 = 0
-		registers.ra = readi32(memory, registers.sp+12)
-		registers.sp = registers.sp + 16
-		if registers.ra ~= 0 then
-			PC = registers.ra
-			registers.ra = 0
-			continue
-		else
-			PC = 0
-			continue
-		end
-		PC += 1
-	end
-	if PC == 14 and not init then -- .Lfunc_end2 (runtime) 
-		PC += 1
-	end
+	end -- .Lfunc_end0 (.Lfunc_end0)
 	if init then -- .L.str (initialization)
-		writestring(memory, 0, "%d\0")
+		writestring(memory, 0, "Square of %d + square of %d = %d\n\0")
 		data[".str"] = 0
+		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
+		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
+		-- ASM ATTRIBUTE: .addrsig
+		-- ASM ATTRIBUTE: .addrsig_sym printf
 		PC += 1
-	end
+	end -- .L.str (.L.str)
 	if init then -- load label names for quick access
 		labels = {
-			["fib"] = 1,
-			[".LBB0_1"] = 2,
-			[".LBB0_1_end"] = 3,
-			[".LBB0_2"] = 4,
-			[".Lfunc_end0"] = 5,
-			["printFib"] = 6,
-			[".LBB1_1"] = 7,
-			[".LBB1_1_end"] = 8,
-			[".LBB1_1_end_end"] = 9,
-			[".LBB1_2"] = 10,
-			[".Lfunc_end1"] = 11,
-			["main"] = 12,
-			["main_end"] = 13,
-			[".Lfunc_end2"] = 14,
-			[".L.str"] = 15,
+			["main"] = 1,
+			["main_end"] = 2,
+			["main_end_end"] = 3,
+			["main_end_end_end"] = 4,
+			["main_end_end_end_end"] = 5,
+			["main_end_end_end_end_end"] = 6,
+			["main_end_end_end_end_end_end"] = 7,
+			["main_end_end_end_end_end_end_end"] = 8,
+			[".Lfunc_end0"] = 9,
+			[".L.str"] = 10,
 		}
 		PC = labels["main"]
 	end
 	init = false -- do not initialize again
-	if (not PC) or PC == 0 or PC > 15 then
+	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 
+	if (not PC) or PC == 0 or PC > 10 then
 		break
 	end
 end

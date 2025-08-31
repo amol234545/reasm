@@ -1,20 +1,11 @@
 void printf(const char *, ...);
 
-int fib(int n) {
-    if (n <= 1)
-        return n;
-    return fib(n-1) + fib(n-2);
-}
-
-void printFib(int n, int i) {
-    if (i < n) {
-        printf("%d ", fib(i));
-        printFib(n, i+1); // recursive printing
-    }
-}
-
 int main() {
-    int terms = 10; // number of Fibonacci numbers to print
-    printFib(terms, 0);
+    float a = 3.5;
+    float b = 2.0;
+    float result = a * a + b * b;
+
+    printf("Square of %d + square of %d = %d\n", (int)a, (int)b, (int)result);
+
     return 0;
 }

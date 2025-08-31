@@ -27,7 +27,19 @@ local registers = {
 
     ["x27"]  = 0,    ["t3"]  = 0,     ["x28"]  = 0,    ["t4"]  = 0,
     ["x29"]  = 0,    ["t5"]  = 0,     ["x30"]  = 0,    ["t6"]  = 0,
-    ["x31"]  = 0
+    ["x31"]  = 0,
+
+    -- Floating point
+    ["ft0"]  = 0, ["ft1"]  = 0, ["ft2"]  = 0, ["ft3"]  = 0,
+    ["ft4"]  = 0, ["ft5"]  = 0, ["ft6"]  = 0, ["ft7"]  = 0,
+    ["ft8"]  = 0, ["ft9"]  = 0, ["ft10"] = 0, ["ft11"] = 0,
+
+    ["fs0"]  = 0, ["fs1"]  = 0, ["fs2"]  = 0, ["fs3"]  = 0,
+    ["fs4"]  = 0, ["fs5"]  = 0, ["fs6"]  = 0, ["fs7"]  = 0,
+    ["fs8"]  = 0, ["fs9"]  = 0, ["fs10"] = 0, ["fs11"] = 0,
+
+    ["fa0"]  = 0, ["fa1"]  = 0, ["fa2"]  = 0, ["fa3"]  = 0,
+    ["fa4"]  = 0, ["fa5"]  = 0, ["fa6"]  = 0, ["fa7"]  = 0
 }
 local functions = {
     ["printf"] = function()
@@ -75,6 +87,40 @@ end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+function fclass(x)
+    local result = 0
+
+    if x ~= x then           -- NaN
+        result = 2^9
+    elseif x == math.huge then
+        result = 2^7           -- positive infinity
+    elseif x == -math.huge then
+        result = 2^0           -- negative infinity
+    elseif x == 0 then
+        if 1/x > 0 then
+            result = 2^4       -- positive zero
+        else
+            result = 2^3       -- negative zero
+        end
+    else
+        local abs_x = math.abs(x)
+        if abs_x < 2.2250738585072014e-308 then  -- subnormal range for double
+            if x > 0 then
+                result = 2^5   -- positive subnormal
+            else
+                result = 2^2   -- negative subnormal
+            end
+        else
+            if x > 0 then
+                result = 2^6   -- positive normal
+            else
+                result = 2^1   -- negative normal
+            end
+        end
+    end
+
+    return result
+end
 
 -- Localized Functions
 --- bit32
@@ -99,6 +145,18 @@ local writeu32 = buffer.writeu32
 local readu8 = buffer.readu8
 local readu16 = buffer.readu16
 local readu32 = buffer.readu32
+local writef32 = buffer.writef32
+local writef64 = buffer.writef64
+local readf32 = buffer.readf32
+local readf64 = buffer.readf64
+
+-- math
+local sqrt = math.sqrt
+local abs = math.abs
+local sgn = math.sign
+local min = math.min
+local max = math.max
+local floor = math.floor
 
 ---- Auto generated code starts here
 --{code here}
