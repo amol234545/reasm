@@ -187,256 +187,248 @@ local floor = math.floor
 registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
 function init()
+	-- ASM DIRECTIVE: .attribute	4, 16
+	-- ASM DIRECTIVE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
+	-- ASM DIRECTIVE: .file	"main.c"
+	-- ASM DIRECTIVE: .text
+	-- ASM DIRECTIVE: .globl	main
+	-- ASM DIRECTIVE: .p2align	2
+	-- ASM DIRECTIVE: .type	main,@function
+	-- ASM DIRECTIVE: .type	.L.str,@object
+	-- ASM DIRECTIVE: .section	.rodata.str1.1,"aMS",@progbits,1
+	writestring(memory, 0, "Fibonacci Sequence:\0")
+	data[".L.str"] = 0
+	-- ASM DIRECTIVE: .type	.L.str.1,@object
+	writestring(memory, 20, "%d\0")
+	data[".L.str.1"] = 20
+	-- ASM DIRECTIVE: .type	.L.str.2,@object
+	writestring(memory, 23, "\n\0")
+	data[".L.str.2"] = 23
+	-- ASM DIRECTIVE: .ident	"Homebrew clang version 20.1.8"
+	-- ASM DIRECTIVE: .section	".note.GNU-stack","",@progbits
+	-- ASM DIRECTIVE: .addrsig
+	-- ASM DIRECTIVE: .addrsig_sym printf
 	PC = 1
-	PC = 10
 end
 function main()
 	while PC ~= 0 do
-		if PC == 1 then -- fibonacci
-			registers.sp = registers.sp + -32
-			writei32(memory, registers.sp+28, registers.ra)
-			writei32(memory, registers.sp+24, registers.s0)
-			registers.s0 = registers.sp + 32
-			writei32(memory, registers.s0+-16, registers.a0)
-			registers.a1 = readi32(memory, registers.s0+-16)
+		if PC == 1 then -- main
+			-- addi ([{0 true sp } {0 true sp } {0 false -64 }])
+			registers.sp = registers.sp + -64
+			-- sw ([{0 true ra } {60 true sp }])
+			writei32(memory, registers.sp+60, registers.ra)
+			-- sw ([{0 true s0 } {56 true sp }])
+			writei32(memory, registers.sp+56, registers.s0)
+			-- addi ([{0 true s0 } {0 true sp } {0 false 64 }])
+			registers.s0 = registers.sp + 64
+			-- li ([{0 true a0 } {0 false 0 }])
 			registers.a0 = 0
-			if registers.a0 < registers.a1 then
-				do
-					PC = 3
-					continue
-				end
-			end
-			do
+			-- sw ([{0 true a0 } {-52 true s0 }])
+			writei32(memory, registers.s0+-52, registers.a0)
+			-- sw ([{0 true a0 } {-12 true s0 }])
+			writei32(memory, registers.s0+-12, registers.a0)
+			-- li ([{0 true a1 } {0 false 10 }])
+			registers.a1 = 10
+			-- sw ([{0 true a1 } {-16 true s0 }])
+			writei32(memory, registers.s0+-16, registers.a1)
+			-- sw ([{0 true a0 } {-28 true s0 }])
+			writei32(memory, registers.s0+-28, registers.a0)
+			-- sw ([{0 true a0 } {-32 true s0 }])
+			writei32(memory, registers.s0+-32, registers.a0)
+			-- sw ([{0 true a0 } {-36 true s0 }])
+			writei32(memory, registers.s0+-36, registers.a0)
+			-- li ([{0 true a0 } {0 false 1 }])
+			registers.a0 = 1
+			-- sw ([{0 true a0 } {-40 true s0 }])
+			writei32(memory, registers.s0+-40, registers.a0)
+			-- lui ([{0 true a0 } {0 false .L.str hi}])
+			registers.a0 = hi(data[".L.str"])
+			-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
+			registers.a0 = registers.a0 + lo(data[".L.str"])
+			-- call ([{0 false printf }])
+			if functions["printf"] then
+				functions["printf"]()
 				PC = 2
 				continue
-			end
-			PC += 1
-		end
-		if PC == 2 then -- .LBB0_1
-			registers.a0 = 0
-			writei32(memory, registers.s0+-12, registers.a0)
-			do
-				PC = 8
-				continue
-			end
-			PC += 1
-		end
-		if PC == 3 then -- .LBB0_2
-			registers.a0 = readi32(memory, registers.s0+-16)
-			registers.a1 = 1
-			if registers.a0 ~= registers.a1 then
-				do
-					PC = 5
-					continue
-				end
-			end
-			do
-				PC = 4
-				continue
-			end
-			PC += 1
-		end
-		if PC == 4 then -- .LBB0_3
-			registers.a0 = 1
-			writei32(memory, registers.s0+-12, registers.a0)
-			do
-				PC = 8
-				continue
-			end
-			PC += 1
-		end
-		if PC == 5 then -- .LBB0_4
-			registers.a0 = readi32(memory, registers.s0+-16)
-			registers.a0 = registers.a0 + -1
-			if functions["fibonacci"] then
-				functions["fibonacci"]()
-				PC = 6
-				continue
 			else
-				do
-					registers.ra = 6
-					PC = 1
-					continue
-				end
+				error("No bindings for functions 'printf'")
 			end
 			PC += 1
-		end
-		if PC == 6 then -- .LBB0_4 (extended) 
+		end -- main (main)
+		if PC == 2 then -- main (extended) 
+			-- lw ([{0 true a0 } {-52 true s0 }])
+			registers.a0 = readi32(memory, registers.s0+-52)
+			-- sw ([{0 true a0 } {-20 true s0 }])
 			writei32(memory, registers.s0+-20, registers.a0)
-			registers.a0 = readi32(memory, registers.s0+-16)
-			registers.a0 = registers.a0 + -2
-			if functions["fibonacci"] then
-				functions["fibonacci"]()
-				PC = 7
+			-- j ([{0 false .LBB0_1 }])
+			do
+				PC = 3 -- .LBB0_1
 				continue
-			else
+			end
+			PC += 1
+		end -- main_end (main_end)
+		if PC == 3 then -- .LBB0_1
+			-- lw ([{0 true a0 } {-20 true s0 }])
+			registers.a0 = readi32(memory, registers.s0+-20)
+			-- lw ([{0 true a1 } {-16 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-16)
+			-- bge ([{0 true a0 } {0 true a1 } {0 false .LBB0_7 }])
+			if registers.a0 >= registers.a1 then
 				do
-					registers.ra = 7
-					PC = 1
+					PC = 10 -- .LBB0_7
 					continue
 				end
 			end
-			PC += 1
-		end
-		if PC == 7 then -- .LBB0_4_end (extended) 
-			registers.a1 = registers.a0
-			registers.a0 = readi32(memory, registers.s0+-20)
-			registers.a0 = registers.a0 + registers.a1
-			writei32(memory, registers.s0+-12, registers.a0)
+			-- j ([{0 false .LBB0_2 }])
 			do
+				PC = 4 -- .LBB0_2
+				continue
+			end
+			PC += 1
+		end -- .LBB0_1 (.LBB0_1)
+		if PC == 4 then -- .LBB0_2
+			-- lw ([{0 true a1 } {-20 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-20)
+			-- li ([{0 true a0 } {0 false 1 }])
+			registers.a0 = 1
+			-- blt ([{0 true a0 } {0 true a1 } {0 false .LBB0_4 }])
+			if registers.a0 < registers.a1 then
+				do
+					PC = 6 -- .LBB0_4
+					continue
+				end
+			end
+			-- j ([{0 false .LBB0_3 }])
+			do
+				PC = 5 -- .LBB0_3
+				continue
+			end
+			PC += 1
+		end -- .LBB0_2 (.LBB0_2)
+		if PC == 5 then -- .LBB0_3
+			-- lw ([{0 true a1 } {-20 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-20)
+			-- srai ([{0 true a0 } {0 true a1 } {0 false 31 }])
+			registers.a0 = band(arshift(registers.a1, 31), 0xFFFFFFFF)
+			-- sw ([{0 true a1 } {-48 true s0 }])
+			writei32(memory, registers.s0+-48, registers.a1)
+			-- sw ([{0 true a0 } {-44 true s0 }])
+			writei32(memory, registers.s0+-44, registers.a0)
+			-- j ([{0 false .LBB0_5 }])
+			do
+				PC = 7 -- .LBB0_5
+				continue
+			end
+			PC += 1
+		end -- .LBB0_3 (.LBB0_3)
+		if PC == 6 then -- .LBB0_4
+			-- lw ([{0 true a2 } {-32 true s0 }])
+			registers.a2 = readi32(memory, registers.s0+-32)
+			-- lw ([{0 true a0 } {-28 true s0 }])
+			registers.a0 = readi32(memory, registers.s0+-28)
+			-- lw ([{0 true a1 } {-40 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-40)
+			-- lw ([{0 true a3 } {-36 true s0 }])
+			registers.a3 = readi32(memory, registers.s0+-36)
+			-- add ([{0 true a0 } {0 true a0 } {0 true a3 }])
+			registers.a0 = registers.a0 + registers.a3
+			-- add ([{0 true a1 } {0 true a2 } {0 true a1 }])
+			registers.a1 = registers.a2 + registers.a1
+			-- sltu ([{0 true a2 } {0 true a1 } {0 true a2 }])
+			registers.a2 = if (registers.a1 < registers.a2) then 1 else 0
+			-- add ([{0 true a0 } {0 true a0 } {0 true a2 }])
+			registers.a0 = registers.a0 + registers.a2
+			-- sw ([{0 true a1 } {-48 true s0 }])
+			writei32(memory, registers.s0+-48, registers.a1)
+			-- sw ([{0 true a0 } {-44 true s0 }])
+			writei32(memory, registers.s0+-44, registers.a0)
+			-- lw ([{0 true a0 } {-40 true s0 }])
+			registers.a0 = readi32(memory, registers.s0+-40)
+			-- lw ([{0 true a1 } {-36 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-36)
+			-- sw ([{0 true a1 } {-28 true s0 }])
+			writei32(memory, registers.s0+-28, registers.a1)
+			-- sw ([{0 true a0 } {-32 true s0 }])
+			writei32(memory, registers.s0+-32, registers.a0)
+			-- lw ([{0 true a0 } {-48 true s0 }])
+			registers.a0 = readi32(memory, registers.s0+-48)
+			-- lw ([{0 true a1 } {-44 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-44)
+			-- sw ([{0 true a1 } {-36 true s0 }])
+			writei32(memory, registers.s0+-36, registers.a1)
+			-- sw ([{0 true a0 } {-40 true s0 }])
+			writei32(memory, registers.s0+-40, registers.a0)
+			-- j ([{0 false .LBB0_5 }])
+			do
+				PC = 7 -- .LBB0_5
+				continue
+			end
+			PC += 1
+		end -- .LBB0_4 (.LBB0_4)
+		if PC == 7 then -- .LBB0_5
+			-- lw ([{0 true a1 } {-48 true s0 }])
+			registers.a1 = readi32(memory, registers.s0+-48)
+			-- lui ([{0 true a0 } {0 false .L.str.1 hi}])
+			registers.a0 = hi(data[".L.str.1"])
+			-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str.1 lo}])
+			registers.a0 = registers.a0 + lo(data[".L.str.1"])
+			-- call ([{0 false printf }])
+			if functions["printf"] then
+				functions["printf"]()
 				PC = 8
 				continue
-			end
-			PC += 1
-		end
-		if PC == 8 then -- .LBB0_5
-			registers.a0 = readi32(memory, registers.s0+-12)
-			registers.ra = readi32(memory, registers.sp+28)
-			registers.s0 = readi32(memory, registers.sp+24)
-			registers.sp = registers.sp + 32
-			if registers.ra ~= 0 then
-				PC = registers.ra
-				registers.ra = 0
-				continue
 			else
-				PC = 0
-				continue
+				error("No bindings for functions 'printf'")
 			end
 			PC += 1
-		end
-		if PC == 9 then -- .Lfunc_end0
-			PC += 1
-		end
-		if PC == 10 then -- main
-			registers.sp = registers.sp + -48
-			writei32(memory, registers.sp+44, registers.ra)
-			writei32(memory, registers.sp+40, registers.s0)
-			registers.s0 = registers.sp + 48
-			registers.a0 = 0
-			writei32(memory, registers.s0+-12, registers.a0)
-			registers.a1 = 12
-			writei32(memory, registers.s0+-16, registers.a1)
-			registers.a1 = readi32(memory, registers.s0+-16)
-			registers.a2 = registers.sp
-			writei32(memory, registers.s0+-20, registers.a2)
-			registers.a2 = band(lshift(registers.a1, 2), 0xFFFFFFFF)
-			registers.a2 = registers.a2 + 15
-			registers.a3 = band(registers.a2, -16)
-			registers.a2 = registers.sp
-			registers.a2 = registers.a2 - registers.a3
-			writei32(memory, registers.s0+-36, registers.a2)
-			registers.sp = registers.a2
-			writei32(memory, registers.s0+-24, registers.a1)
-			writei32(memory, registers.s0+-28, registers.a0)
+		end -- .LBB0_5 (.LBB0_5)
+		if PC == 8 then -- .LBB0_5 (extended) 
+			-- j ([{0 false .LBB0_6 }])
 			do
-				PC = 11
+				PC = 9 -- .LBB0_6
 				continue
 			end
 			PC += 1
-		end
-		if PC == 11 then -- .LBB1_1
-			registers.a0 = readi32(memory, registers.s0+-28)
-			registers.a1 = readi32(memory, registers.s0+-16)
-			if registers.a0 >= registers.a1 then
-				do
-					PC = 15
-					continue
-				end
-			end
-			do
-				PC = 12
-				continue
-			end
-			PC += 1
-		end
-		if PC == 12 then -- .LBB1_2
-			registers.a0 = readi32(memory, registers.s0+-28)
-			if functions["fibonacci"] then
-				functions["fibonacci"]()
-				PC = 13
-				continue
-			else
-				do
-					registers.ra = 13
-					PC = 1
-					continue
-				end
-			end
-			PC += 1
-		end
-		if PC == 13 then -- .LBB1_2 (extended) 
-			registers.a1 = readi32(memory, registers.s0+-36)
-			registers.a2 = readi32(memory, registers.s0+-28)
-			registers.a2 = band(lshift(registers.a2, 2), 0xFFFFFFFF)
-			registers.a1 = registers.a1 + registers.a2
-			writei32(memory, registers.a1, registers.a0)
-			do
-				PC = 14
-				continue
-			end
-			PC += 1
-		end
-		if PC == 14 then -- .LBB1_3
-			registers.a0 = readi32(memory, registers.s0+-28)
-			registers.a0 = registers.a0 + 1
-			writei32(memory, registers.s0+-28, registers.a0)
-			do
-				PC = 11
-				continue
-			end
-			PC += 1
-		end
-		if PC == 15 then -- .LBB1_4
-			registers.a0 = 0
-			writei32(memory, registers.s0+-32, registers.a0)
-			do
-				PC = 16
-				continue
-			end
-			PC += 1
-		end
-		if PC == 16 then -- .LBB1_5
-			registers.a0 = readi32(memory, registers.s0+-32)
-			registers.a1 = readi32(memory, registers.s0+-16)
-			if registers.a0 >= registers.a1 then
-				do
-					PC = 19
-					continue
-				end
-			end
-			do
-				PC = 17
-				continue
-			end
-			PC += 1
-		end
-		if PC == 17 then -- .LBB1_6
-			do
-				PC = 18
-				continue
-			end
-			PC += 1
-		end
-		if PC == 18 then -- .LBB1_7
-			registers.a0 = readi32(memory, registers.s0+-32)
-			registers.a0 = registers.a0 + 1
-			writei32(memory, registers.s0+-32, registers.a0)
-			do
-				PC = 16
-				continue
-			end
-			PC += 1
-		end
-		if PC == 19 then -- .LBB1_8
-			registers.a0 = 0
-			writei32(memory, registers.s0+-12, registers.a0)
+		end -- .LBB0_5_end (.LBB0_5_end)
+		if PC == 9 then -- .LBB0_6
+			-- lw ([{0 true a0 } {-20 true s0 }])
 			registers.a0 = readi32(memory, registers.s0+-20)
-			registers.sp = registers.a0
-			registers.a0 = readi32(memory, registers.s0+-12)
-			registers.sp = registers.s0 + -48
-			registers.ra = readi32(memory, registers.sp+44)
-			registers.s0 = readi32(memory, registers.sp+40)
-			registers.sp = registers.sp + 48
+			-- addi ([{0 true a0 } {0 true a0 } {0 false 1 }])
+			registers.a0 = registers.a0 + 1
+			-- sw ([{0 true a0 } {-20 true s0 }])
+			writei32(memory, registers.s0+-20, registers.a0)
+			-- j ([{0 false .LBB0_1 }])
+			do
+				PC = 3 -- .LBB0_1
+				continue
+			end
+			PC += 1
+		end -- .LBB0_6 (.LBB0_6)
+		if PC == 10 then -- .LBB0_7
+			-- lui ([{0 true a0 } {0 false .L.str.2 hi}])
+			registers.a0 = hi(data[".L.str.2"])
+			-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str.2 lo}])
+			registers.a0 = registers.a0 + lo(data[".L.str.2"])
+			-- call ([{0 false printf }])
+			if functions["printf"] then
+				functions["printf"]()
+				PC = 11
+				continue
+			else
+				error("No bindings for functions 'printf'")
+			end
+			PC += 1
+		end -- .LBB0_7 (.LBB0_7)
+		if PC == 11 then -- .LBB0_7 (extended) 
+			-- li ([{0 true a0 } {0 false 0 }])
+			registers.a0 = 0
+			-- lw ([{0 true ra } {60 true sp }])
+			registers.ra = readi32(memory, registers.sp+60)
+			-- lw ([{0 true s0 } {56 true sp }])
+			registers.s0 = readi32(memory, registers.sp+56)
+			-- addi ([{0 true sp } {0 true sp } {0 false 64 }])
+			registers.sp = registers.sp + 64
+			-- ret ([])
 			if registers.ra ~= 0 then
 				PC = registers.ra
 				registers.ra = 0
@@ -446,22 +438,24 @@ function main()
 				continue
 			end
 			PC += 1
-		end
-		if PC == 20 then -- .Lfunc_end1
+		end -- .LBB0_7_end (.LBB0_7_end)
+		if PC == 12 then -- .Lfunc_end0
 			PC += 1
-		end
-		if (not PC) or PC == 0 or PC > 20 then
+		end -- .Lfunc_end0 (.Lfunc_end0)
+		if PC == 13 then -- .L.str
+			PC += 1
+		end -- .L.str (.L.str)
+		if PC == 14 then -- .L.str.1
+			PC += 1
+		end -- .L.str.1 (.L.str.1)
+		if PC == 15 then -- .L.str.2
+			PC += 1
+		end -- .L.str.2 (.L.str.2)
+		if (not PC) or PC == 0 or PC > 15 then
 			break
 		end
 	end
 end
+init()
+main()
 
-return {
-    Name = "RISCV File",
-
-    BeforeEach = init,
-
-    Functions = {
-        ["main"] = main,
-    }
-}

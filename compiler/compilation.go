@@ -62,6 +62,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	/*** descendants */
 	"remu":  rem,
 	"mulh":  mulh,
+	"mulhu": mulh,
 	"mulsu": mulh,
 	"mulu":  mulh,
 	"divu":  div,
@@ -120,7 +121,6 @@ var directives = map[string]func(*OutputWriter, []string){
 	".word":   word,
 	".byte":   byte_,
 	".half":   half,
-	".globl":  globl,
 }
 
 func generateRegistryMap(m map[string]bool) string {
@@ -180,6 +180,7 @@ func BeforeCompilation(writer *OutputWriter) {
 			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
 		}
 	}
+	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.MainSymbol))
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
 

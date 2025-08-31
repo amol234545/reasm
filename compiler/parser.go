@@ -29,7 +29,7 @@ type AssemblyCommand struct {
 	Arguments []Argument
 }
 
-func Parse(command string) AssemblyCommand {
+func Parse(writer *OutputWriter, command string) AssemblyCommand {
 	// Remove comments
 	if idx := strings.IndexAny(command, ";#"); idx != -1 {
 		command = command[:idx]

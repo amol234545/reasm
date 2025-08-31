@@ -1,25 +1,25 @@
-void printf(const char *, ...);
+int printf(const char *, ...);
 
-int fibonacci(int n) {
-    if (n <= 0) return 0;
-    if (n == 1) return 1;
-    return fibonacci(n - 1) + fibonacci(n - 2);
-}
+#include <stdio.h>
 
 int main() {
-    int n = 12;  // hardcoded value
-    int fib_sequence[n];
+    int n, i;
+    n=10;
+    long long first = 0, second = 1, next;
 
-    // Fill array with Fibonacci numbers
-    for (int i = 0; i < n; i++) {
-        fib_sequence[i] = fibonacci(i);
+    printf("Fibonacci Sequence: ");
+
+    for (i = 0; i < n; i++) {
+        if (i <= 1)
+            next = i;
+        else {
+            next = first + second;
+            first = second;
+            second = next;
+        }
+        printf("%d ", (int)next);
     }
 
-    // Print the sequence
-    //printf("Fibonacci sequence up to %d terms: ", n);
-    for (int i = 0; i < n; i++) {
-        //printf("%d ", fib_sequence[i]);
-    }
-
+    printf("\n");
     return 0;
 }

@@ -26,6 +26,7 @@ type OutputWriter struct {
 	MaxPC                    int               /* used for counting PC which is hardcoded in */
 	Commands                 []AssemblyCommand /* used to check lines in the future */
 	Mode                     string            /* generation mode */
+	MainSymbol               string            /* entry point symbol */
 
 	/* debug options */
 	DebugPC       bool /* code will print the program counter */

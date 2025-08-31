@@ -5,30 +5,30 @@ import (
 )
 
 type Options struct {
-	Comments bool
-	Trace    bool
-	Mode     string
+	Comments   bool
+	Trace      bool
+	Mode       string
+	MainSymbol string
 }
 
-func Compile(assembly []byte, lang string, options Options) []byte {
-	var assembly_str string = string(assembly)
-
-	lines := strings.Split(assembly_str, "\n")
-
+func Compile(assemblyFiles [][]byte, lang string, options Options) []byte {
 	/* prepare */
-	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0, MaxPC: 1, DebugPC: options.Trace, DebugComments: options.Comments, Mode: options.Mode}
+	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0, MaxPC: 1, DebugPC: options.Trace, DebugComments: options.Comments, Mode: options.Mode, MainSymbol: options.MainSymbol}
 
-	/* parse */
-	var commands []AssemblyCommand
-	for _, line := range lines {
-		var command AssemblyCommand = Parse(line)
-		commands = append(commands, command)
+	for _, assembly := range assemblyFiles {
+		var assembly_str string = string(assembly)
+		lines := strings.Split(assembly_str, "\n")
+
+		/* parse */
+		for _, line := range lines {
+			var command AssemblyCommand = Parse(writer, line)
+			writer.Commands = append(writer.Commands, command)
+		}
 	}
-	writer.Commands = commands
 
 	/* compilation */
 	BeforeCompilation(writer)
-	for _, command := range commands {
+	for _, command := range writer.Commands {
 		CompileInstruction(writer, command)
 	}
 	return AfterCompilation(writer)

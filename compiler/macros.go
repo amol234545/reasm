@@ -84,6 +84,3 @@ func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap wit
 
 	w.MemoryDevelopmentPointer += 1
 }
-func globl(w *OutputWriter, components []string) {
-	WriteIndentedString(w, "PC = %d\n", FindLabelAddress(w, components[1]))
-}
