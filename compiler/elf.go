@@ -8,6 +8,7 @@ import (
 )
 
 func ParseFromElf(f *elf.File) []AssemblyCommand {
+	/* validate file */
 	if f.Class != elf.ELFCLASS32 {
 		panic("ELF file is not 32-bit.")
 	} else if f.Machine != elf.EM_RISCV {
@@ -18,11 +19,18 @@ func ParseFromElf(f *elf.File) []AssemblyCommand {
 		panic("ELF file is not an executable.")
 	}
 
-	/* TODO: parse the actual data of the file  */
-	code := []byte{
-		0x93, 0x00, 0x10, 0x00, // addi x1, x0, 1
-		0x13, 0x01, 0x20, 0x00, // addi x2, x0, 2
+	/* look for bytecode */
+	text := f.Section(".text")
+	if text == nil {
+		panic(".text section not found")
 	}
+
+	code, err := text.Data()
+	if err != nil {
+		panic(err)
+	}
+
+	/* TODO: parse the actual data of the file  */
 	for i := 0; i < len(code); i += 4 { // RISC-V instructions are 4 bytes
 		inst, err := riscv64asm.Decode(code[i : i+4])
 		if err != nil {
