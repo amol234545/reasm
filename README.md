@@ -8,7 +8,7 @@
 - Handle overflows correctly.
 ## Example:
 ```c
-void printf(const char *, ...); /* manually define printf if we are not using stdlib.h which does often include unsupported functions */
+void printf(const char *, ...); /* manually define printf if we are not using stdlib.h */
 
 int fib(int n) {
     if (n <= 1)
@@ -30,7 +30,7 @@ int main() {
 }
 ```
 ```bash
-clang -S -Oz -target riscv32 -march=rv32im main.c -o main.s
+clang -S -target riscv32 -march=rv32im main.c -o main.s
 asmdecomp main.s -o main.luau # where the magic happens
 luau main.luau
 ```
