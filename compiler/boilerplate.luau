@@ -37,8 +37,7 @@ local functions = {
 }
 
 --- Variables
-local PC = -1 -- where the next iteration shall goto
-local init = true -- becomes false when the buffer is polluted with static data, and labels are assigned
+local PC = 1 -- current position
 
 --- Utility
 local function idiv_trunc(a, b)

@@ -3,9 +3,6 @@
 > Heavy optimizations (like `-O2`) will not work, it tends to use MIPS instructions rather than RISCV which are not supported.
 
 ## TODO:
-- Analyze and remove labels automatically if they are empty or only filled with directives
-- Allow toplevel directives so we dont need a `init` variable in the cycle.
-- Define main function from `globl` directive, do not presume main.
 - Floating point & Double support
 - Work on support with a linker, need to figure out system calls & defining calls that ASM will presume exist (ex: `printf`).
 - Add all pseudo-instructions.

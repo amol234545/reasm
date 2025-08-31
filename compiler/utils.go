@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-func ReadAttribute(attribute string) []string {
+func ReadDirective(directive string) []string {
 	// Regex: match either "quoted strings" or sequences of non-comma, non-whitespace characters
 	re := regexp.MustCompile(`"([^"]*)"|[^,\s]+`)
-	matches := re.FindAllString(attribute, -1)
+	matches := re.FindAllString(directive, -1)
 
 	// Remove quotes and trim spaces
 	for i, match := range matches {
@@ -75,11 +75,10 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 }
 func CutAndLink(w *OutputWriter) {
 	AddEnd(w)
-	WriteIndentedString(w, "if PC == %d and not init then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
+	WriteIndentedString(w, "if PC == %d then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
 	w.MaxPC++
 	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
-	w.Labels = append(w.Labels, w.CurrentLabel)
 }
 func FindInArray(array []string, target string) int {
 	for i, item := range array {
@@ -105,4 +104,23 @@ func FindLabelAddress(writer *OutputWriter, target string) int {
 		}
 	}
 	return -1
+}
+
+func IsLabelEmpty(writer *OutputWriter, label string) bool {
+	reachedLabel := false
+	for _, command := range writer.Commands {
+		if command.Type == Instruction && reachedLabel { /* found something in our bounds */
+			return true
+		}
+
+		if command.Type == Label {
+			if command.Name == label { /* it is our turn! */
+				reachedLabel = true
+			} else if reachedLabel { /* we passed another label, our time is up */
+				return false
+			}
+		}
+	}
+
+	return false
 }

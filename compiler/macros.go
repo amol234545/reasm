@@ -7,20 +7,19 @@ import (
 )
 
 func label(w *OutputWriter, command AssemblyCommand) {
+	// if IsLabelEmpty(w, command.Name) {
+	// 	return
+	// }
+
 	/* end previous label */
 	AddEnd(w)
 
 	/* define it */
 	w.CurrentLabel = command.Name
 
-	if strings.HasPrefix(command.Name, ".L.") || strings.HasPrefix(command.Name, ".L_") {
-		WriteIndentedString(w, "if init then -- %s (initialization)\n", command.Name)
-	} else {
-		WriteIndentedString(w, "if PC == %d and not init then -- %s (runtime) \n", w.MaxPC, command.Name)
-	}
+	WriteIndentedString(w, "if PC == %d then -- %s\n", w.MaxPC, command.Name)
 	w.Depth++
 	w.MaxPC++
-	w.Labels = append(w.Labels, command.Name)
 }
 
 func asciz(w *OutputWriter, components []string) {
@@ -84,4 +83,7 @@ func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap wit
 	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
 
 	w.MemoryDevelopmentPointer += 1
+}
+func globl(w *OutputWriter, components []string) {
+	WriteIndentedString(w, "PC = %d\n", FindLabelAddress(w, components[1]))
 }

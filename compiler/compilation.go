@@ -148,13 +148,14 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fnmadd.s": fnmadd,
 	"fnmsub.s": fnmsub,
 }
-var attributes = map[string]func(*OutputWriter, []string){
+var directives = map[string]func(*OutputWriter, []string){
 	".asciz":  asciz,
 	".string": asciz,
 	".size":   size,
 	".word":   word,
 	".byte":   byte_,
 	".half":   half,
+	".globl":  globl,
 }
 
 func generateRegistryMap(m map[string]bool) string {
@@ -192,33 +193,33 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 		} else {
 			WriteIndentedString(writer, "-- unknown instruction: %s (%v)\n", command.Name, command.Arguments)
 		}
-	case Attribute:
-		attributeComponents := ReadAttribute(command.Name)
-		attributeName := attributeComponents[0]
-		if _, ok := attributes[attributeName]; ok {
-			attributes[attributeName](writer, attributeComponents)
-		} else if writer.DebugComments {
-			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
-		}
 	case Label:
 		label(writer, command)
 	}
 }
 func BeforeCompilation(writer *OutputWriter) {
+
+	/* load directives */
+	for _, command := range writer.Commands {
+		if command.Type != Directive {
+			continue
+		}
+
+		attributeComponents := ReadDirective(command.Name)
+		attributeName := attributeComponents[0]
+		if _, ok := directives[attributeName]; ok {
+			directives[attributeName](writer, attributeComponents)
+		} else if writer.DebugComments {
+			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
+		}
+	}
+
+	/* start code */
 	WriteIndentedString(writer, "while PC ~= 0 do\n")
 	writer.Depth++
 }
 func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
-
-	// load the label names
-	WriteIndentedString(writer, "if init then\n")
-	writer.Depth++
-	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, "main"))
-	writer.Depth--
-	WriteIndentedString(writer, "end\n")
-
-	WriteIndentedString(writer, "init = false -- do not initialize again\n")
 
 	// check if invalid PC, then break
 	if writer.DebugComments {

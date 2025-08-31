@@ -20,7 +20,7 @@ type CommandType uint8
 const (
 	Instruction CommandType = 0
 	Label       CommandType = 1
-	Attribute   CommandType = 2
+	Directive   CommandType = 2
 )
 
 type AssemblyCommand struct {
@@ -48,11 +48,11 @@ func Parse(command string) AssemblyCommand {
 		return AssemblyCommand{Type: Label, Name: name}
 	}
 
-	// Attribute (.something ...)
+	// Directive (.something ...)
 	if strings.HasPrefix(cmd, ".") {
 		name := cmd
 		args := make([]Argument, 0)
-		return AssemblyCommand{Type: Attribute, Name: name, Arguments: args}
+		return AssemblyCommand{Type: Directive, Name: name, Arguments: args}
 	}
 
 	// Regular instruction (command)

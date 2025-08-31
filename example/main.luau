@@ -134,8 +134,7 @@ local functions = {
 }
 
 --- Variables
-local PC = -1 -- where the next iteration shall goto
-local init = true -- becomes false when the buffer is polluted with static data, and labels are assigned
+local PC = 1 -- current position
 
 --- Utility
 local function idiv_trunc(a, b)
@@ -222,32 +221,21 @@ local floor = math.floor
 
 registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
+PC = 1
+writestring(memory, 0, "For loop:\0")
+data[".L.str"] = 0
+writestring(memory, 10, "%d\0")
+data[".L.str.1"] = 10
 while PC ~= 0 do
-	-- ASM DIRECTIVE: .attribute	4, 16
-	-- ASM DIRECTIVE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
-	-- ASM DIRECTIVE: .file	"main.c"
-	-- ASM DIRECTIVE: .text
-	-- ASM DIRECTIVE: .globl	main
-	-- ASM DIRECTIVE: .p2align	2
-	-- ASM DIRECTIVE: .type	main,@function
-	if PC == 1 and not init then -- main (runtime) 
-		-- addi ([{0 true sp } {0 true sp } {0 false -16 }])
+	if PC == 1 then -- main
 		registers.sp = registers.sp + -16
-		-- sw ([{0 true ra } {12 true sp }])
 		writei32(memory, registers.sp+12, registers.ra)
-		-- sw ([{0 true s0 } {8 true sp }])
 		writei32(memory, registers.sp+8, registers.s0)
-		-- addi ([{0 true s0 } {0 true sp } {0 false 16 }])
 		registers.s0 = registers.sp + 16
-		-- li ([{0 true a0 } {0 false 0 }])
 		registers.a0 = 0
-		-- sw ([{0 true a0 } {-12 true s0 }])
 		writei32(memory, registers.s0+-12, registers.a0)
-		-- lui ([{0 true a0 } {0 false .L.str hi}])
 		registers.a0 = hi(data[".L.str"])
-		-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str lo}])
 		registers.a0 = registers.a0 + lo(data[".L.str"])
-		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]()
 			PC = 2
@@ -255,51 +243,40 @@ while PC ~= 0 do
 		else
 			do
 				registers.ra = 2
-				PC = -1 -- printf
+				PC = -1
 				continue
 			end
 		end
 		PC += 1
-	end -- main (main)
-	if PC == 2 and not init then -- main (extended) 
-		-- li ([{0 true a0 } {0 false 1 }])
+	end
+	if PC == 2 then -- main (extended) 
 		registers.a0 = 1
-		-- sw ([{0 true a0 } {-16 true s0 }])
 		writei32(memory, registers.s0+-16, registers.a0)
-		-- j ([{0 false .LBB0_1 }])
 		do
-			PC = 3 -- .LBB0_1
+			PC = 3
 			continue
 		end
 		PC += 1
-	end -- main_end (main_end)
-	if PC == 3 and not init then -- .LBB0_1 (runtime) 
-		-- lw ([{0 true a1 } {-16 true s0 }])
+	end
+	if PC == 3 then -- .LBB0_1
 		registers.a1 = readi32(memory, registers.s0+-16)
-		-- li ([{0 true a0 } {0 false 5 }])
 		registers.a0 = 5
-		-- blt ([{0 true a0 } {0 true a1 } {0 false .LBB0_4 }])
 		if registers.a0 < registers.a1 then
 			do
-				PC = 7 -- .LBB0_4
+				PC = 7
 				continue
 			end
 		end
-		-- j ([{0 false .LBB0_2 }])
 		do
-			PC = 4 -- .LBB0_2
+			PC = 4
 			continue
 		end
 		PC += 1
-	end -- .LBB0_1 (.LBB0_1)
-	if PC == 4 and not init then -- .LBB0_2 (runtime) 
-		-- lw ([{0 true a1 } {-16 true s0 }])
+	end
+	if PC == 4 then -- .LBB0_2
 		registers.a1 = readi32(memory, registers.s0+-16)
-		-- lui ([{0 true a0 } {0 false .L.str.1 hi}])
 		registers.a0 = hi(data[".L.str.1"])
-		-- addi ([{0 true a0 } {0 true a0 } {0 false .L.str.1 lo}])
 		registers.a0 = registers.a0 + lo(data[".L.str.1"])
-		-- call ([{0 false printf }])
 		if functions["printf"] then
 			functions["printf"]()
 			PC = 5
@@ -307,44 +284,34 @@ while PC ~= 0 do
 		else
 			do
 				registers.ra = 5
-				PC = -1 -- printf
+				PC = -1
 				continue
 			end
 		end
 		PC += 1
-	end -- .LBB0_2 (.LBB0_2)
-	if PC == 5 and not init then -- .LBB0_2 (extended) 
-		-- j ([{0 false .LBB0_3 }])
+	end
+	if PC == 5 then -- .LBB0_2 (extended) 
 		do
-			PC = 6 -- .LBB0_3
+			PC = 6
 			continue
 		end
 		PC += 1
-	end -- .LBB0_2_end (.LBB0_2_end)
-	if PC == 6 and not init then -- .LBB0_3 (runtime) 
-		-- lw ([{0 true a0 } {-16 true s0 }])
+	end
+	if PC == 6 then -- .LBB0_3
 		registers.a0 = readi32(memory, registers.s0+-16)
-		-- addi ([{0 true a0 } {0 true a0 } {0 false 1 }])
 		registers.a0 = registers.a0 + 1
-		-- sw ([{0 true a0 } {-16 true s0 }])
 		writei32(memory, registers.s0+-16, registers.a0)
-		-- j ([{0 false .LBB0_1 }])
 		do
-			PC = 3 -- .LBB0_1
+			PC = 3
 			continue
 		end
 		PC += 1
-	end -- .LBB0_3 (.LBB0_3)
-	if PC == 7 and not init then -- .LBB0_4 (runtime) 
-		-- li ([{0 true a0 } {0 false 0 }])
+	end
+	if PC == 7 then -- .LBB0_4
 		registers.a0 = 0
-		-- lw ([{0 true ra } {12 true sp }])
 		registers.ra = readi32(memory, registers.sp+12)
-		-- lw ([{0 true s0 } {8 true sp }])
 		registers.s0 = readi32(memory, registers.sp+8)
-		-- addi ([{0 true sp } {0 true sp } {0 false 16 }])
 		registers.sp = registers.sp + 16
-		-- ret ([])
 		if registers.ra ~= 0 then
 			PC = registers.ra
 			registers.ra = 0
@@ -354,32 +321,16 @@ while PC ~= 0 do
 			continue
 		end
 		PC += 1
-	end -- .LBB0_4 (.LBB0_4)
-	if PC == 8 and not init then -- .Lfunc_end0 (runtime) 
-		-- ASM DIRECTIVE: .type	.L.str,@object
-		-- ASM DIRECTIVE: .section	.rodata.str1.1,"aMS",@progbits,1
-		PC += 1
-	end -- .Lfunc_end0 (.Lfunc_end0)
-	if init then -- .L.str (initialization)
-		writestring(memory, 0, "For loop:\0")
-		data[".L.str"] = 0
-		-- ASM DIRECTIVE: .type	.L.str.1,@object
-		PC += 1
-	end -- .L.str (.L.str)
-	if init then -- .L.str.1 (initialization)
-		writestring(memory, 10, "%d\0")
-		data[".L.str.1"] = 10
-		-- ASM DIRECTIVE: .ident	"Homebrew clang version 20.1.8"
-		-- ASM DIRECTIVE: .section	".note.GNU-stack","",@progbits
-		-- ASM DIRECTIVE: .addrsig
-		-- ASM DIRECTIVE: .addrsig_sym printf
-		PC += 1
-	end -- .L.str.1 (.L.str.1)
-	if init then
-		PC = 1
 	end
-	init = false -- do not initialize again
-	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 
+	if PC == 8 then -- .Lfunc_end0
+		PC += 1
+	end
+	if PC == 9 then -- .L.str
+		PC += 1
+	end
+	if PC == 10 then -- .L.str.1
+		PC += 1
+	end
 	if (not PC) or PC == 0 or PC > 10 then
 		break
 	end

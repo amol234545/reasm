@@ -16,7 +16,6 @@ func Compile(assembly []byte, lang string, options Options) []byte {
 
 	/* prepare */
 	var writer = &OutputWriter{Buffer: []byte(""), CurrentLabel: "", MemoryDevelopmentPointer: 0, MaxPC: 1, DebugPC: options.Trace, DebugComments: options.Comments}
-	BeforeCompilation(writer)
 
 	/* parse */
 	var commands []AssemblyCommand
@@ -27,10 +26,9 @@ func Compile(assembly []byte, lang string, options Options) []byte {
 	writer.Commands = commands
 
 	/* compilation */
+	BeforeCompilation(writer)
 	for _, command := range commands {
 		CompileInstruction(writer, command)
 	}
-
-	/* complete */
 	return AfterCompilation(writer)
 }
