@@ -198,7 +198,7 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 		if _, ok := attributes[attributeName]; ok {
 			attributes[attributeName](writer, attributeComponents)
 		} else if writer.DebugComments {
-			WriteIndentedString(writer, "-- ASM ATTRIBUTE: %s\n", command.Name)
+			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
 		}
 	case Label:
 		label(writer, command)
@@ -212,16 +212,9 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
 
 	// load the label names
-	WriteIndentedString(writer, "if init then -- load label names for quick access\n")
+	WriteIndentedString(writer, "if init then\n")
 	writer.Depth++
-	WriteIndentedString(writer, "labels = {\n")
-	writer.Depth++
-	for index, label := range writer.Labels {
-		WriteIndentedString(writer, "[\"%s\"] = %d,\n", label, index+1)
-	}
-	writer.Depth--
-	WriteIndentedString(writer, "}\n")
-	WriteIndentedString(writer, "PC = labels[\"main\"]\n")
+	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, "main"))
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
 

@@ -2,8 +2,7 @@
 --- API
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
-local data = {} -- pointers in memory to static data, ex: strings
-local labels = {}
+local data = {} -- pointers in memory to data, ex: strings
 local registers = {
 --{registers here}
 }

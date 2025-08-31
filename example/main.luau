@@ -2,8 +2,7 @@
 --- API
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
-local data = {} -- pointers in memory to static data, ex: strings
-local labels = {}
+local data = {} -- pointers in memory to data, ex: strings
 local registers = {
     ["a0"] = 0,
     ["a1"] = 0,
@@ -224,13 +223,13 @@ local floor = math.floor
 registers.sp = mem/2 -- start at the center.
 ---- Auto generated code starts here
 while PC ~= 0 do
-	-- ASM ATTRIBUTE: .attribute	4, 16
-	-- ASM ATTRIBUTE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
-	-- ASM ATTRIBUTE: .file	"main.c"
-	-- ASM ATTRIBUTE: .text
-	-- ASM ATTRIBUTE: .globl	main
-	-- ASM ATTRIBUTE: .p2align	2
-	-- ASM ATTRIBUTE: .type	main,@function
+	-- ASM DIRECTIVE: .attribute	4, 16
+	-- ASM DIRECTIVE: .attribute	5, "rv32i2p1_m2p0_zmmul1p0"
+	-- ASM DIRECTIVE: .file	"main.c"
+	-- ASM DIRECTIVE: .text
+	-- ASM DIRECTIVE: .globl	main
+	-- ASM DIRECTIVE: .p2align	2
+	-- ASM DIRECTIVE: .type	main,@function
 	if PC == 1 and not init then -- main (runtime) 
 		-- addi ([{0 true sp } {0 true sp } {0 false -16 }])
 		registers.sp = registers.sp + -16
@@ -256,7 +255,7 @@ while PC ~= 0 do
 		else
 			do
 				registers.ra = 2
-				PC = labels["printf"]
+				PC = -1 -- printf
 				continue
 			end
 		end
@@ -269,7 +268,7 @@ while PC ~= 0 do
 		writei32(memory, registers.s0+-16, registers.a0)
 		-- j ([{0 false .LBB0_1 }])
 		do
-			PC = labels[".LBB0_1"]
+			PC = 3 -- .LBB0_1
 			continue
 		end
 		PC += 1
@@ -282,13 +281,13 @@ while PC ~= 0 do
 		-- blt ([{0 true a0 } {0 true a1 } {0 false .LBB0_4 }])
 		if registers.a0 < registers.a1 then
 			do
-				PC = labels[".LBB0_4"]
+				PC = 7 -- .LBB0_4
 				continue
 			end
 		end
 		-- j ([{0 false .LBB0_2 }])
 		do
-			PC = labels[".LBB0_2"]
+			PC = 4 -- .LBB0_2
 			continue
 		end
 		PC += 1
@@ -308,7 +307,7 @@ while PC ~= 0 do
 		else
 			do
 				registers.ra = 5
-				PC = labels["printf"]
+				PC = -1 -- printf
 				continue
 			end
 		end
@@ -317,7 +316,7 @@ while PC ~= 0 do
 	if PC == 5 and not init then -- .LBB0_2 (extended) 
 		-- j ([{0 false .LBB0_3 }])
 		do
-			PC = labels[".LBB0_3"]
+			PC = 6 -- .LBB0_3
 			continue
 		end
 		PC += 1
@@ -331,7 +330,7 @@ while PC ~= 0 do
 		writei32(memory, registers.s0+-16, registers.a0)
 		-- j ([{0 false .LBB0_1 }])
 		do
-			PC = labels[".LBB0_1"]
+			PC = 3 -- .LBB0_1
 			continue
 		end
 		PC += 1
@@ -357,39 +356,27 @@ while PC ~= 0 do
 		PC += 1
 	end -- .LBB0_4 (.LBB0_4)
 	if PC == 8 and not init then -- .Lfunc_end0 (runtime) 
-		-- ASM ATTRIBUTE: .type	.L.str,@object
-		-- ASM ATTRIBUTE: .section	.rodata.str1.1,"aMS",@progbits,1
+		-- ASM DIRECTIVE: .type	.L.str,@object
+		-- ASM DIRECTIVE: .section	.rodata.str1.1,"aMS",@progbits,1
 		PC += 1
 	end -- .Lfunc_end0 (.Lfunc_end0)
 	if init then -- .L.str (initialization)
 		writestring(memory, 0, "For loop:\0")
 		data[".L.str"] = 0
-		-- ASM ATTRIBUTE: .type	.L.str.1,@object
+		-- ASM DIRECTIVE: .type	.L.str.1,@object
 		PC += 1
 	end -- .L.str (.L.str)
 	if init then -- .L.str.1 (initialization)
 		writestring(memory, 10, "%d\0")
 		data[".L.str.1"] = 10
-		-- ASM ATTRIBUTE: .ident	"Homebrew clang version 20.1.8"
-		-- ASM ATTRIBUTE: .section	".note.GNU-stack","",@progbits
-		-- ASM ATTRIBUTE: .addrsig
-		-- ASM ATTRIBUTE: .addrsig_sym printf
+		-- ASM DIRECTIVE: .ident	"Homebrew clang version 20.1.8"
+		-- ASM DIRECTIVE: .section	".note.GNU-stack","",@progbits
+		-- ASM DIRECTIVE: .addrsig
+		-- ASM DIRECTIVE: .addrsig_sym printf
 		PC += 1
 	end -- .L.str.1 (.L.str.1)
-	if init then -- load label names for quick access
-		labels = {
-			["main"] = 1,
-			["main_end"] = 2,
-			[".LBB0_1"] = 3,
-			[".LBB0_2"] = 4,
-			[".LBB0_2_end"] = 5,
-			[".LBB0_3"] = 6,
-			[".LBB0_4"] = 7,
-			[".Lfunc_end0"] = 8,
-			[".L.str"] = 9,
-			[".L.str.1"] = 10,
-		}
-		PC = labels["main"]
+	if init then
+		PC = 1
 	end
 	init = false -- do not initialize again
 	-- if no PC, or invalid PC then break (look into alternative implementations in the future) 

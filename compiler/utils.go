@@ -61,7 +61,11 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 	if link {
 		WriteIndentedString(w, "registers.ra = %d\n", w.MaxPC)
 	}
-	WriteIndentedString(w, "PC = labels[\"%s\"]\n", label)
+	if w.DebugComments {
+		WriteIndentedString(w, "PC = %d -- %s\n", FindLabelAddress(w, label), label)
+	} else {
+		WriteIndentedString(w, "PC = %d\n", FindLabelAddress(w, label))
+	}
 	if w.DebugPC {
 		WriteIndentedString(w, "print(PC)\n")
 	}
@@ -81,6 +85,23 @@ func FindInArray(array []string, target string) int {
 	for i, item := range array {
 		if item == target {
 			return i
+		}
+	}
+	return -1
+}
+
+func isCutoffInstruction(instruction AssemblyCommand) bool {
+	return instruction.Type == Instruction && (instruction.Name == "call" || instruction.Name == "jal" || instruction.Name == "jalr")
+}
+
+func FindLabelAddress(writer *OutputWriter, target string) int {
+	countedLabels := 0
+	for _, label := range writer.Commands {
+		if label.Type == Label || isCutoffInstruction(label) {
+			countedLabels++ // our labels are Lua indexed starting at 1
+		}
+		if label.Type == Label && label.Name == target {
+			return countedLabels
 		}
 	}
 	return -1
