@@ -119,7 +119,6 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 var directives = map[string]func(*OutputWriter, []string){
 	".asciz":  asciz,
 	".string": asciz,
-	".size":   size,
 	".word":   word,
 	".byte":   byte_,
 	".half":   half,
@@ -170,6 +169,9 @@ func BeforeCompilation(writer *OutputWriter) {
 	WriteIndentedString(writer, "function init()\n")
 	writer.Depth++
 	for _, command := range writer.Commands {
+		if command.Type == Label {
+			writer.CurrentLabel = command.Name /* macros depend on label */
+		}
 		if command.Type != Directive {
 			continue
 		}
@@ -182,6 +184,7 @@ func BeforeCompilation(writer *OutputWriter) {
 			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
 		}
 	}
+	writer.CurrentLabel = ""
 	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.MainSymbol))
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")

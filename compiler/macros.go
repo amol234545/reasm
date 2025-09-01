@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -22,38 +21,23 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	w.MaxPC++
 }
 
+func save_pointer(w *OutputWriter) {
+	WriteIndentedString(w, "data[\"%s\"] = %d\n", w.CurrentLabel, int(w.MemoryDevelopmentPointer))
+}
+
 func asciz(w *OutputWriter, components []string) {
 	var data = strings.Trim(components[1], "\"")
 	w.PendingData.Data = data
 	w.PendingData.Type = PendingDataTypeString
-}
-func size(w *OutputWriter, components []string) {
-	data := w.PendingData.Data
-	dataType := w.PendingData.Type
 
-	macro := fmt.Sprintf("data[\"%s\"]", components[1])
-
-	if macro == "" {
-		return
-	}
-
-	if dataType == PendingDataTypeString {
-		/* define a string */
-		WriteIndentedString(w, "writestring(memory, %d, \"%s\\0\")\n", w.MemoryDevelopmentPointer, data)
-		WriteIndentedString(w, "%s = %d\n", macro, w.MemoryDevelopmentPointer)
-
-		w.MemoryDevelopmentPointer += int32(len(data) + 1)
-	} else if dataType == PendingDataTypeNumeric {
-		/* define a number */
-		dataInt, _ := strconv.Atoi(data)
-		WriteIndentedString(w, "%s = %d\n", macro, dataInt)
-	}
-
-	w.PendingData.Type = PendingDataTypeNone
+	WriteIndentedString(w, "writestring(memory, %d, \"%s\\0\")\n", w.MemoryDevelopmentPointer, data)
+	save_pointer(w)
+	w.MemoryDevelopmentPointer += int32(len(data) + 1)
 }
 func word(w *OutputWriter, components []string) {
 	if w.PendingData.Type != PendingDataTypeNumeric {
-		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer))
+		save_pointer(w)
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
@@ -64,7 +48,8 @@ func word(w *OutputWriter, components []string) {
 }
 func half(w *OutputWriter, components []string) {
 	if w.PendingData.Type != PendingDataTypeNumeric {
-		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer))
+		save_pointer(w)
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
@@ -75,7 +60,8 @@ func half(w *OutputWriter, components []string) {
 }
 func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap with the type */
 	if w.PendingData.Type != PendingDataTypeNumeric {
-		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer)) /* i lowkey dont wanna deal with string|number union somehow */
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer))
+		save_pointer(w)
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
