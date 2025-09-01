@@ -6,8 +6,8 @@ permissions:
 on:
   push:
     branches:
-      - main   # Trigger on commits to main branch
-  workflow_dispatch: # Optional manual trigger
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [linux, darwin, windows]
-        go: [1.21]  # Replace with your desired Go version
+        go: [1.21]
 
     steps:
       - name: Checkout repository
@@ -32,7 +32,14 @@ jobs:
           EXT=""
           if [ "$OS" = "windows" ]; then EXT=".exe"; fi
           mkdir -p build
-          go build -o build/reasm-$OS$EXT
+          # Set GOOS and GOARCH for cross-compilation
+          if [ "$OS" = "linux" ]; then
+            GOOS=linux GOARCH=amd64 go build -o build/reasm-$OS$EXT
+          elif [ "$OS" = "darwin" ]; then
+            GOOS=darwin GOARCH=amd64 go build -o build/reasm-$OS$EXT
+          elif [ "$OS" = "windows" ]; then
+            GOOS=windows GOARCH=amd64 go build -o build/reasm-$OS$EXT
+          fi
 
       - name: Upload artifact for commits
         if: github.event_name == 'push' && github.ref_type != 'tag'
