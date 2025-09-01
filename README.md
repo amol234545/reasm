@@ -1,4 +1,6 @@
 # ReASM
+
+[Wiki](https://github.com/AsynchronousAI/reasm/wiki)
 > A **RISC-V IM** compatible assembler/disassembler to **Luau**.
 ## Example:
 ```c
