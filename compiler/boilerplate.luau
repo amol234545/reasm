@@ -60,6 +60,11 @@ end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+local function int_to_double(high, low)
+    local packed = string.pack("I4I4", high, low)
+    local d = string.unpack("d", packed)
+    return d
+end
 local function extract_args()
    return {
        registers.x10,
@@ -92,12 +97,17 @@ local function format_string(fmt, args)
 
     local result = fmt:gsub("%%([%d%.]*[dfs])", function(spec)
         local val = args[arg_index]
-        arg_index = arg_index + 1
+        arg_index += 1
 
         if spec:sub(-1) == "d" then
             return string.format("%d", val)
         elseif spec:sub(-1) == "f" then
-            return string.format("%"..spec, int_to_float(val))
+            arg_index+=1 -- skip for alignment
+            local low = args[arg_index]; arg_index+=1;
+            local high = args[arg_index]; arg_index+=1;
+            local float = int_to_double(high, low)
+
+            return string.format("%"..spec, float)
         elseif spec:sub(-1) == "s" then
             return read_string(val)
         else

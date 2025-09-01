@@ -124,6 +124,11 @@ end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
+local function int_to_double(high, low)
+    local packed = string.pack("I4I4", high, low)
+    local d = string.unpack("d", packed)
+    return d
+end
 local function extract_args()
    return {
        registers.x10,
@@ -156,12 +161,17 @@ local function format_string(fmt, args)
 
     local result = fmt:gsub("%%([%d%.]*[dfs])", function(spec)
         local val = args[arg_index]
-        arg_index = arg_index + 1
+        arg_index += 1
 
         if spec:sub(-1) == "d" then
             return string.format("%d", val)
         elseif spec:sub(-1) == "f" then
-            return string.format("%"..spec, int_to_float(val))
+            arg_index+=1 -- skip for alignment
+            local low = args[arg_index]; arg_index+=1;
+            local high = args[arg_index]; arg_index+=1;
+            local float = int_to_double(high, low)
+
+            return string.format("%"..spec, float)
         elseif spec:sub(-1) == "s" then
             return read_string(val)
         else
@@ -243,16 +253,28 @@ function main()
 			writei32(memory, registers.x2+24, registers.x8)
 			-- addi ([{0 true x8 } {0 true x2 } {0 false 32 }])
 			registers.x8 = registers.x2 + 32
-			-- lui ([{0 true x10 } {0 false 266752 }])
-			registers.x10 = 266752
+			-- lui ([{0 true x10 } {0 false 266880 }])
+			registers.x10 = lshift(266880, 12)
 			-- sw ([{0 true x10 } {-12 true s0 }])
 			writei32(memory, registers.x8+-12, registers.x10)
+			-- flw ([{0 true f15 } {-12 true s0 }])
+			registers["f15"] = readf32(memory, registers.x8+-12)
+			-- lui ([{0 true x10 } {0 false 264704 }])
+			registers.x10 = lshift(264704, 12)
+			-- fmv.w.x ([{0 true f14 } {0 true x10 }])
+			registers["f14"] = int_to_float(registers.x10)
+			-- fadd.s ([{0 true f15 } {0 true f15 } {0 true f14 }])
+			registers["f15"] = registers.f15 + registers.f14
+			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
+			registers["f15"] = registers.f15
+			-- fsd ([{0 true f15 } {-24 true s0 }])
+			writef64(memory, registers.x8+-24, registers.f15)
 			-- lw ([{0 true x12 } {-24 true s0 }])
 			registers.x12 = readi32(memory, registers.x8+-24)
 			-- lw ([{0 true x13 } {-20 true s0 }])
 			registers.x13 = readi32(memory, registers.x8+-20)
 			-- lui ([{0 true x10 } {0 false .L.str hi}])
-			registers.x10 = hi(data[".L.str"])
+			registers.x10 = lshift(hi(data[".L.str"]), 12)
 			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str lo}])
 			registers.x10 = registers.x10 + lo(data[".L.str"])
 			-- call ([{0 false printf }])

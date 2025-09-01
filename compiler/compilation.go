@@ -45,7 +45,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 
 	/*** variants */
 	"li":  li,
-	"lui": li,
+	"lui": lui,
 	"lbu": lbu,
 	"lhu": lhu,
 
@@ -111,11 +111,15 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltz":  sltz,
 
 	/* F extension */
-	// "flw": flw,
-	// "fsd": fsd,
+	"fadd.s": fadd_s,
+
+	/** Memory */
+	"flw": flw,
+	"fsd": fsd,
 
 	/** Conversion */
-	// "fcvt.d.s": fcvt_d_s,
+	"fmv.w.x":  fmv_w_x,
+	"fcvt.d.s": fcvt_d_s,
 
 	/* Abstraction */
 	"auipc": auipc,
