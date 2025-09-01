@@ -163,9 +163,13 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fnmsub.d": fnmsub,
 
 	/** Conversion */
-	"fmv.w.x":  fmv_w_x,
-	"fmv.x.w":  fmv_x_w,
-	"fcvt.d.s": fcvt_d_s,
+	"fmv.w.x":   fmv_w_x,
+	"fmv.x.w":   fmv_x_w,
+	"fcvt.w.s":  fcvt_w_s,
+	"fcvt.wu.s": fcvt_w_s,
+	"fcvt.s.w":  fcvt_s_w,
+	"fcvt.s.wu": fcvt_s_w,
+	"fcvt.d.s":  fcvt_d_s,
 
 	/* Abstraction */
 	"auipc": auipc,
