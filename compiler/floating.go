@@ -28,6 +28,17 @@ func fnmsub(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = -(%s) * %s - (%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]), CompileRegister(command.Arguments[3]))
 }
 
+/** Sign */
+func fsgnj(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = abs(%s) * sgn(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+}
+func fsgnjn(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = abs(%s) * -sgn(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+}
+func fsgnjx(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = %s * -sgn(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]))
+}
+
 /** Other math */
 func fsqrt(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = sqrt(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))

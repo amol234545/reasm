@@ -135,6 +135,14 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fld": fld,
 	"fsd": fsd,
 
+	/** Sign */
+	"fsgnj.s":  fsgnj,
+	"fsgnjn.s": fsgnjn,
+	"fsgnjx.s": fsgnjx,
+	"fsgnj.d":  fsgnj,
+	"fsgnjn.d": fsgnjn,
+	"fsgnjx.d": fsgnjx,
+
 	/** Comparators */
 	"feq.s": feq,
 	"flt.s": flt,
