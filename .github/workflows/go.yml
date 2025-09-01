@@ -3,9 +3,9 @@ name: Go Build
 on:
   push:
     tags:
-      - '*'    # Triggers on new tags (releases)
+      - '*'    # Trigger on new tags (releases)
     branches:
-      - main   # Triggers on commits to main branch
+      - main   # Trigger on commits to main branch
   workflow_dispatch: # Optional manual trigger
 
 jobs:
@@ -14,7 +14,8 @@ jobs:
     strategy:
       matrix:
         os: [linux, darwin, windows]
-        go: [1.21]  # Replace with the Go version you want
+        go: [1.21]  # Replace with your desired Go version
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -29,11 +30,12 @@ jobs:
           OS=${{ matrix.os }}
           EXT=""
           if [ "$OS" = "windows" ]; then EXT=".exe"; fi
+          mkdir -p build
           go build -o build/myapp-$OS$EXT
 
       - name: Upload artifact for commits
         if: github.event_name == 'push' && github.ref_type != 'tag'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: myapp-${{ matrix.os }}
           path: build/myapp-${{ matrix.os }}*
