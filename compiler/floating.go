@@ -79,3 +79,8 @@ func fmv_w_x(w *OutputWriter, command AssemblyCommand) {
 func fmv_x_w(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = float_to_int(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
 }
+
+/** Classify */
+func fclass(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "%s = fclass(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}

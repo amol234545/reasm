@@ -155,16 +155,58 @@ local function read_string(startPointer)
     until false
     return str
 end
+function fclass(x)
+    local result = 0
+
+    if x ~= x then
+        -- NaN
+        if x < 0 then
+            result = bit32.bor(result, bit32.lshift(1, 0)) -- -NaN
+        else
+            result = bit32.bor(result, bit32.lshift(1, 9)) -- +NaN
+        end
+    elseif x == math.huge then
+        result = bit32.bor(result, bit32.lshift(1, 8)) -- +Inf
+    elseif x == -math.huge then
+        result = bit32.bor(result, bit32.lshift(1, 1)) -- -Inf
+    elseif x == 0 then
+        if 1/x == math.huge then
+            result = bit32.bor(result, bit32.lshift(1, 5)) -- +Zero
+        else
+            result = bit32.bor(result, bit32.lshift(1, 4)) -- -Zero
+        end
+    else
+        local absx = math.abs(x)
+        local min_normal = 2.2250738585072014e-308 -- 2^-1022
+        if absx < min_normal then
+            if x > 0 then
+                result = bit32.bor(result, bit32.lshift(1, 6)) -- +Subnormal
+            else
+                result = bit32.bor(result, bit32.lshift(1, 3)) -- -Subnormal
+            end
+        else
+            if x > 0 then
+                result = bit32.bor(result, bit32.lshift(1, 7)) -- +Normal
+            else
+                result = bit32.bor(result, bit32.lshift(1, 2)) -- -Normal
+            end
+        end
+    end
+
+    return result
+end
 local function format_string(fmt, args)
     -- custom format string because strings are stored as pointers, and floats as ints.
     local arg_index = 1
 
-    local result = fmt:gsub("%%([%d%.]*[dfse])", function(spec)
+    local result = fmt:gsub("%%([%d%.]*[dfseX])", function(spec)
         local val = args[arg_index]
         arg_index += 1
 
         if spec:sub(-1) == "d" then
             return string.format("%d", val)
+        elseif spec:sub(-1) == "X" then
+            return string.format("%X", val)
         elseif spec:sub(-1) == "f" then
             arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
@@ -243,63 +285,51 @@ local floor = math.floor
 
 ---- Auto generated code starts here
 function init()
-	writestring(memory, 0, "%.2f\0")
+	writestring(memory, 0, "%X\0")
 	data[".L.str"] = 0
 	PC = 1
-	registers.x2 = (buffer.len(memory) + 5) / 2 -- start at the center after static data
+	registers.x2 = (buffer.len(memory) + 3) / 2 -- start at the center after static data
 	if registers.x2 >= buffer.len(memory) then error("Not enough memory") end
 end
 function main()
 	while PC ~= 0 do
 		if PC == 1 then -- main
-			-- addi ([{0 true x2 } {0 true x2 } {0 false -48 }])
-			registers.x2 = registers.x2 + -48
-			-- sw ([{0 true x1 } {44 true sp }])
-			writei32(memory, registers.x2+44, registers.x1)
-			-- sw ([{0 true x8 } {40 true sp }])
-			writei32(memory, registers.x2+40, registers.x8)
-			-- addi ([{0 true x8 } {0 true x2 } {0 false 48 }])
-			registers.x8 = registers.x2 + 48
+			-- addi ([{0 true x2 } {0 true x2 } {0 false -32 }])
+			registers.x2 = registers.x2 + -32
+			-- sw ([{0 true x1 } {28 true sp }])
+			writei32(memory, registers.x2+28, registers.x1)
+			-- sw ([{0 true x8 } {24 true sp }])
+			writei32(memory, registers.x2+24, registers.x8)
+			-- addi ([{0 true x8 } {0 true x2 } {0 false 32 }])
+			registers.x8 = registers.x2 + 32
 			-- li ([{0 true x10 } {0 false 0 }])
 			registers.x10 = 0
-			-- sw ([{0 true x10 } {-36 true s0 }])
-			writei32(memory, registers.x8+-36, registers.x10)
+			-- sw ([{0 true x10 } {-28 true s0 }])
+			writei32(memory, registers.x8+-28, registers.x10)
 			-- sw ([{0 true x10 } {-12 true s0 }])
 			writei32(memory, registers.x8+-12, registers.x10)
-			-- lui ([{0 true x10 } {0 false 266803 }])
-			registers.x10 = lshift(266803, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 819 }])
-			registers.x10 = registers.x10 + 819
+			-- li ([{0 true x10 } {0 false 10 }])
+			registers.x10 = 10
 			-- sw ([{0 true x10 } {-16 true s0 }])
 			writei32(memory, registers.x8+-16, registers.x10)
-			-- lui ([{0 true x10 } {0 false 262554 }])
-			registers.x10 = lshift(262554, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false -1638 }])
-			registers.x10 = registers.x10 + -1638
+			-- li ([{0 true x10 } {0 false 2 }])
+			registers.x10 = 2
 			-- sw ([{0 true x10 } {-20 true s0 }])
 			writei32(memory, registers.x8+-20, registers.x10)
-			-- lui ([{0 true x10 } {0 false 270470 }])
-			registers.x10 = lshift(270470, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 1638 }])
-			registers.x10 = registers.x10 + 1638
+			-- li ([{0 true x10 } {0 false 34 }])
+			registers.x10 = 34
 			-- sw ([{0 true x10 } {-24 true s0 }])
 			writei32(memory, registers.x8+-24, registers.x10)
-			-- flw ([{0 true f15 } {-16 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-16)
-			-- flw ([{0 true f14 } {-20 true s0 }])
-			registers["f14"] = readf32(memory, registers.x8+-20)
-			-- flw ([{0 true f13 } {-24 true s0 }])
-			registers["f13"] = readf32(memory, registers.x8+-24)
-			-- fmadd.s ([{0 true f15 } {0 true f15 } {0 true f14 } {0 true f13 }])
-			registers["f15"] = registers.f15 * registers.f14 + registers.f13
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-32 true s0 }])
-			writef64(memory, registers.x8+-32, registers.f15)
-			-- lw ([{0 true x12 } {-32 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-32)
-			-- lw ([{0 true x13 } {-28 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-28)
+			-- lw ([{0 true x10 } {-16 true s0 }])
+			registers.x10 = readi32(memory, registers.x8+-16)
+			-- lw ([{0 true x11 } {-20 true s0 }])
+			registers.x11 = readi32(memory, registers.x8+-20)
+			-- mul ([{0 true x10 } {0 true x10 } {0 true x11 }])
+			registers.x10 = registers.x10 * registers.x11
+			-- lw ([{0 true x11 } {-24 true s0 }])
+			registers.x11 = readi32(memory, registers.x8+-24)
+			-- add ([{0 true x11 } {0 true x10 } {0 true x11 }])
+			registers.x11 = registers.x10 + registers.x11
 			-- lui ([{0 true x10 } {0 false .L.str hi}])
 			registers.x10 = lshift(hi(data[".L.str"]), 12)
 			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str lo}])
@@ -315,14 +345,14 @@ function main()
 			PC += 1
 		end -- main (main)
 		if PC == 2 then -- main (extended) 
-			-- lw ([{0 true x10 } {-36 true s0 }])
-			registers.x10 = readi32(memory, registers.x8+-36)
-			-- lw ([{0 true x1 } {44 true sp }])
-			registers.x1 = readi32(memory, registers.x2+44)
-			-- lw ([{0 true x8 } {40 true sp }])
-			registers.x8 = readi32(memory, registers.x2+40)
-			-- addi ([{0 true x2 } {0 true x2 } {0 false 48 }])
-			registers.x2 = registers.x2 + 48
+			-- lw ([{0 true x10 } {-28 true s0 }])
+			registers.x10 = readi32(memory, registers.x8+-28)
+			-- lw ([{0 true x1 } {28 true sp }])
+			registers.x1 = readi32(memory, registers.x2+28)
+			-- lw ([{0 true x8 } {24 true sp }])
+			registers.x8 = readi32(memory, registers.x2+24)
+			-- addi ([{0 true x2 } {0 true x2 } {0 false 32 }])
+			registers.x2 = registers.x2 + 32
 			-- ret ([])
 			if registers.x1 ~= 0 then
 				PC = registers.x1

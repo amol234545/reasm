@@ -111,6 +111,9 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltz":  sltz,
 
 	/* F extension */
+	"fclass.s": fclass,
+	"fclass.d": fclass,
+
 	/** Arithmetic */
 	"fadd.s": add,
 	"fsub.s": sub,
@@ -293,6 +296,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 		float_to_double = float_to_double,
 		double_to_float = double_to_float,
 		two_words_to_double = two_words_to_double,
+		fclass = fclass,
 	},
 	PC = PC,
 	registers = registers,

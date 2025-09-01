@@ -91,16 +91,58 @@ local function read_string(startPointer)
     until false
     return str
 end
+function fclass(x)
+    local result = 0
+
+    if x ~= x then
+        -- NaN
+        if x < 0 then
+            result = bit32.bor(result, bit32.lshift(1, 0)) -- -NaN
+        else
+            result = bit32.bor(result, bit32.lshift(1, 9)) -- +NaN
+        end
+    elseif x == math.huge then
+        result = bit32.bor(result, bit32.lshift(1, 8)) -- +Inf
+    elseif x == -math.huge then
+        result = bit32.bor(result, bit32.lshift(1, 1)) -- -Inf
+    elseif x == 0 then
+        if 1/x == math.huge then
+            result = bit32.bor(result, bit32.lshift(1, 5)) -- +Zero
+        else
+            result = bit32.bor(result, bit32.lshift(1, 4)) -- -Zero
+        end
+    else
+        local absx = math.abs(x)
+        local min_normal = 2.2250738585072014e-308 -- 2^-1022
+        if absx < min_normal then
+            if x > 0 then
+                result = bit32.bor(result, bit32.lshift(1, 6)) -- +Subnormal
+            else
+                result = bit32.bor(result, bit32.lshift(1, 3)) -- -Subnormal
+            end
+        else
+            if x > 0 then
+                result = bit32.bor(result, bit32.lshift(1, 7)) -- +Normal
+            else
+                result = bit32.bor(result, bit32.lshift(1, 2)) -- -Normal
+            end
+        end
+    end
+
+    return result
+end
 local function format_string(fmt, args)
     -- custom format string because strings are stored as pointers, and floats as ints.
     local arg_index = 1
 
-    local result = fmt:gsub("%%([%d%.]*[dfse])", function(spec)
+    local result = fmt:gsub("%%([%d%.]*[dfseX])", function(spec)
         local val = args[arg_index]
         arg_index += 1
 
         if spec:sub(-1) == "d" then
             return string.format("%d", val)
+        elseif spec:sub(-1) == "X" then
+            return string.format("%X", val)
         elseif spec:sub(-1) == "f" then
             arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
