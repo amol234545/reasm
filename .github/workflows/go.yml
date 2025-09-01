@@ -1,0 +1,47 @@
+name: Go Build
+
+on:
+  push:
+    tags:
+      - '*'    # Triggers on new tags (releases)
+    branches:
+      - main   # Triggers on commits to main branch
+  workflow_dispatch: # Optional manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux, darwin, windows]
+        go: [1.21]  # Replace with the Go version you want
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Build binary
+        run: |
+          OS=${{ matrix.os }}
+          EXT=""
+          if [ "$OS" = "windows" ]; then EXT=".exe"; fi
+          go build -o build/myapp-$OS$EXT
+
+      - name: Upload artifact for commits
+        if: github.event_name == 'push' && github.ref_type != 'tag'
+        uses: actions/upload-artifact@v3
+        with:
+          name: myapp-${{ matrix.os }}
+          path: build/myapp-${{ matrix.os }}*
+
+      - name: Create release and upload assets
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
