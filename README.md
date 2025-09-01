@@ -1,7 +1,7 @@
 # ReASM
 
 [Wiki](https://github.com/AsynchronousAI/reasm/wiki)
-> A **RISC-V IM** compatible assembler/disassembler to **Luau**.
+> An experimental **RISC-V IM** compatible assembler/disassembler to **Luau**.
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h */
