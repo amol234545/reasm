@@ -110,6 +110,13 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sgtz":  sgtz,
 	"sltz":  sltz,
 
+	/* F extension */
+	// "flw": flw,
+	// "fsd": fsd,
+
+	/** Conversion */
+	// "fcvt.d.s": fcvt_d_s,
+
 	/* Abstraction */
 	"auipc": auipc,
 	"ret":   ret,
@@ -186,6 +193,8 @@ func BeforeCompilation(writer *OutputWriter) {
 	}
 	writer.CurrentLabel = ""
 	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.MainSymbol))
+	WriteIndentedString(writer, "registers.x2 = (buffer.len(memory) + %d) / 2 -- start at the center after static data\n", writer.MemoryDevelopmentPointer)
+	WriteIndentedString(writer, "if registers.x2 >= buffer.len(memory) then error(\"Not enough memory\") end\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
 
@@ -223,7 +232,13 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	util = {
 		extract_args = extract_args,
 		read_string = read_string,
-		format_string = format_string,
+		int_to_float = int_to_float,
+		float_to_int = float_to_int,
+		hi = hi,
+		lo = lo,
+		float_to_double = float_to_double,
+		double_to_float = double_to_float,
+		two_words_to_double = two_words_to_double,
 	},
 	PC = PC,
 	registers = registers,

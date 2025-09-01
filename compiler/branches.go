@@ -133,3 +133,8 @@ func bgez(w *OutputWriter, command AssemblyCommand) {
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
+
+/* AUIPC */
+func auipc(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = PC + %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+}

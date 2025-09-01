@@ -47,9 +47,6 @@ func move(w *OutputWriter, command AssemblyCommand) {
 }
 
 /* unimplemented */
-func auipc(w *OutputWriter, command AssemblyCommand) {
-	log.Warn("AUIPC cannot be used.")
-}
 func ebreak(w *OutputWriter, command AssemblyCommand) {
 	log.Warn("EBREAK cannot be used (yet).")
 }
