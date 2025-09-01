@@ -27,13 +27,13 @@ int main() {
 ```
 ```bash
 clang -S -target riscv32 -march=rv32im main.c -o main.s
-asmdecomp main.s -o main.luau # where the magic happens
+reasm main.s -o main.luau # where the magic happens
 luau main.luau
 ```
 
 ## Usage:
 ```bash
-asmdecomp main.S -o main.luau --mode {module|main|bench} --trace --comments
+reasm main.S -o main.luau --mode {module|main|bench} --trace --comments
 ```
 
 Input file can either be a `.S` assembly file, or a `.elf` file which is linked *(experimental)*.
