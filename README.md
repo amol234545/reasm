@@ -52,9 +52,9 @@ Super helpful resources in development below:
 
 ## TODO:
 - Floating point & Double support
-- Work on support for ELF files.
-* `No bindings for function '<register??>'`
-* ECALL & AUIPC
-* Read labels
 - Handle overflows correctly.
 - Vector operations
+- Work on support for ELF files. (or decide to remove it)
+  * `No bindings for function '<register??>'`
+  * ECALL & AUIPC
+  * Read labels
