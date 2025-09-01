@@ -3,14 +3,14 @@ package compiler
 import log "github.com/sirupsen/logrus"
 
 func ret(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if registers.ra ~= 0 then\n")
+	WriteIndentedString(w, "if registers.x1 ~= 0 then\n")
 	w.Depth++
 	//WriteIndentedString(w, "print('ret', RETURN)\n")
-	WriteIndentedString(w, "PC = registers.ra\n")
+	WriteIndentedString(w, "PC = registers.x1\n")
 	if w.DebugPC {
 		WriteIndentedString(w, "print('RET: ', PC)\n")
 	}
-	WriteIndentedString(w, "registers.ra = 0\n")
+	WriteIndentedString(w, "registers.x1 = 0\n")
 	WriteIndentedString(w, "continue\n")
 	w.Depth--
 	WriteIndentedString(w, "else\n")

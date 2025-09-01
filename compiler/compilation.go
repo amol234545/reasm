@@ -240,6 +240,6 @@ return {
 	}
 
 	code := string(writer.Buffer)
-	registers := generateRegistryMap(regs)
+	registers := generateRegistryMap(baseRegs)
 	return []byte(strings.Replace(strings.Replace(luau_boilerplate, "--{registers here}", registers, 1), "--{code here}", code, 1))
 }

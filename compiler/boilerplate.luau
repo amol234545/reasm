@@ -23,15 +23,16 @@ local function lo(addr)
     return bit32.band(addr, 0xFFF)
 end
 local function extract_args()
-    -- turn arguments from registers a0-a7 into a table
-    local args = {}
-    for key, value in pairs(registers) do
-       	if string.match(key, "^a%d+$") then
-      		local index = tonumber(string.match(key, "%d+"))
-      		args[index] = value
-       	end
-    end
-    return args
+   return {
+       registers.x10,
+       registers.x11,
+       registers.x12,
+       registers.x13,
+       registers.x14,
+       registers.x15,
+       registers.x16,
+       registers.x17,
+   }
 end
 local function read_string(startPointer)
     -- read null terminated strings from memory
@@ -72,12 +73,14 @@ end
 -- Functions
 local functions = {
     ["printf"] = function()
-        print(format_string(read_string(registers["a0"]), extract_args()))
+        local args = extract_args()
+        table.remove(args, 1)
+        print(format_string(read_string(registers.x10), args))
     end,
     ["memcpy"] = function()
-        local dest = registers["a0"]
-        local src = registers["a1"]
-        local count = registers["a2"]
+        local dest = registers.x10
+        local src = registers.x11
+        local count = registers.x12
 
         buffer.copy(memory, dest, memory, src, count)
     end,
@@ -119,6 +122,6 @@ local min = math.min
 local max = math.max
 local floor = math.floor
 
-registers.sp = mem/2 -- start at the center.
+registers.x2 = mem/2 -- start at the center.
 ---- Auto generated code starts here
 --{code here}

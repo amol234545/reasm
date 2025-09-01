@@ -13,7 +13,10 @@ func jal(w *OutputWriter, command AssemblyCommand) { /* jal instructions */
 func jalr(w *OutputWriter, command AssemblyCommand) {
 	returnAddress := CompileRegister(command.Arguments[0])
 	sourceRegister := CompileRegister(command.Arguments[1])
-	offset := CompileRegister(command.Arguments[2])
+	var offset string = "0"
+	if len(command.Arguments) > 2 {
+		offset = CompileRegister(command.Arguments[2])
+	}
 
 	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
 	w.Depth++

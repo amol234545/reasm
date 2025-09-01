@@ -89,6 +89,7 @@ func parseArguments(parts []string) []Argument {
 		arg.Source = p // store the raw source
 
 		// Check for offset(register) pattern inside source
+		isReg, reg := isRegister(p)
 		if matches := offsetReg.FindStringSubmatch(p); matches != nil {
 			arg.Register = true
 			arg.Source = matches[2] // register name only
@@ -99,19 +100,10 @@ func parseArguments(parts []string) []Argument {
 			} else {
 				arg.Offset = 0
 			}
-		} else if isRegister(p) { // standalone register
+		} else if isReg { // standalone register
 			arg.Register = true
 			arg.Offset = 0
-		} else if strings.HasPrefix(p, "#") { // Immediate (#10)
-			valStr := strings.TrimPrefix(p, "#")
-			if val, err := strconv.Atoi(valStr); err == nil {
-				arg.Offset = int8(val)
-			}
-		} else if strings.HasPrefix(p, "$") { // Offset ($4)
-			valStr := strings.TrimPrefix(p, "$")
-			if val, err := strconv.Atoi(valStr); err == nil {
-				arg.Offset = int8(val)
-			}
+			arg.Source = reg
 		}
 
 		args = append(args, arg)
@@ -119,42 +111,81 @@ func parseArguments(parts []string) []Argument {
 	return args
 }
 
-var regs = map[string]bool{
-	// Integer registers
-	"zero": true, "x0": true,
-	"ra": true, "x1": true,
-	"sp": true, "x2": true,
-	"gp": true, "x3": true,
-	"tp": true, "x4": true,
-	"t0": true, "x5": true,
-	"t1": true, "x6": true,
-	"t2": true, "x7": true,
-	"s0": true, "fp": true, "x8": true,
-	"s1": true, "x9": true,
-	"a0": true, "x10": true,
-	"a1": true, "x11": true,
-	"a2": true, "x12": true,
-	"a3": true, "x13": true,
-	"a4": true, "x14": true,
-	"a5": true, "x15": true,
-	"a6": true, "x16": true,
-	"a7": true, "x17": true,
-	"s2": true, "x18": true,
-	"s3": true, "x19": true,
-	"s4": true, "x20": true,
-	"s5": true, "x21": true,
-	"s6": true, "x22": true,
-	"s7": true, "x23": true,
-	"s8": true, "x24": true,
-	"s9": true, "x25": true,
-	"s10": true, "x26": true,
-	"s11": true, "x27": true,
-	"t3": true, "x28": true,
-	"t4": true, "x29": true,
-	"t5": true, "x30": true,
-	"t6": true, "x31": true,
+var baseRegs = map[string]bool{
+	"x0":  true,
+	"x1":  true,
+	"x2":  true,
+	"x3":  true,
+	"x4":  true,
+	"x5":  true,
+	"x6":  true,
+	"x7":  true,
+	"x8":  true,
+	"x9":  true,
+	"x10": true,
+	"x11": true,
+	"x12": true,
+	"x13": true,
+	"x14": true,
+	"x15": true,
+	"x16": true,
+	"x17": true,
+	"x18": true,
+	"x19": true,
+	"x20": true,
+	"x21": true,
+	"x22": true,
+	"x23": true,
+	"x24": true,
+	"x25": true,
+	"x26": true,
+	"x27": true,
+	"x28": true,
+	"x29": true,
+	"x30": true,
+	"x31": true,
+}
+var abiToReg = map[string]string{
+	"zero": "x0",
+	"ra":   "x1",
+	"sp":   "x2",
+	"gp":   "x3",
+	"tp":   "x4",
+	"t0":   "x5",
+	"t1":   "x6",
+	"t2":   "x7",
+	"s0":   "x8",
+	"fp":   "x8",
+	"s1":   "x9",
+	"a0":   "x10",
+	"a1":   "x11",
+	"a2":   "x12",
+	"a3":   "x13",
+	"a4":   "x14",
+	"a5":   "x15",
+	"a6":   "x16",
+	"a7":   "x17",
+	"s2":   "x18",
+	"s3":   "x19",
+	"s4":   "x20",
+	"s5":   "x21",
+	"s6":   "x22",
+	"s7":   "x23",
+	"s8":   "x24",
+	"s9":   "x25",
+	"s10":  "x26",
+	"s11":  "x27",
+	"t3":   "x28",
+	"t4":   "x29",
+	"t5":   "x30",
+	"t6":   "x31",
 }
 
-func isRegister(s string) bool {
-	return regs[s]
+func isRegister(s string) (bool, string) {
+	if baseRegs[s] {
+		return true, s
+	} else if abiToReg[s] != "" {
+		return true, abiToReg[s]
+	}
+	return false, ""
 }
