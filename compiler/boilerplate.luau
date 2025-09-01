@@ -95,7 +95,7 @@ local function format_string(fmt, args)
     -- custom format string because strings are stored as pointers, and floats as ints.
     local arg_index = 1
 
-    local result = fmt:gsub("%%([%d%.]*[dfs])", function(spec)
+    local result = fmt:gsub("%%([%d%.]*[dfse])", function(spec)
         local val = args[arg_index]
         arg_index += 1
 
@@ -105,11 +105,18 @@ local function format_string(fmt, args)
             arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
             local high = args[arg_index]; arg_index+=1;
-            local float = int_to_double(high, low)
+            local float = int_to_double(high, math.abs(low))
 
             return string.format("%"..spec, float)
         elseif spec:sub(-1) == "s" then
             return read_string(val)
+        elseif spec:sub(-1) == "e" then
+            arg_index+=1 -- skip for alignment
+            local low = args[arg_index]; arg_index+=1;
+            local high = args[arg_index]; arg_index+=1;
+            local float = int_to_double(high, low)
+
+            return string.format("%"..spec, float)
         else
             return spec
         end
