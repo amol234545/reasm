@@ -5,6 +5,8 @@ import (
 	"io"
 	"os"
 	"strings"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Options struct {
@@ -14,7 +16,7 @@ type Options struct {
 	MainSymbol string
 }
 
-func Compile(executable *os.File, lang string, options Options) []byte {
+func Compile(executable *os.File, options Options) []byte {
 	/* prepare */
 	var writer = &OutputWriter{
 		Buffer:                   []byte(""),
@@ -39,6 +41,7 @@ func Compile(executable *os.File, lang string, options Options) []byte {
 			writer.Commands = append(writer.Commands, command)
 		}
 	} else {
+		logrus.Warn(".elf support is experimental!")
 		writer.Commands = ParseFromElf(elf)
 	}
 

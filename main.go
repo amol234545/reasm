@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	var lang string
 	var enableComments bool
 	var enableTrace bool
 	var mode string
@@ -51,7 +50,7 @@ func main() {
 			defer file.Close()
 
 			/* compile with options */
-			processed := compiler.Compile(file, lang, compiler.Options{
+			processed := compiler.Compile(file, compiler.Options{
 				Comments:   enableComments,
 				Trace:      enableTrace,
 				Mode:       modeLower,
@@ -70,7 +69,6 @@ func main() {
 	}
 
 	// Flags
-	rootCmd.Flags().StringVar(&lang, "lang", "luau", "Language to compile to (default: luau)")
 	rootCmd.Flags().BoolVar(&enableComments, "comments", false, "Include debug comments in the output")
 	rootCmd.Flags().BoolVar(&enableTrace, "trace", false, "Prints out a trace of the PC")
 	rootCmd.Flags().StringVar(&mode, "mode", "main", "Mode to compile as: module, main, or bench (default: main)")

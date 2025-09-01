@@ -1,5 +1,5 @@
 # ReASM
-> A **RISC-V IM** compatible assembler/disassembler to **Luau**.
+> A **RISC-V IM** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h */
@@ -49,11 +49,15 @@ Super helpful resources in development below:
 - https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf
 - https://msyksphinz-self.github.io/riscv-isadoc/
 - https://godbolt.org/
+- https://projectf.io/posts/riscv-cheat-sheet/
+- https://en.wikipedia.org/wiki/RISC-V_instruction_listings (IMB)
+
 
 ## TODO:
-- Floating point & Double support
-- Handle overflows correctly.
+- Floating point extension
+- Doubles extension
 - Vector operations
+- Bit manipulation operators
 - Work on support for ELF files. (or decide to remove it)
   * `No bindings for function '<register??>'`
   * ECALL & AUIPC

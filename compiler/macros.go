@@ -6,10 +6,6 @@ import (
 )
 
 func label(w *OutputWriter, command AssemblyCommand) {
-	// if IsLabelEmpty(w, command.Name) {
-	// 	return
-	// }
-
 	/* end previous label */
 	AddEnd(w)
 
