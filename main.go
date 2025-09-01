@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/AsynchronousAI/asm-decomp/compiler"
+	"github.com/AsynchronousAI/reasm/compiler"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -26,8 +26,8 @@ func main() {
 	log.SetLevel(log.DebugLevel)
 
 	var rootCmd = &cobra.Command{
-		Use:   "cli [input] [output]",
-		Short: "CLI tool to decompile assembly.",
+		Use:   "reasm [input] [output]",
+		Short: "Compile RISC-V Assembly into Luau",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, inputFiles []string) error {
 			validModes := []string{"module", "main", "bench"}

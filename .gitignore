@@ -1,2 +1,4 @@
 *.s
 *.elf
+reasm
+.DS_Store
