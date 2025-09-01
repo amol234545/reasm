@@ -14,6 +14,20 @@ func fsw(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "writef32(memory, %s, %s)\n", CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[0]))
 }
 
+/** Fused */
+func fmadd(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = %s * %s + %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]), CompileRegister(command.Arguments[3]))
+}
+func fmsub(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = %s * %s - (%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]), CompileRegister(command.Arguments[3]))
+}
+func fnmadd(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = -(%s) * %s + %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]), CompileRegister(command.Arguments[3]))
+}
+func fnmsub(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "registers[\"%s\"] = -(%s) * %s - (%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]), CompileRegister(command.Arguments[2]), CompileRegister(command.Arguments[3]))
+}
+
 /** Other math */
 func fsqrt(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = sqrt(%s)\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))

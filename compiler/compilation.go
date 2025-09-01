@@ -143,6 +143,17 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"flt.d": flt,
 	"fle.d": fle,
 
+	/** Fused */
+	"fmadd.s":  fmadd,
+	"fmsub.s":  fmsub,
+	"fnmadd.s": fnmadd,
+	"fnmsub.s": fnmsub,
+
+	"fmadd.d":  fmadd,
+	"fmsub.d":  fmsub,
+	"fnmadd.d": fnmadd,
+	"fnmsub.d": fnmsub,
+
 	/** Conversion */
 	"fmv.w.x":  fmv_w_x,
 	"fmv.x.w":  fmv_x_w,

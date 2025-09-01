@@ -243,111 +243,63 @@ local floor = math.floor
 
 ---- Auto generated code starts here
 function init()
-	writestring(memory, 0, "Float sum: %f\n\0")
+	writestring(memory, 0, "%.2f\0")
 	data[".L.str"] = 0
-	writestring(memory, 16, "Float product: %f\n\0")
-	data[".L.str.1"] = 16
-	writestring(memory, 36, "Float division: %f\n\0")
-	data[".L.str.2"] = 36
-	writestring(memory, 57, "Float difference: %f\n\0")
-	data[".L.str.3"] = 57
-	writestring(memory, 80, "Double sum: %f\n\0")
-	data[".L.str.4"] = 80
-	writestring(memory, 97, "Double product: %f\n\0")
-	data[".L.str.5"] = 97
-	writestring(memory, 118, "Double division: %f\n\0")
-	data[".L.str.6"] = 118
-	writestring(memory, 140, "Double difference: %f\n\0")
-	data[".L.str.7"] = 140
-	writestring(memory, 164, "f1 > f2\n\0")
-	data[".L.str.8"] = 164
-	writestring(memory, 174, "d1 < d2\n\0")
-	data[".L.str.9"] = 174
-	writestring(memory, 184, "Float infinity: %f\n\0")
-	data[".L.str.10"] = 184
-	writestring(memory, 205, "Float NaN: %f\n\0")
-	data[".L.str.11"] = 205
-	writestring(memory, 221, "Double infinity: %f\n\0")
-	data[".L.str.12"] = 221
-	writestring(memory, 243, "Double NaN: %f\n\0")
-	data[".L.str.13"] = 243
-	writestring(memory, 260, "Float max: %e\n\0")
-	data[".L.str.14"] = 260
-	writestring(memory, 276, "Float min: %e\n\0")
-	data[".L.str.15"] = 276
-	writestring(memory, 292, "Double max: %e\n\0")
-	data[".L.str.16"] = 292
-	writestring(memory, 309, "Double min: %e\n\0")
-	data[".L.str.17"] = 309
 	PC = 1
-	registers.x2 = (buffer.len(memory) + 326) / 2 -- start at the center after static data
+	registers.x2 = (buffer.len(memory) + 5) / 2 -- start at the center after static data
 	if registers.x2 >= buffer.len(memory) then error("Not enough memory") end
 end
 function main()
 	while PC ~= 0 do
 		if PC == 1 then -- main
-			-- addi ([{0 true x2 } {0 true x2 } {0 false -80 }])
-			registers.x2 = registers.x2 + -80
-			-- sw ([{0 true x1 } {76 true sp }])
-			writei32(memory, registers.x2+76, registers.x1)
-			-- sw ([{0 true x8 } {72 true sp }])
-			writei32(memory, registers.x2+72, registers.x8)
-			-- addi ([{0 true x8 } {0 true x2 } {0 false 80 }])
-			registers.x8 = registers.x2 + 80
+			-- addi ([{0 true x2 } {0 true x2 } {0 false -48 }])
+			registers.x2 = registers.x2 + -48
+			-- sw ([{0 true x1 } {44 true sp }])
+			writei32(memory, registers.x2+44, registers.x1)
+			-- sw ([{0 true x8 } {40 true sp }])
+			writei32(memory, registers.x2+40, registers.x8)
+			-- addi ([{0 true x8 } {0 true x2 } {0 false 48 }])
+			registers.x8 = registers.x2 + 48
 			-- li ([{0 true x10 } {0 false 0 }])
 			registers.x10 = 0
-			-- sw ([{0 true x10 } {-12 true s0 }])
-			writei32(memory, registers.x8+-12, registers.x10)
-			-- lui ([{0 true x10 } {0 false 263311 }])
-			registers.x10 = lshift(263311, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 1475 }])
-			registers.x10 = registers.x10 + 1475
-			-- sw ([{0 true x10 } {-16 true s0 }])
-			writei32(memory, registers.x8+-16, registers.x10)
-			-- lui ([{0 true x10 } {0 false 262871 }])
-			registers.x10 = lshift(262871, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 164 }])
-			registers.x10 = registers.x10 + 164
-			-- sw ([{0 true x10 } {-20 true s0 }])
-			writei32(memory, registers.x8+-20, registers.x10)
-			-- lui ([{0 true x10 } {0 false 261948 }])
-			registers.x10 = lshift(261948, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 131 }])
-			registers.x10 = registers.x10 + 131
-			-- sw ([{0 true x10 } {-28 true s0 }])
-			writei32(memory, registers.x8+-28, registers.x10)
-			-- lui ([{0 true x10 } {0 false 75497 }])
-			registers.x10 = lshift(75497, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 1933 }])
-			registers.x10 = registers.x10 + 1933
-			-- sw ([{0 true x10 } {-32 true s0 }])
-			writei32(memory, registers.x8+-32, registers.x10)
-			-- lui ([{0 true x10 } {0 false 262578 }])
-			registers.x10 = lshift(262578, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false 2031 }])
-			registers.x10 = registers.x10 + 2031
 			-- sw ([{0 true x10 } {-36 true s0 }])
 			writei32(memory, registers.x8+-36, registers.x10)
-			-- lui ([{0 true x10 } {0 false 645923 }])
-			registers.x10 = lshift(645923, 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false -754 }])
-			registers.x10 = registers.x10 + -754
-			-- sw ([{0 true x10 } {-40 true s0 }])
-			writei32(memory, registers.x8+-40, registers.x10)
+			-- sw ([{0 true x10 } {-12 true s0 }])
+			writei32(memory, registers.x8+-12, registers.x10)
+			-- lui ([{0 true x10 } {0 false 266803 }])
+			registers.x10 = lshift(266803, 12)
+			-- addi ([{0 true x10 } {0 true x10 } {0 false 819 }])
+			registers.x10 = registers.x10 + 819
+			-- sw ([{0 true x10 } {-16 true s0 }])
+			writei32(memory, registers.x8+-16, registers.x10)
+			-- lui ([{0 true x10 } {0 false 262554 }])
+			registers.x10 = lshift(262554, 12)
+			-- addi ([{0 true x10 } {0 true x10 } {0 false -1638 }])
+			registers.x10 = registers.x10 + -1638
+			-- sw ([{0 true x10 } {-20 true s0 }])
+			writei32(memory, registers.x8+-20, registers.x10)
+			-- lui ([{0 true x10 } {0 false 270470 }])
+			registers.x10 = lshift(270470, 12)
+			-- addi ([{0 true x10 } {0 true x10 } {0 false 1638 }])
+			registers.x10 = registers.x10 + 1638
+			-- sw ([{0 true x10 } {-24 true s0 }])
+			writei32(memory, registers.x8+-24, registers.x10)
 			-- flw ([{0 true f15 } {-16 true s0 }])
 			registers["f15"] = readf32(memory, registers.x8+-16)
 			-- flw ([{0 true f14 } {-20 true s0 }])
 			registers["f14"] = readf32(memory, registers.x8+-20)
-			-- fadd.s ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 + registers.f14
+			-- flw ([{0 true f13 } {-24 true s0 }])
+			registers["f13"] = readf32(memory, registers.x8+-24)
+			-- fmadd.s ([{0 true f15 } {0 true f15 } {0 true f14 } {0 true f13 }])
+			registers["f15"] = registers.f15 * registers.f14 + registers.f13
 			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
 			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
+			-- fsd ([{0 true f15 } {-32 true s0 }])
+			writef64(memory, registers.x8+-32, registers.f15)
+			-- lw ([{0 true x12 } {-32 true s0 }])
+			registers.x12 = readi32(memory, registers.x8+-32)
+			-- lw ([{0 true x13 } {-28 true s0 }])
+			registers.x13 = readi32(memory, registers.x8+-28)
 			-- lui ([{0 true x10 } {0 false .L.str hi}])
 			registers.x10 = lshift(hi(data[".L.str"]), 12)
 			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str lo}])
@@ -363,499 +315,14 @@ function main()
 			PC += 1
 		end -- main (main)
 		if PC == 2 then -- main (extended) 
-			-- flw ([{0 true f15 } {-16 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-16)
-			-- flw ([{0 true f14 } {-20 true s0 }])
-			registers["f14"] = readf32(memory, registers.x8+-20)
-			-- fmul.s ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 * registers.f14
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.1 hi}])
-			registers.x10 = lshift(hi(data[".L.str.1"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.1 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.1"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 3
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end (main_end)
-		if PC == 3 then -- main_end (extended) 
-			-- flw ([{0 true f15 } {-16 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-16)
-			-- flw ([{0 true f14 } {-20 true s0 }])
-			registers["f14"] = readf32(memory, registers.x8+-20)
-			-- fdiv.s ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = idiv_trunc(registers.f15, registers.f14)
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.2 hi}])
-			registers.x10 = lshift(hi(data[".L.str.2"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.2 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.2"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 4
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end (main_end_end)
-		if PC == 4 then -- main_end_end (extended) 
-			-- flw ([{0 true f15 } {-16 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-16)
-			-- flw ([{0 true f14 } {-20 true s0 }])
-			registers["f14"] = readf32(memory, registers.x8+-20)
-			-- fsub.s ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 - registers.f14
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.3 hi}])
-			registers.x10 = lshift(hi(data[".L.str.3"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.3 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.3"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 5
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end_end (main_end_end_end)
-		if PC == 5 then -- main_end_end_end (extended) 
-			-- fld ([{0 true f15 } {-32 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-32)
-			-- fld ([{0 true f14 } {-40 true s0 }])
-			registers["f14"] = readf64(memory, registers.x8+-40)
-			-- fadd.d ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 + registers.f14
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.4 hi}])
-			registers.x10 = lshift(hi(data[".L.str.4"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.4 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.4"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 6
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end_end_end (main_end_end_end_end)
-		if PC == 6 then -- main_end_end_end_end (extended) 
-			-- fld ([{0 true f15 } {-32 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-32)
-			-- fld ([{0 true f14 } {-40 true s0 }])
-			registers["f14"] = readf64(memory, registers.x8+-40)
-			-- fmul.d ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 * registers.f14
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.5 hi}])
-			registers.x10 = lshift(hi(data[".L.str.5"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.5 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.5"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 7
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end_end_end_end (main_end_end_end_end_end)
-		if PC == 7 then -- main_end_end_end_end_end (extended) 
-			-- fld ([{0 true f15 } {-32 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-32)
-			-- fld ([{0 true f14 } {-40 true s0 }])
-			registers["f14"] = readf64(memory, registers.x8+-40)
-			-- fdiv.d ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = idiv_trunc(registers.f15, registers.f14)
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.6 hi}])
-			registers.x10 = lshift(hi(data[".L.str.6"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.6 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.6"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 8
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end_end_end_end_end (main_end_end_end_end_end_end)
-		if PC == 8 then -- main_end_end_end_end_end_end (extended) 
-			-- fld ([{0 true f15 } {-32 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-32)
-			-- fld ([{0 true f14 } {-40 true s0 }])
-			registers["f14"] = readf64(memory, registers.x8+-40)
-			-- fsub.d ([{0 true f15 } {0 true f15 } {0 true f14 }])
-			registers.f15 = registers.f15 - registers.f14
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.7 hi}])
-			registers.x10 = lshift(hi(data[".L.str.7"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.7 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.7"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 9
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- main_end_end_end_end_end_end_end (main_end_end_end_end_end_end_end)
-		if PC == 9 then -- main_end_end_end_end_end_end_end (extended) 
-			-- flw ([{0 true f14 } {-16 true s0 }])
-			registers["f14"] = readf32(memory, registers.x8+-16)
-			-- flw ([{0 true f15 } {-20 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-20)
-			-- flt.s ([{0 true x10 } {0 true f15 } {0 true f14 }])
-			registers["x10"] = if registers.f15 < registers.f14 then 1 else 0
-			-- beqz ([{0 true x10 } {0 false .LBB0_2 }])
-			if registers.x10 == 0 then
-				do
-					PC = 12 -- .LBB0_2
-					continue
-				end
-			end
-			-- j ([{0 false .LBB0_1 }])
-			do
-				PC = 10 -- .LBB0_1
-				continue
-			end
-			PC += 1
-		end -- main_end_end_end_end_end_end_end_end (main_end_end_end_end_end_end_end_end)
-		if PC == 10 then -- .LBB0_1
-			-- lui ([{0 true x10 } {0 false .L.str.8 hi}])
-			registers.x10 = lshift(hi(data[".L.str.8"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.8 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.8"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 11
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_1 (.LBB0_1)
-		if PC == 11 then -- .LBB0_1 (extended) 
-			-- j ([{0 false .LBB0_2 }])
-			do
-				PC = 12 -- .LBB0_2
-				continue
-			end
-			PC += 1
-		end -- .LBB0_1_end (.LBB0_1_end)
-		if PC == 12 then -- .LBB0_2
-			-- fld ([{0 true f15 } {-32 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-32)
-			-- fld ([{0 true f14 } {-40 true s0 }])
-			registers["f14"] = readf64(memory, registers.x8+-40)
-			-- flt.d ([{0 true x10 } {0 true f15 } {0 true f14 }])
-			registers["x10"] = if registers.f15 < registers.f14 then 1 else 0
-			-- beqz ([{0 true x10 } {0 false .LBB0_4 }])
-			if registers.x10 == 0 then
-				do
-					PC = 15 -- .LBB0_4
-					continue
-				end
-			end
-			-- j ([{0 false .LBB0_3 }])
-			do
-				PC = 13 -- .LBB0_3
-				continue
-			end
-			PC += 1
-		end -- .LBB0_2 (.LBB0_2)
-		if PC == 13 then -- .LBB0_3
-			-- lui ([{0 true x10 } {0 false .L.str.9 hi}])
-			registers.x10 = lshift(hi(data[".L.str.9"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.9 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.9"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 14
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_3 (.LBB0_3)
-		if PC == 14 then -- .LBB0_3 (extended) 
-			-- j ([{0 false .LBB0_4 }])
-			do
-				PC = 15 -- .LBB0_4
-				continue
-			end
-			PC += 1
-		end -- .LBB0_3_end (.LBB0_3_end)
-		if PC == 15 then -- .LBB0_4
-			-- lui ([{0 true x10 } {0 false 522240 }])
-			registers.x10 = lshift(522240, 12)
-			-- sw ([{0 true x10 } {-44 true s0 }])
-			writei32(memory, registers.x8+-44, registers.x10)
-			-- lui ([{0 true x10 } {0 false 523264 }])
-			registers.x10 = lshift(523264, 12)
-			-- sw ([{0 true x10 } {-48 true s0 }])
-			writei32(memory, registers.x8+-48, registers.x10)
-			-- lui ([{0 true x10 } {0 false 524032 }])
-			registers.x10 = lshift(524032, 12)
-			-- sw ([{0 true x10 } {-80 true s0 }])
-			writei32(memory, registers.x8+-80, registers.x10)
-			-- sw ([{0 true x10 } {-52 true s0 }])
-			writei32(memory, registers.x8+-52, registers.x10)
-			-- li ([{0 true x10 } {0 false 0 }])
-			registers.x10 = 0
-			-- sw ([{0 true x10 } {-76 true s0 }])
-			writei32(memory, registers.x8+-76, registers.x10)
-			-- sw ([{0 true x10 } {-56 true s0 }])
-			writei32(memory, registers.x8+-56, registers.x10)
-			-- lui ([{0 true x11 } {0 false 524160 }])
-			registers.x11 = lshift(524160, 12)
-			-- sw ([{0 true x11 } {-60 true s0 }])
-			writei32(memory, registers.x8+-60, registers.x11)
-			-- sw ([{0 true x10 } {-64 true s0 }])
-			writei32(memory, registers.x8+-64, registers.x10)
-			-- flw ([{0 true f15 } {-44 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-44)
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.10 hi}])
-			registers.x10 = lshift(hi(data[".L.str.10"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.10 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.10"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 16
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4 (.LBB0_4)
-		if PC == 16 then -- .LBB0_4 (extended) 
-			-- flw ([{0 true f15 } {-48 true s0 }])
-			registers["f15"] = readf32(memory, registers.x8+-48)
-			-- fcvt.d.s ([{0 true f15 } {0 true f15 }])
-			registers["f15"] = registers.f15
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.11 hi}])
-			registers.x10 = lshift(hi(data[".L.str.11"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.11 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.11"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 17
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end (.LBB0_4_end)
-		if PC == 17 then -- .LBB0_4_end (extended) 
-			-- fld ([{0 true f15 } {-56 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-56)
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.12 hi}])
-			registers.x10 = lshift(hi(data[".L.str.12"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.12 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.12"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 18
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end (.LBB0_4_end_end)
-		if PC == 18 then -- .LBB0_4_end_end (extended) 
-			-- fld ([{0 true f15 } {-64 true s0 }])
-			registers["f15"] = readf64(memory, registers.x8+-64)
-			-- fsd ([{0 true f15 } {-72 true s0 }])
-			writef64(memory, registers.x8+-72, registers.f15)
-			-- lw ([{0 true x12 } {-72 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-72)
-			-- lw ([{0 true x13 } {-68 true s0 }])
-			registers.x13 = readi32(memory, registers.x8+-68)
-			-- lui ([{0 true x10 } {0 false .L.str.13 hi}])
-			registers.x10 = lshift(hi(data[".L.str.13"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.13 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.13"])
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 19
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end_end (.LBB0_4_end_end_end)
-		if PC == 19 then -- .LBB0_4_end_end_end (extended) 
-			-- lui ([{0 true x10 } {0 false .L.str.14 hi}])
-			registers.x10 = lshift(hi(data[".L.str.14"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.14 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.14"])
-			-- lui ([{0 true x11 } {0 false 294656 }])
-			registers.x11 = lshift(294656, 12)
-			-- addi ([{0 true x13 } {0 true x11 } {0 false -1 }])
-			registers.x13 = registers.x11 + -1
-			-- lui ([{0 true x12 } {0 false 917504 }])
-			registers.x12 = lshift(917504, 12)
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 20
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end_end_end (.LBB0_4_end_end_end_end)
-		if PC == 20 then -- .LBB0_4_end_end_end_end (extended) 
-			-- lw ([{0 true x12 } {-76 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-76)
-			-- lui ([{0 true x10 } {0 false .L.str.15 hi}])
-			registers.x10 = lshift(hi(data[".L.str.15"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.15 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.15"])
-			-- lui ([{0 true x13 } {0 false 229632 }])
-			registers.x13 = lshift(229632, 12)
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 21
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end_end_end_end (.LBB0_4_end_end_end_end_end)
-		if PC == 21 then -- .LBB0_4_end_end_end_end_end (extended) 
-			-- lw ([{0 true x11 } {-80 true s0 }])
-			registers.x11 = readi32(memory, registers.x8+-80)
-			-- lui ([{0 true x10 } {0 false .L.str.16 hi}])
-			registers.x10 = lshift(hi(data[".L.str.16"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.16 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.16"])
-			-- addi ([{0 true x13 } {0 true x11 } {0 false -1 }])
-			registers.x13 = registers.x11 + -1
-			-- li ([{0 true x12 } {0 false -1 }])
-			registers.x12 = -1
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 22
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end_end_end_end_end (.LBB0_4_end_end_end_end_end_end)
-		if PC == 22 then -- .LBB0_4_end_end_end_end_end_end (extended) 
-			-- lw ([{0 true x12 } {-76 true s0 }])
-			registers.x12 = readi32(memory, registers.x8+-76)
-			-- lui ([{0 true x10 } {0 false .L.str.17 hi}])
-			registers.x10 = lshift(hi(data[".L.str.17"]), 12)
-			-- addi ([{0 true x10 } {0 true x10 } {0 false .L.str.17 lo}])
-			registers.x10 = registers.x10 + lo(data[".L.str.17"])
-			-- lui ([{0 true x13 } {0 false 256 }])
-			registers.x13 = lshift(256, 12)
-			-- call ([{0 false printf }])
-			if functions["printf"] then
-				functions["printf"]()
-				PC = 23
-				continue
-			else
-				error("No bindings for functions 'printf'")
-			end
-			PC += 1
-		end -- .LBB0_4_end_end_end_end_end_end_end (.LBB0_4_end_end_end_end_end_end_end)
-		if PC == 23 then -- .LBB0_4_end_end_end_end_end_end_end (extended) 
-			-- lw ([{0 true x10 } {-76 true s0 }])
-			registers.x10 = readi32(memory, registers.x8+-76)
-			-- lw ([{0 true x1 } {76 true sp }])
-			registers.x1 = readi32(memory, registers.x2+76)
-			-- lw ([{0 true x8 } {72 true sp }])
-			registers.x8 = readi32(memory, registers.x2+72)
-			-- addi ([{0 true x2 } {0 true x2 } {0 false 80 }])
-			registers.x2 = registers.x2 + 80
+			-- lw ([{0 true x10 } {-36 true s0 }])
+			registers.x10 = readi32(memory, registers.x8+-36)
+			-- lw ([{0 true x1 } {44 true sp }])
+			registers.x1 = readi32(memory, registers.x2+44)
+			-- lw ([{0 true x8 } {40 true sp }])
+			registers.x8 = readi32(memory, registers.x2+40)
+			-- addi ([{0 true x2 } {0 true x2 } {0 false 48 }])
+			registers.x2 = registers.x2 + 48
 			-- ret ([])
 			if registers.x1 ~= 0 then
 				PC = registers.x1
@@ -866,62 +333,11 @@ function main()
 				continue
 			end
 			PC += 1
-		end -- .LBB0_4_end_end_end_end_end_end_end_end (.LBB0_4_end_end_end_end_end_end_end_end)
-		if PC == 24 then -- .L.str
+		end -- main_end (main_end)
+		if PC == 3 then -- .L.str
 			PC += 1
 		end -- .L.str (.L.str)
-		if PC == 25 then -- .L.str.1
-			PC += 1
-		end -- .L.str.1 (.L.str.1)
-		if PC == 26 then -- .L.str.2
-			PC += 1
-		end -- .L.str.2 (.L.str.2)
-		if PC == 27 then -- .L.str.3
-			PC += 1
-		end -- .L.str.3 (.L.str.3)
-		if PC == 28 then -- .L.str.4
-			PC += 1
-		end -- .L.str.4 (.L.str.4)
-		if PC == 29 then -- .L.str.5
-			PC += 1
-		end -- .L.str.5 (.L.str.5)
-		if PC == 30 then -- .L.str.6
-			PC += 1
-		end -- .L.str.6 (.L.str.6)
-		if PC == 31 then -- .L.str.7
-			PC += 1
-		end -- .L.str.7 (.L.str.7)
-		if PC == 32 then -- .L.str.8
-			PC += 1
-		end -- .L.str.8 (.L.str.8)
-		if PC == 33 then -- .L.str.9
-			PC += 1
-		end -- .L.str.9 (.L.str.9)
-		if PC == 34 then -- .L.str.10
-			PC += 1
-		end -- .L.str.10 (.L.str.10)
-		if PC == 35 then -- .L.str.11
-			PC += 1
-		end -- .L.str.11 (.L.str.11)
-		if PC == 36 then -- .L.str.12
-			PC += 1
-		end -- .L.str.12 (.L.str.12)
-		if PC == 37 then -- .L.str.13
-			PC += 1
-		end -- .L.str.13 (.L.str.13)
-		if PC == 38 then -- .L.str.14
-			PC += 1
-		end -- .L.str.14 (.L.str.14)
-		if PC == 39 then -- .L.str.15
-			PC += 1
-		end -- .L.str.15 (.L.str.15)
-		if PC == 40 then -- .L.str.16
-			PC += 1
-		end -- .L.str.16 (.L.str.16)
-		if PC == 41 then -- .L.str.17
-			PC += 1
-		end -- .L.str.17 (.L.str.17)
-		if (not PC) or PC == 0 or PC > 41 then
+		if (not PC) or PC == 0 or PC > 3 then
 			break
 		end
 	end
