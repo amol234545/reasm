@@ -1,5 +1,11 @@
 # ReASM
+<<<<<<< HEAD
 > A **RISC-V IM** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
+=======
+
+[Wiki](https://github.com/AsynchronousAI/reasm/wiki)
+> An experimental **RISC-V IM** compatible assembler/disassembler to **Luau**.
+>>>>>>> d0e155e79e77049c9927f3eb2cf6587ab5b6aaa1
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h */
@@ -25,13 +31,13 @@ int main() {
 ```
 ```bash
 clang -S -target riscv32 -march=rv32im main.c -o main.s
-asmdecomp main.s -o main.luau # where the magic happens
+reasm main.s -o main.luau # where the magic happens
 luau main.luau
 ```
 
 ## Usage:
 ```bash
-asmdecomp main.S -o main.luau --mode {module|main|bench} --trace --comments
+reasm main.S -o main.luau --mode {module|main|bench} --trace --comments
 ```
 
 Input file can either be a `.S` assembly file, or a `.elf` file which is linked *(experimental)*.
