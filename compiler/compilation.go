@@ -111,14 +111,41 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"sltz":  sltz,
 
 	/* F extension */
-	"fadd.s": fadd_s,
+	/** Arithmetic */
+	"fadd.s": add,
+	"fsub.s": sub,
+	"fdiv.s": div,
+	"fmul.s": mul,
+	"fadd.d": add,
+	"fsub.d": sub,
+	"fdiv.d": div,
+	"fmul.d": mul,
+
+	/** More advanced */
+	"fsqrt.s": fsqrt,
+	"fmin.s":  fmin,
+	"fmax.s":  fmax,
+	"fsqrt.d": fsqrt,
+	"fmin.d":  fmin,
+	"fmax.d":  fmax,
 
 	/** Memory */
 	"flw": flw,
+	"fsw": fsw,
+	"fld": fld,
 	"fsd": fsd,
+
+	/** Comparators */
+	"feq.s": feq,
+	"flt.s": flt,
+	"fle.s": fle,
+	"feq.d": feq,
+	"flt.d": flt,
+	"fle.d": fle,
 
 	/** Conversion */
 	"fmv.w.x":  fmv_w_x,
+	"fmv.x.w":  fmv_x_w,
 	"fcvt.d.s": fcvt_d_s,
 
 	/* Abstraction */
