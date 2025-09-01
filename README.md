@@ -1,5 +1,5 @@
-# ASM-Decomp (no name yet)
-> A full **RISC-V IM** compatible assembler/disassembler to **Luau**.
+# ReASM
+> A **RISC-V IM** compatible assembler/disassembler to **Luau**.
 ## Example:
 ```c
 void printf(const char *, ...); /* manually define printf if we are not using stdlib.h */
@@ -44,22 +44,11 @@ Input file can either be a `.S` assembly file, or a `.elf` file which is linked 
   * `main` will generate a simple Luau file which runs on its own.
   * `bench` will generate a module prepared for benchmarking with [Scriptbench](https://devforum.roblox.com/t/scriptbench-free-opensource-heavy-duty-benchmarker/3815286) or [Benchmarker](https://devforum.roblox.com/t/benchmarker-plugin-compare-function-speeds-with-graphs-percentiles-and-more/829912).
 
-
-## Providing Methods:
-### Assembly:
-Assembly files use `call` to invoke functions which are provided with
-```lua
-module.functions["sprintf"] = function() end
-```
-
-### ELF:
-> [!IMPORTANT]
-> ELF support is **INCOMPLETE** do not expect it to work
-
-while linked files (like ELF) will use system calls that can be intercepted by
-```lua
-module.system[67] = function() end
-```
+## Resources:
+Super helpful resources in development below:
+- https://www.cs.sfu.ca/~ashriram/Courses/CS295/assets/notebooks/RISCV/RISCV_CARD.pdf
+- https://msyksphinz-self.github.io/riscv-isadoc/
+- https://godbolt.org/
 
 ## TODO:
 - Floating point & Double support
