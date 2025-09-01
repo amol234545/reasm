@@ -30,6 +30,19 @@ func asciz(w *OutputWriter, components []string) {
 	save_pointer(w)
 	w.MemoryDevelopmentPointer += int32(len(data) + 1)
 }
+func quad(w *OutputWriter, components []string) {
+	if w.PendingData.Type != PendingDataTypeNumeric {
+		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer))
+		save_pointer(w)
+	}
+	w.PendingData.Type = PendingDataTypeNumeric
+
+	val, _ := strconv.ParseInt(components[1], 0, 0)
+	WriteIndentedString(w, "writei32(memory, %d, hi(%d))\n", w.MemoryDevelopmentPointer, val)
+	WriteIndentedString(w, "writei32(memory, %d, lo(%d))\n", w.MemoryDevelopmentPointer+4, val)
+
+	w.MemoryDevelopmentPointer += 8
+}
 func word(w *OutputWriter, components []string) {
 	if w.PendingData.Type != PendingDataTypeNumeric {
 		w.PendingData.Data = strconv.Itoa(int(w.MemoryDevelopmentPointer))
@@ -37,7 +50,7 @@ func word(w *OutputWriter, components []string) {
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
-	val, _ := strconv.Atoi(components[1])
+	val, _ := strconv.ParseInt(components[1], 0, 0)
 	WriteIndentedString(w, "writei32(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
 
 	w.MemoryDevelopmentPointer += 4
@@ -49,7 +62,7 @@ func half(w *OutputWriter, components []string) {
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
-	val, _ := strconv.Atoi(components[1])
+	val, _ := strconv.ParseInt(components[1], 0, 0)
 	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
 
 	w.MemoryDevelopmentPointer += 2
@@ -61,7 +74,7 @@ func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap wit
 	}
 	w.PendingData.Type = PendingDataTypeNumeric
 
-	val, _ := strconv.Atoi(components[1])
+	val, _ := strconv.ParseInt(components[1], 0, 0)
 	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
 
 	w.MemoryDevelopmentPointer += 1

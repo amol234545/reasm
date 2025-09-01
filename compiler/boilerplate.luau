@@ -37,20 +37,8 @@ local function float_to_double(f)
     local d = string.unpack("d", padded)
     return d
 end
-
-local function double_to_float(d)
-    -- Pack double into 8 bytes
-    local packed_d = string.pack("d", d)
-
-    -- Take the first 4 bytes (truncate)
-    local first4 = packed_d:sub(1, 4)
-
-    -- Unpack as float
-    local f = string.unpack("f", first4)
-    return f
-end
 local function two_words_to_double(lowWord, highWord)
-    local packed = string.pack("I4I4", lowWord, highWord)
+    local packed = string.pack("I4I4", math.abs(lowWord or 0), math.abs(highWord or 0))
     local d = string.unpack("d", packed)
     return d
 end
@@ -59,11 +47,6 @@ local function hi(addr)
 end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
-end
-local function int_to_double(high, low)
-    local packed = string.pack("I4I4", high, low)
-    local d = string.unpack("d", packed)
-    return d
 end
 local function extract_args()
    return {
@@ -147,7 +130,7 @@ local function format_string(fmt, args)
             arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
             local high = args[arg_index]; arg_index+=1;
-            local float = int_to_double(high, math.abs(low))
+            local float = two_words_to_double(high, math.abs(low))
 
             return string.format("%"..spec, float)
         elseif spec:sub(-1) == "s" then

@@ -2,7 +2,7 @@
 [Wiki](https://github.com/AsynchronousAI/reasm/wiki)
 > A **RISC-V IMFD** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
 >
-> **124** supported instructions!
+> **125** supported instructions & directives!
 
 ## Example:
 ```c

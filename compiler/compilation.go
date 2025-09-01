@@ -183,6 +183,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 var directives = map[string]func(*OutputWriter, []string){
 	".asciz":  asciz,
 	".string": asciz,
+	".quad":   quad,
 	".word":   word,
 	".byte":   byte_,
 	".half":   half,
@@ -294,7 +295,6 @@ func AfterCompilation(writer *OutputWriter) []byte {
 		hi = hi,
 		lo = lo,
 		float_to_double = float_to_double,
-		double_to_float = double_to_float,
 		two_words_to_double = two_words_to_double,
 		fclass = fclass,
 	},
