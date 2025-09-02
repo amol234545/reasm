@@ -7,7 +7,7 @@ func ret(w *OutputWriter, command AssemblyCommand) {
 	w.Depth++
 	//WriteIndentedString(w, "print('ret', RETURN)\n")
 	WriteIndentedString(w, "PC = registers.x1\n")
-	if w.DebugPC {
+	if w.Options.Trace {
 		WriteIndentedString(w, "print('RET: ', PC)\n")
 	}
 	WriteIndentedString(w, "registers.x1 = 0\n")
@@ -28,7 +28,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	w.Depth++
 	WriteIndentedString(w, "functions[\"%s\"]()\n", function)
 	WriteIndentedString(w, "PC = %d\n", w.MaxPC)
-	if w.DebugPC {
+	if w.Options.Trace {
 		WriteIndentedString(w, "print('CALL: ', PC)\n")
 	}
 	WriteIndentedString(w, "continue\n")

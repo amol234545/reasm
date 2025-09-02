@@ -60,6 +60,12 @@ local function extract_args()
        registers.x17,
    }
 end
+local function return_args(...)
+    local vals = {...}
+    for i = 1, #vals do
+        registers["x" .. i + 9] = vals[i]
+    end
+end
 local function read_string(startPointer)
     -- read null terminated strings from memory
     local pointer = startPointer
@@ -165,6 +171,9 @@ local functions = {
         buffer.copy(memory, dest, memory, src, count)
     end,
 }
+
+-- Extensions
+--{extentions here}
 
 -- Localized Functions
 --- bit32

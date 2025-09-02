@@ -38,8 +38,8 @@ func quad(w *OutputWriter, components []string) {
 	w.PendingData.Type = PendingDataTypeNumeric
 
 	val, _ := strconv.ParseInt(components[1], 0, 0)
-	WriteIndentedString(w, "writei32(memory, %d, hi(%d))\n", w.MemoryDevelopmentPointer, val)
-	WriteIndentedString(w, "writei32(memory, %d, lo(%d))\n", w.MemoryDevelopmentPointer+4, val)
+	WriteIndentedString(w, "writei32(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val&0xFFFFFFFF)
+	WriteIndentedString(w, "writei32(memory, %d, %d)\n", w.MemoryDevelopmentPointer+4, val>>32)
 
 	w.MemoryDevelopmentPointer += 8
 }

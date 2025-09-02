@@ -16,6 +16,7 @@ func main() {
 	var mode string
 	var outputFile string
 	var mainSymbol string
+	var importSymbols []string // <- multiple imports
 
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:   true, // force color output
@@ -44,7 +45,7 @@ func main() {
 
 			file, err := os.Open(inputFiles[0])
 			if err != nil {
-				log.Error("failed to read input file: %w", err)
+				log.Errorf("failed to read input file: %v", err)
 				return nil
 			}
 			defer file.Close()
@@ -55,12 +56,13 @@ func main() {
 				Trace:      enableTrace,
 				Mode:       modeLower,
 				MainSymbol: mainSymbol,
+				Imports:    importSymbols,
 			})
 
 			/* write output file */
 			err = os.WriteFile(outputFile, processed, 0644)
 			if err != nil {
-				log.Error("failed to write output file: %w", err)
+				log.Errorf("failed to write output file: %v", err)
 				return nil
 			}
 
@@ -74,6 +76,7 @@ func main() {
 	rootCmd.Flags().StringVar(&mode, "mode", "main", "Mode to compile as: module, main, or bench (default: main)")
 	rootCmd.Flags().StringVarP(&outputFile, "output", "o", "", "The output luau file.")
 	rootCmd.Flags().StringVarP(&mainSymbol, "symbol", "e", "main", "The main symbol to start automatically.")
+	rootCmd.Flags().StringArrayVarP(&importSymbols, "import", "I", []string{}, "Import symbol(s), can be repeated (example: -Imath -Ios)")
 	rootCmd.MarkFlagRequired("o")
 
 	rootCmd.Execute()

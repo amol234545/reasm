@@ -2,3 +2,4 @@
 *.elf
 reasm
 .DS_Store
+main.luau

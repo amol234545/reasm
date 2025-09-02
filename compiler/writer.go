@@ -25,12 +25,7 @@ type OutputWriter struct {
 	Depth                    int               /* used for indentation */
 	MaxPC                    int               /* used for counting PC which is hardcoded in */
 	Commands                 []AssemblyCommand /* used to check lines in the future */
-	Mode                     string            /* generation mode */
-	MainSymbol               string            /* entry point symbol */
-
-	/* debug options */
-	DebugPC       bool /* code will print the program counter */
-	DebugComments bool /* code will be commented with the original instruction and other notes */
+	Options                  Options           /* user specified options */
 }
 
 func WriteString(writer *OutputWriter, format string, args ...any) {

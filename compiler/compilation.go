@@ -123,8 +123,12 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fsub.d": sub,
 	"fdiv.d": div,
 	"fmul.d": mul,
+	"fneg.s": fneg,
+	"fneg.d": fneg,
 
 	/** More advanced */
+	"fabs.s":  fneg,
+	"fabs.d":  fabs,
 	"fsqrt.s": fsqrt,
 	"fmin.s":  fmin,
 	"fmax.s":  fmax,
@@ -166,6 +170,8 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fnmsub.d": fnmsub,
 
 	/** Conversion */
+	"fmv.d": move,
+
 	"fmv.w.x":   fmv_w_x,
 	"fmv.x.w":   fmv_x_w,
 	"fcvt.w.s":  fcvt_w_s,
@@ -216,7 +222,7 @@ func CompileInstruction(writer *OutputWriter, command AssemblyCommand) {
 		}
 
 		if cmdFunc, ok := instructions[command.Name]; ok {
-			if writer.DebugComments {
+			if writer.Options.Comments {
 				WriteIndentedString(writer, "-- %s (%v)\n", command.Name, command.Arguments)
 			}
 
@@ -245,12 +251,12 @@ func BeforeCompilation(writer *OutputWriter) {
 		attributeName := attributeComponents[0]
 		if _, ok := directives[attributeName]; ok {
 			directives[attributeName](writer, attributeComponents)
-		} else if writer.DebugComments {
+		} else if writer.Options.Comments {
 			WriteIndentedString(writer, "-- ASM DIRECTIVE: %s\n", command.Name)
 		}
 	}
 	writer.CurrentLabel = ""
-	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.MainSymbol))
+	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.Options.MainSymbol))
 	WriteIndentedString(writer, "registers.x2 = (buffer.len(memory) + %d) / 2 -- start at the center after static data\n", writer.MemoryDevelopmentPointer)
 	WriteIndentedString(writer, "if registers.x2 >= buffer.len(memory) then error(\"Not enough memory\") end\n")
 	writer.Depth--
@@ -279,9 +285,9 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	WriteIndentedString(writer, "end\n")
 
 	// final code based on mode
-	if writer.Mode == "main" {
+	if writer.Options.Mode == "main" {
 		WriteString(writer, "init()\nmain()\n")
-	} else if writer.Mode == "module" {
+	} else if writer.Options.Mode == "module" {
 		WriteString(writer, `return setmetatable({
 	init = init,
 	main = main,
@@ -295,6 +301,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 		hi = hi,
 		lo = lo,
 		float_to_double = float_to_double,
+		return_args = return_args,
 		two_words_to_double = two_words_to_double,
 		fclass = fclass,
 	},
@@ -302,7 +309,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	registers = registers,
 	data = data
 }, {__call = function() init(); main() end})`)
-	} else if writer.Mode == "bench" {
+	} else if writer.Options.Mode == "bench" {
 		WriteString(writer, `
 return {
     Name = "RISCV File",
@@ -317,5 +324,13 @@ return {
 
 	code := string(writer.Buffer)
 	registers := generateRegistryMap(baseRegs)
-	return []byte(strings.Replace(strings.Replace(luau_boilerplate, "--{registers here}", registers, 1), "--{code here}", code, 1))
+	extensions := generateExtensions(writer)
+
+	replacer := strings.NewReplacer(
+		"--{extentions here}", extensions,
+		"--{registers here}", registers,
+		"--{code here}", code,
+	)
+	return []byte(replacer.Replace(luau_boilerplate))
+
 }

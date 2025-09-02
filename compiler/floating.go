@@ -84,3 +84,11 @@ func fmv_x_w(w *OutputWriter, command AssemblyCommand) {
 func fclass(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "%s = fclass(%s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
 }
+
+/** Other */
+func fneg(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "%s = -%s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+}
+func fabs(w *OutputWriter, command AssemblyCommand) {
+	WriteIndentedString(w, "%s = abs(%s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+}

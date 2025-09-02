@@ -2,7 +2,7 @@
 [Wiki](https://github.com/AsynchronousAI/reasm/wiki)
 > A **RISC-V IMFD** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
 >
-> **125** supported instructions & directives!
+> **125+** supported instructions & directives!
 
 ## Example:
 ```c
@@ -58,8 +58,8 @@ Super helpful resources in development below:
 
 
 ## TODO:
-- Floating point extension
-- Doubles extension
+- Improved floating points
+- Support for `%hi(val)(5)` assembly syntax.
 - Vector operations
 - Bit manipulation operators
 - Work on support for ELF files. (or decide to remove it)

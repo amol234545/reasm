@@ -14,6 +14,7 @@ type Options struct {
 	Trace      bool
 	Mode       string
 	MainSymbol string
+	Imports    []string
 }
 
 func Compile(executable *os.File, options Options) []byte {
@@ -23,10 +24,7 @@ func Compile(executable *os.File, options Options) []byte {
 		CurrentLabel:             "",
 		MemoryDevelopmentPointer: 0,
 		MaxPC:                    1,
-		DebugPC:                  options.Trace,
-		DebugComments:            options.Comments,
-		Mode:                     options.Mode,
-		MainSymbol:               options.MainSymbol,
+		Options:                  options,
 	}
 
 	elf, err := elf.NewFile(executable)

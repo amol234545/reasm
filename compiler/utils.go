@@ -26,7 +26,7 @@ func AddEnd(w *OutputWriter) {
 
 	WriteIndentedString(w, "PC += 1\n")
 	w.Depth--
-	if w.DebugComments {
+	if w.Options.Comments {
 		WriteIndentedString(w, "end -- %s (%s)\n", w.CurrentLabel, w.CurrentLabel)
 	} else {
 		WriteIndentedString(w, "end\n")
@@ -41,7 +41,7 @@ func CompileRegister(w *OutputWriter, argument Argument) string {
 
 	var compiled string = fmt.Sprintf("data[\"%s\"]", argument.Source) /* assume it is raw data originally */
 	isReg, regName := isRegister(argument.Source)
-	address := FindLabelAddress(w, argument.Source)
+	//address := FindLabelAddress(w, argument.Source)
 	if isReg { /* it is a register! */
 		compiled = fmt.Sprintf("registers.%s", regName)
 
@@ -49,9 +49,9 @@ func CompileRegister(w *OutputWriter, argument Argument) string {
 		if argument.Offset != 0 {
 			compiled = fmt.Sprintf("%s+%d", compiled, argument.Offset)
 		}
-	} else if address != -1 {
+	} /*else if address != -1 {
 		compiled = fmt.Sprintf("%d", address)
-	}
+	}*/ // TODO: Re-enable
 
 	/** Modifier */
 	if argument.Modifier != "" {
@@ -69,13 +69,13 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 			WriteIndentedString(w, "registers.x1 = %d\n", w.MaxPC)
 		}
 
-		if w.DebugComments {
+		if w.Options.Comments {
 			WriteIndentedString(w, "PC = %d -- %s\n", address, label)
 		} else {
 			WriteIndentedString(w, "PC = %d\n", address)
 		}
 
-		if w.DebugPC {
+		if w.Options.Trace {
 			WriteIndentedString(w, "print('JUMP: ', PC)\n")
 		}
 

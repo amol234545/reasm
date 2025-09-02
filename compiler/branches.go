@@ -27,7 +27,7 @@ func jalr(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "%s = PC\n", returnAddress)
 	WriteIndentedString(w, "PC = %s + %s\n", sourceRegister, offset)
 
-	if w.DebugPC {
+	if w.Options.Trace {
 		WriteIndentedString(w, "print('JALR: ', PC)\n")
 	}
 
@@ -44,7 +44,7 @@ func jr(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
 	w.Depth++
 	WriteIndentedString(w, "PC = %s\n", CompileRegister(w, command.Arguments[0]))
-	if w.DebugPC {
+	if w.Options.Trace {
 		WriteIndentedString(w, "print('JR: ', PC)\n")
 	}
 	WriteIndentedString(w, "continue\n")
