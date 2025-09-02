@@ -43,7 +43,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	CutAndLink(w)
 }
 func move(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
 }
 
 /* unimplemented */

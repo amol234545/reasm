@@ -32,7 +32,7 @@ func AddEnd(w *OutputWriter) {
 		WriteIndentedString(w, "end\n")
 	}
 }
-func CompileRegister(argument Argument) string {
+func CompileRegister(w *OutputWriter, argument Argument) string {
 	/* does it work as a integer (its a plain) */
 	_, err := strconv.Atoi(argument.Source)
 	if err == nil {
@@ -41,6 +41,7 @@ func CompileRegister(argument Argument) string {
 
 	var compiled string = fmt.Sprintf("data[\"%s\"]", argument.Source) /* assume it is raw data originally */
 	isReg, regName := isRegister(argument.Source)
+	address := FindLabelAddress(w, argument.Source)
 	if isReg { /* it is a register! */
 		compiled = fmt.Sprintf("registers.%s", regName)
 
@@ -48,6 +49,8 @@ func CompileRegister(argument Argument) string {
 		if argument.Offset != 0 {
 			compiled = fmt.Sprintf("%s+%d", compiled, argument.Offset)
 		}
+	} else if address != -1 {
+		compiled = fmt.Sprintf("%d", address)
 	}
 
 	/** Modifier */

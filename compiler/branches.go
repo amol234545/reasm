@@ -11,11 +11,15 @@ func jal(w *OutputWriter, command AssemblyCommand) { /* jal instructions */
 	CutAndLink(w)
 }
 func jalr(w *OutputWriter, command AssemblyCommand) {
-	returnAddress := CompileRegister(command.Arguments[0])
-	sourceRegister := CompileRegister(command.Arguments[1])
+	returnAddress := CompileRegister(w, command.Arguments[0])
+
+	sourceRegister := returnAddress
+	if len(command.Arguments) > 1 {
+		CompileRegister(w, command.Arguments[1])
+	}
 	var offset string = "0"
 	if len(command.Arguments) > 2 {
-		offset = CompileRegister(command.Arguments[2])
+		offset = CompileRegister(w, command.Arguments[2])
 	}
 
 	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
@@ -39,7 +43,7 @@ func jalr(w *OutputWriter, command AssemblyCommand) {
 func jr(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
 	w.Depth++
-	WriteIndentedString(w, "PC = %s\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "PC = %s\n", CompileRegister(w, command.Arguments[0]))
 	if w.DebugPC {
 		WriteIndentedString(w, "print('JR: ', PC)\n")
 	}
@@ -50,84 +54,84 @@ func jr(w *OutputWriter, command AssemblyCommand) {
 
 /** Branching */
 func blt(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s < %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s < %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bnez(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s ~= 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s ~= 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bne(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s ~= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s ~= %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bge(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s >= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s >= %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func beqz(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s == 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s == 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func beq(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s == %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s == %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgt(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s > %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s > %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func ble(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s <= %s then\n", CompileRegister(command.Arguments[0]), CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "if %s <= %s then\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 	w.Depth++
 	JumpTo(w, command.Arguments[2].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bltz(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s < 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s < 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgtz(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s > 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s > 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func blez(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s <= 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s <= 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
 func bgez(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if %s >= 0 then\n", CompileRegister(command.Arguments[0]))
+	WriteIndentedString(w, "if %s >= 0 then\n", CompileRegister(w, command.Arguments[0]))
 	w.Depth++
 	JumpTo(w, command.Arguments[1].Source, false)
 	w.Depth--
@@ -136,5 +140,5 @@ func bgez(w *OutputWriter, command AssemblyCommand) {
 
 /* AUIPC */
 func auipc(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = PC + %s\n", command.Arguments[0].Source, CompileRegister(command.Arguments[1]))
+	WriteIndentedString(w, "registers[\"%s\"] = PC + %s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
 }
