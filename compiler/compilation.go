@@ -276,22 +276,23 @@ func BeforeCompilation(writer *OutputWriter) {
 	WriteIndentedString(writer, "end\n")
 
 	/* start code */
-	WriteIndentedString(writer, "function main()\n")
-	writer.Depth++
-	WriteIndentedString(writer, "while PC ~= 0 do\n")
-	writer.Depth++
 }
 func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
 
 	// check if invalid PC, then break
-	WriteIndentedString(writer, "if (not PC) or PC == 0 or PC > %d then\n", writer.MaxPC-1)
+	WriteIndentedString(writer, "function main()\n")
 	writer.Depth++
-	WriteIndentedString(writer, "break\n")
+	WriteIndentedString(writer, "while FUNCS[PC] do\n")
+	writer.Depth++
+	WriteIndentedString(writer, "if not FUNCS[PC]() then\n")
+	writer.Depth++
+	WriteIndentedString(writer, "PC += 1\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
-
-	// end the while loop we initialized in StartLuau
+	if writer.Options.Trace {
+		WriteIndentedString(writer, "print(\"FALL THROUGH:\", PC)\n")
+	}
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
 	writer.Depth--

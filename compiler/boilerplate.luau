@@ -211,5 +211,6 @@ local min = math.min
 local max = math.max
 local floor = math.floor
 
+local FUNCS = {}
 ---- Auto generated code starts here
 --{code here}

@@ -31,11 +31,11 @@ func jalr(w *OutputWriter, command AssemblyCommand) {
 		WriteIndentedString(w, "print('JALR: ', PC)\n")
 	}
 
-	WriteIndentedString(w, "continue\n")
+	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 	AddEnd(w)
-	WriteIndentedString(w, "if PC == %d then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
+	WriteIndentedString(w, "FUNCS[%d] = function() -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
 	w.MaxPC++
 	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
@@ -47,7 +47,7 @@ func jr(w *OutputWriter, command AssemblyCommand) {
 	if w.Options.Trace {
 		WriteIndentedString(w, "print('JR: ', PC)\n")
 	}
-	WriteIndentedString(w, "continue\n")
+	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }

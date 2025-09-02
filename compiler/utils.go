@@ -24,7 +24,6 @@ func AddEnd(w *OutputWriter) {
 		return
 	}
 
-	WriteIndentedString(w, "PC += 1\n")
 	w.Depth--
 	if w.Options.Comments {
 		WriteIndentedString(w, "end -- %s (%s)\n", w.CurrentLabel, w.CurrentLabel)
@@ -79,7 +78,7 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 			WriteIndentedString(w, "print('JUMP: ', PC)\n")
 		}
 
-		WriteIndentedString(w, "continue\n")
+		WriteIndentedString(w, "return true\n")
 		w.Depth--
 		WriteIndentedString(w, "end\n")
 	} else {
@@ -88,7 +87,7 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 }
 func CutAndLink(w *OutputWriter) {
 	AddEnd(w)
-	WriteIndentedString(w, "if PC == %d then -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
+	WriteIndentedString(w, "FUNCS[%d] = function() -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
 	w.MaxPC++
 	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)

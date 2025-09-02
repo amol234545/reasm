@@ -11,12 +11,12 @@ func ret(w *OutputWriter, command AssemblyCommand) {
 		WriteIndentedString(w, "print('RET: ', PC)\n")
 	}
 	WriteIndentedString(w, "registers.x1 = 0\n")
-	WriteIndentedString(w, "continue\n")
+	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "else\n")
 	w.Depth++
 	WriteIndentedString(w, "PC = 0\n")
-	WriteIndentedString(w, "continue\n")
+	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "end\n")
 }
@@ -31,7 +31,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	if w.Options.Trace {
 		WriteIndentedString(w, "print('CALL: ', PC)\n")
 	}
-	WriteIndentedString(w, "continue\n")
+	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "else\n")
 	w.Depth++

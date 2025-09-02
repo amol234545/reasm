@@ -12,7 +12,7 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	/* define it */
 	w.CurrentLabel = command.Name
 
-	WriteIndentedString(w, "if PC == %d then -- %s\n", w.MaxPC, command.Name)
+	WriteIndentedString(w, "FUNCS[%d] = function() -- %s\n", w.MaxPC, command.Name)
 	w.Depth++
 	w.MaxPC++
 }
