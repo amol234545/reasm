@@ -71,6 +71,22 @@ func fcvt_w_s(w *OutputWriter, command AssemblyCommand) {
 func fcvt_s_w(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "registers[\"%s\"] = int_to_float(%s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
 }
+func fcvt_d_w(w *OutputWriter, command AssemblyCommand) {
+	if w.Options.Comments {
+		WriteIndentedString(w, "registers[\"%s\"] = int_to_float(%s) -- Double will just be a less precise float\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+
+	} else {
+		WriteIndentedString(w, "registers[\"%s\"] = int_to_float(%s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	}
+}
+func fcvt_w_d(w *OutputWriter, command AssemblyCommand) {
+	if w.Options.Comments {
+		WriteIndentedString(w, "registers[\"%s\"] = float_to_int(%s) -- Double will just be a less precise float\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+
+	} else {
+		WriteIndentedString(w, "registers[\"%s\"] = float_to_int(%s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	}
+}
 
 /** Move */
 func fmv_w_x(w *OutputWriter, command AssemblyCommand) {

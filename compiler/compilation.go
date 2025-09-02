@@ -172,6 +172,7 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 
 	/** Conversion */
 	"fmv.d": move,
+	"fmv.s": move,
 
 	"fmv.w.x":   fmv_w_x,
 	"fmv.x.w":   fmv_x_w,
@@ -180,6 +181,8 @@ var instructions = map[string]func(*OutputWriter, AssemblyCommand){
 	"fcvt.s.w":  fcvt_s_w,
 	"fcvt.s.wu": fcvt_s_w,
 	"fcvt.d.s":  fcvt_d_s,
+	"fcvt.w.d":  fcvt_w_d,
+	"fcvt.d.w":  fcvt_d_w,
 
 	/* Abstraction */
 	"auipc": auipc,
@@ -194,6 +197,8 @@ var directives = map[string]func(*OutputWriter, []string){
 	".word":   word,
 	".byte":   byte_,
 	".half":   half,
+	".zero":   zero,
+	".set":    set,
 }
 
 func generateRegistryMap(w *OutputWriter, m map[string]bool) string {

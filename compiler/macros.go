@@ -17,8 +17,11 @@ func label(w *OutputWriter, command AssemblyCommand) {
 	w.MaxPC++
 }
 
+func save_pointer_at(w *OutputWriter, what string, where int32) {
+	WriteIndentedString(w, "data[\"%s\"] = %d\n", what, int(where))
+}
 func save_pointer(w *OutputWriter) {
-	WriteIndentedString(w, "data[\"%s\"] = %d\n", w.CurrentLabel, int(w.MemoryDevelopmentPointer))
+	save_pointer_at(w, w.CurrentLabel, w.MemoryDevelopmentPointer)
 }
 
 func asciz(w *OutputWriter, components []string) {
@@ -78,4 +81,14 @@ func byte_(w *OutputWriter, components []string) { /* byte_ to avoid overlap wit
 	WriteIndentedString(w, "writei16(memory, %d, %d)\n", w.MemoryDevelopmentPointer, val)
 
 	w.MemoryDevelopmentPointer += 1
+}
+func zero(w *OutputWriter, components []string) {
+	size, _ := strconv.ParseInt(components[1], 0, 0)
+	save_pointer(w)
+	WriteIndentedString(w, "fill(memory, %d, 0, %d)\n", w.MemoryDevelopmentPointer, size)
+
+	w.MemoryDevelopmentPointer += int32(size)
+}
+func set(w *OutputWriter, components []string) {
+	save_pointer_at(w, components[1], w.MemoryDevelopmentPointer) /* todo: support offsetted .set directives */
 }

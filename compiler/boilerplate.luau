@@ -163,6 +163,9 @@ local functions = {
         table.remove(args, 1)
         print(format_string(read_string(registers.x10), args))
     end,
+    ["puts"] = function()
+        print(read_string(registers.x10))
+    end,
     ["memcpy"] = function()
         local dest = registers.x10
         local src = registers.x11
@@ -202,6 +205,7 @@ local writef32 = buffer.writef32
 local writef64 = buffer.writef64
 local readf32 = buffer.readf32
 local readf64 = buffer.readf64
+local fill = buffer.fill
 
 -- math
 local sqrt = math.sqrt
