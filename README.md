@@ -1,8 +1,11 @@
 # ReASM
 [Wiki](https://github.com/AsynchronousAI/reasm/wiki)
-> A **RISC-V IMFD** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
+> A experimental **RISC-V IMFD** compatible assembler/disassembler to **Luau**. Soon to be **IMFDVB** compatible!
 >
 > **125+** supported instructions & directives!
+
+> [!NOTE]
+> Some programs, will not work! Create an issue if you find an assembly file which is compiling invalid.
 
 ## Example:
 ```c
