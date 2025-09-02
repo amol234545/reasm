@@ -26,6 +26,7 @@ type OutputWriter struct {
 	MaxPC                    int               /* used for counting PC which is hardcoded in */
 	Commands                 []AssemblyCommand /* used to check lines in the future */
 	Options                  Options           /* user specified options */
+	//RegistryMap              map[string]int    /* register name to integer */
 }
 
 func WriteString(writer *OutputWriter, format string, args ...any) {

@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -195,19 +196,31 @@ var directives = map[string]func(*OutputWriter, []string){
 	".half":   half,
 }
 
-func generateRegistryMap(m map[string]bool) string {
+func generateRegistryMap(w *OutputWriter, m map[string]bool) string {
 	var sb strings.Builder
 
-	// Sort keys for consistent output
 	keys := make([]string, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys)
+	sort.Slice(keys, func(i, j int) bool {
+		ki, kj := keys[i], keys[j]
+
+		// Compare first characters
+		if ki[0] != kj[0] {
+			return ki[0] > kj[0]
+		}
+
+		// Extract numeric suffix
+		numI, _ := strconv.Atoi(ki[1:])
+		numJ, _ := strconv.Atoi(kj[1:])
+
+		return numI < numJ
+	})
 
 	for _, k := range keys {
-		// All values are zero
-		sb.WriteString(fmt.Sprintf("    [\"%s\"] = 0,\n", k))
+		sb.WriteString(fmt.Sprintf("\t[\"%s\"] = 0,\n", k))
+		//w.RegistryMap[k] = i
 	}
 
 	return sb.String()
@@ -323,7 +336,7 @@ return {
 	}
 
 	code := string(writer.Buffer)
-	registers := generateRegistryMap(baseRegs)
+	registers := generateRegistryMap(writer, baseRegs)
 	extensions := generateExtensions(writer)
 
 	replacer := strings.NewReplacer(

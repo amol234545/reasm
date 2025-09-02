@@ -73,7 +73,7 @@ func main() {
 	// Flags
 	rootCmd.Flags().BoolVar(&enableComments, "comments", false, "Include debug comments in the output")
 	rootCmd.Flags().BoolVar(&enableTrace, "trace", false, "Prints out a trace of the PC")
-	rootCmd.Flags().StringVar(&mode, "mode", "main", "Mode to compile as: module, main, or bench (default: main)")
+	rootCmd.Flags().StringVar(&mode, "mode", "main", "Mode to compile as: module, main, or bench")
 	rootCmd.Flags().StringVarP(&outputFile, "output", "o", "", "The output luau file.")
 	rootCmd.Flags().StringVarP(&mainSymbol, "symbol", "e", "main", "The main symbol to start automatically.")
 	rootCmd.Flags().StringArrayVarP(&importSymbols, "import", "I", []string{}, "Import symbol(s), can be repeated (example: -Imath -Ios)")
