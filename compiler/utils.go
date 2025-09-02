@@ -105,6 +105,16 @@ func isCutoffInstruction(instruction AssemblyCommand) bool {
 	return instruction.Type == Instruction && (instruction.Name == "call" || instruction.Name == "jal" || instruction.Name == "jalr")
 }
 
+func GetAllLabels(writer *OutputWriter) []string {
+	labels := make([]string, 0)
+	for _, command := range writer.Commands {
+		if command.Type == Label {
+			labels = append(labels, command.Name)
+		}
+	}
+	return labels
+}
+
 func FindLabelAddress(writer *OutputWriter, target string) int {
 	countedLabels := 0
 	for _, label := range writer.Commands {

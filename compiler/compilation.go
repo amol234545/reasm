@@ -286,8 +286,9 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	AddEnd(writer) // end the current label, if active
 
 	// check if invalid PC, then break
-	WriteIndentedString(writer, "function main()\n")
+	WriteIndentedString(writer, "function start(startPosition)\n")
 	writer.Depth++
+	WriteIndentedString(writer, "PC = startPosition\n")
 	WriteIndentedString(writer, "while FUNCS[PC] do\n")
 	writer.Depth++
 	WriteIndentedString(writer, "if not FUNCS[PC]() then\n")
@@ -304,12 +305,12 @@ func AfterCompilation(writer *OutputWriter) []byte {
 	WriteIndentedString(writer, "end\n")
 
 	// final code based on mode
+	main := FindLabelAddress(writer, writer.Options.MainSymbol)
 	if writer.Options.Mode == "main" {
-		WriteString(writer, "init()\nmain()\n")
+		WriteString(writer, "init()\nstart(%d)\n", main)
 	} else if writer.Options.Mode == "module" {
 		WriteString(writer, `return setmetatable({
 	init = init,
-	main = main,
 	memory = memory,
 	functions = functions,
 	util = {
@@ -324,10 +325,17 @@ func AfterCompilation(writer *OutputWriter) []byte {
 		two_words_to_double = two_words_to_double,
 		fclass = fclass,
 	},
-	PC = PC,
 	registers = registers,
-	data = data
-}, {__call = function() init(); main() end})`)
+	data = data,
+
+	exports = {
+`)
+
+		for _, label := range GetAllLabels(writer) {
+			WriteString(writer, "\t\t[\"%s\"] = function() start(%d) end,\n", label, FindLabelAddress(writer, label))
+		}
+
+		WriteString(writer, "\t}\n}, {__call = function() init(); start(%d) end})", main)
 	} else if writer.Options.Mode == "bench" {
 		WriteString(writer, `
 return {
@@ -336,9 +344,9 @@ return {
     BeforeEach = init,
 
     Functions = {
-        ["main"] = main,
+        ["main"] = function() start(%d) end,
     }
-}`)
+}`, main)
 	}
 
 	code := string(writer.Buffer)
