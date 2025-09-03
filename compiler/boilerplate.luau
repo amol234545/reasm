@@ -3,9 +3,7 @@
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
 local data = {} -- pointers in memory to data, ex: strings
-local registers = {
---{registers here}
-}
+local registers = table.create(64,0)
 
 -- Variables
 local PC = 1 -- current position
@@ -13,9 +11,12 @@ local PC = 1 -- current position
 -- Utility
 --- Base (can be found in generated code)
 local function idiv_trunc(a, b)
-  if b == 0 then error("division by zero") end
-  local q = math.modf(a / b) -- truncated toward zero
-  return bit32.band(q, 0xFFFFFFFF) -- keep 32-bit wrap semantics if desired
+    if b == 0 then error("division by zero") end
+    if a >= 0 then
+        return (a - (a % b)) // b
+    else
+        return -((-a) - ((-a) % b)) // b
+    end
 end
 local function float_to_int(f)
     local i = string.unpack("i", string.pack("f", f))
@@ -89,9 +90,7 @@ function fclass(x)
     return result
 end
 function reset_registers()
-    for regName, regValue in registers do
-        registers[regName] = 0
-    end
+    registers = table.create(64,0)
 end
 
 --- Strings
@@ -148,14 +147,14 @@ end
 --- Args
 local function extract_args()
    return {
-       registers.x10,
-       registers.x11,
-       registers.x12,
-       registers.x13,
-       registers.x14,
-       registers.x15,
-       registers.x16,
-       registers.x17,
+       registers[11],
+       registers[12],
+       registers[13],
+       registers[14],
+       registers[15],
+       registers[16],
+       registers[17],
+       registers[18],
    }
 end
 local function return_args(...)
@@ -170,16 +169,15 @@ end
 local functions = {
     ["printf"] = function()
         local args = extract_args()
+        local str = args[1]
         table.remove(args, 1)
-        print(format_string(read_string(registers.x10), args))
+        print(format_string(read_string(str), args))
     end,
     ["puts"] = function()
-        print(read_string(registers.x10))
+        print(read_string(extract_args()[1]))
     end,
     ["memcpy"] = function()
-        local dest = registers.x10
-        local src = registers.x11
-        local count = registers.x12
+        local dest,src,count = unpack(extract_args())
 
         buffer.copy(memory, dest, memory, src, count)
     end,

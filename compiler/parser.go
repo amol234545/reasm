@@ -112,7 +112,7 @@ func parseArguments(parts []string) []Argument {
 }
 
 func isRegister(s string) (bool, string) {
-	if baseRegs[s] {
+	if baseRegs[s] > 0 {
 		return true, s
 	} else if abiToReg[s] != "" {
 		return true, abiToReg[s]

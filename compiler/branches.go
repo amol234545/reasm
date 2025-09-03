@@ -138,5 +138,5 @@ func bgez(w *OutputWriter, command AssemblyCommand) {
 
 /* AUIPC */
 func auipc(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers[\"%s\"] = PC + %s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = PC + %s\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }

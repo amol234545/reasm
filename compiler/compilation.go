@@ -276,8 +276,8 @@ func BeforeCompilation(writer *OutputWriter) {
 	}
 	writer.CurrentLabel = ""
 	WriteIndentedString(writer, "PC = %d\n", FindLabelAddress(writer, writer.Options.MainSymbol))
-	WriteIndentedString(writer, "registers.x2 = (buffer.len(memory) + %d) / 2 -- start at the center after static data\n", writer.MemoryDevelopmentPointer)
-	WriteIndentedString(writer, "if registers.x2 >= buffer.len(memory) then error(\"Not enough memory\") end\n")
+	WriteIndentedString(writer, "registers[3] = (buffer.len(memory) + %d) / 2 -- start at the center after static data\n", writer.MemoryDevelopmentPointer)
+	WriteIndentedString(writer, "if registers[3] >= buffer.len(memory) then error(\"Not enough memory\") end\n")
 	writer.Depth--
 	WriteIndentedString(writer, "end\n")
 
@@ -352,12 +352,10 @@ return {
 	}
 
 	code := string(writer.Buffer)
-	registers := generateRegistryMap(writer, baseRegs)
 	extensions := generateExtensions(writer)
 
 	replacer := strings.NewReplacer(
 		"--{extentions here}", extensions,
-		"--{registers here}", registers,
 		"--{code here}", code,
 	)
 	return []byte(replacer.Replace(luau_boilerplate))

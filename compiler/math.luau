@@ -39,6 +39,6 @@ local math_wrappers = {
 
 for name, func in pairs(math_wrappers) do
     functions[name] = function()
-        registers.f10 = func(registers.f10,registers.f11,registers.f12)
+        registers[43] = func(registers[43],registers[44],registers[45])
     end
 end

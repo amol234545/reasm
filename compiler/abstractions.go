@@ -3,14 +3,14 @@ package compiler
 import log "github.com/sirupsen/logrus"
 
 func ret(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "if registers.x1 ~= 0 then\n")
+	WriteIndentedString(w, "if registers[2] ~= 0 then\n")
 	w.Depth++
 	//WriteIndentedString(w, "print('ret', RETURN)\n")
-	WriteIndentedString(w, "PC = registers.x1\n")
+	WriteIndentedString(w, "PC = registers[2]\n")
 	if w.Options.Trace {
 		WriteIndentedString(w, "print('RET: ', PC)\n")
 	}
-	WriteIndentedString(w, "registers.x1 = 0\n")
+	WriteIndentedString(w, "registers[2] = 0\n")
 	WriteIndentedString(w, "return true\n")
 	w.Depth--
 	WriteIndentedString(w, "else\n")
@@ -43,7 +43,7 @@ func call(w *OutputWriter, command AssemblyCommand) {
 	CutAndLink(w)
 }
 func move(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = %s\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 
 /* unimplemented */

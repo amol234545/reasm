@@ -13,23 +13,23 @@ func sb(w *OutputWriter, command AssemblyCommand) {
 
 /** Load Memory */
 func li(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = %s\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = %s\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lui(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = lshift(%s, 12)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = lshift(%s, 12)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lw(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = readi32(memory, %s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = readi32(memory, %s)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lb(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = readi8(memory, %s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = readi8(memory, %s)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lh(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = readi16(memory, %s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = readi16(memory, %s)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lhu(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = readu16(memory, %s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = readu16(memory, %s)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }
 func lbu(w *OutputWriter, command AssemblyCommand) {
-	WriteIndentedString(w, "registers.%s = readu8(memory, %s)\n", command.Arguments[0].Source, CompileRegister(w, command.Arguments[1]))
+	WriteIndentedString(w, "%s = readu8(memory, %s)\n", CompileRegister(w, command.Arguments[0]), CompileRegister(w, command.Arguments[1]))
 }

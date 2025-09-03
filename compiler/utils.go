@@ -40,17 +40,19 @@ func CompileRegister(w *OutputWriter, argument Argument) string {
 
 	var compiled string = fmt.Sprintf("data[\"%s\"]", argument.Source) /* assume it is raw data originally */
 	isReg, regName := isRegister(argument.Source)
-	//address := FindLabelAddress(w, argument.Source)
+	regNumber := baseRegs[regName]
 	if isReg { /* it is a register! */
-		compiled = fmt.Sprintf("registers.%s", regName)
+		if w.Options.Comments {
+			compiled = fmt.Sprintf("registers[%d --[[ %s ]] ]", regNumber, regName)
+		} else {
+			compiled = fmt.Sprintf("registers[%d]", regNumber)
+		}
 
 		/** Offset */
 		if argument.Offset != 0 {
 			compiled = fmt.Sprintf("%s+%d", compiled, argument.Offset)
 		}
-	} /*else if address != -1 {
-		compiled = fmt.Sprintf("%d", address)
-	}*/ // TODO: Re-enable
+	}
 
 	/** Modifier */
 	if argument.Modifier != "" {
@@ -65,7 +67,7 @@ func JumpTo(w *OutputWriter, label string, link bool) {
 		WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue
 		w.Depth++
 		if link {
-			WriteIndentedString(w, "registers.x1 = %d\n", w.MaxPC)
+			WriteIndentedString(w, "registers[2] = %d\n", w.MaxPC)
 		}
 
 		if w.Options.Comments {
