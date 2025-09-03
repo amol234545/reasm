@@ -3,6 +3,7 @@ package compiler
 import (
 	"debug/elf"
 	"fmt"
+	"sort"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
@@ -31,12 +32,23 @@ func ParseFromElf(f *elf.File) []AssemblyCommand {
 		log.Error(".text section not found")
 		return []AssemblyCommand{}
 	}
+	symtab, err := f.Symbols() // returns []elf.Symbol
+	if err != nil {
+		log.Println("No symbol table found:", err)
+	}
 
 	code, err := text.Data()
 	if err != nil {
 		log.Error(err)
 		return []AssemblyCommand{}
 	}
+
+	sort.Slice(symtab, func(i, j int) bool {
+		return symtab[i].Value < symtab[j].Value
+	})
+
+	symStack := make([]elf.Symbol, len(symtab))
+	copy(symStack, symtab)
 
 	/* TODO: parse the actual data of the file  */
 	instructions := make([]AssemblyCommand, 0)
@@ -45,6 +57,17 @@ func ParseFromElf(f *elf.File) []AssemblyCommand {
 		if err != nil {
 			fmt.Println("Decode error:", err)
 			continue
+		}
+
+		/* any symbols to be added before this */
+		for _, sym := range symStack {
+			symStack = symStack[:len(symStack)-1] // pop
+
+			instructions = append(instructions, AssemblyCommand{
+				Type:      Label,
+				Name:      sym.Name,
+				Arguments: nil,
+			})
 		}
 
 		/* read args */
@@ -63,12 +86,11 @@ func ParseFromElf(f *elf.File) []AssemblyCommand {
 		instructionOp := strings.ToLower(inst.Op.String())
 
 		/* append */
-		instruction := AssemblyCommand{
+		instructions = append(instructions, AssemblyCommand{
 			Type:      Instruction,
 			Name:      instructionOp,
 			Arguments: args,
-		}
-		instructions = append(instructions, instruction)
+		})
 	}
 
 	return instructions

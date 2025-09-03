@@ -1,7 +1,5 @@
 package compiler
 
-import "fmt"
-
 /** Jump */
 func jump(w *OutputWriter, command AssemblyCommand) { /* j instructions */
 	JumpTo(w, command.Arguments[0].Source, false)
@@ -38,7 +36,7 @@ func jalr(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "FUNCS[%d] = function() -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
 	w.MaxPC++
-	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
+	w.CurrentLabel = IncrementFunctionName(w.CurrentLabel)
 }
 func jr(w *OutputWriter, command AssemblyCommand) {
 	WriteIndentedString(w, "do\n") // wrap with a do so luau does not complain if any code is after the continue

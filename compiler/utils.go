@@ -20,7 +20,7 @@ func ReadDirective(directive string) []string {
 	return matches
 }
 func AddEnd(w *OutputWriter) {
-	if w.CurrentLabel == "" {
+	if w.Depth == 0 {
 		return
 	}
 
@@ -90,7 +90,7 @@ func CutAndLink(w *OutputWriter) {
 	WriteIndentedString(w, "FUNCS[%d] = function() -- %s (extended) \n", w.MaxPC, w.CurrentLabel)
 	w.Depth++
 	w.MaxPC++
-	w.CurrentLabel = fmt.Sprintf("%s_end", w.CurrentLabel)
+	w.CurrentLabel = IncrementFunctionName(w.CurrentLabel)
 }
 func FindInArray(array []string, target string) int {
 	for i, item := range array {
@@ -104,7 +104,28 @@ func FindInArray(array []string, target string) int {
 func isCutoffInstruction(instruction AssemblyCommand) bool {
 	return instruction.Type == Instruction && (instruction.Name == "call" || instruction.Name == "jal" || instruction.Name == "jalr")
 }
+func IncrementFunctionName(name string) string {
+	re := regexp.MustCompile(`^(.*?)(?:_ext_(\d+))?$`)
+	matches := re.FindStringSubmatch(name)
 
+	if len(matches) == 0 {
+		return name + "_ext_1"
+	}
+
+	base := matches[1]
+	suffix := matches[2]
+
+	if suffix == "" {
+		return base + "_ext_1"
+	}
+
+	num, err := strconv.Atoi(suffix)
+	if err != nil {
+		return base + "_ext_1"
+	}
+
+	return fmt.Sprintf("%s_ext_%d", base, num+1)
+}
 func GetAllLabels(writer *OutputWriter) []string {
 	labels := make([]string, 0)
 	for _, command := range writer.Commands {

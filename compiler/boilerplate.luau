@@ -1,5 +1,5 @@
 -- Compiled from RISC-V assembly.
---- API
+-- API
 local mem = 2048 -- 2KB of RAM
 local memory = buffer.create(mem) -- our memory!
 local data = {} -- pointers in memory to data, ex: strings
@@ -7,10 +7,11 @@ local registers = {
 --{registers here}
 }
 
---- Variables
+-- Variables
 local PC = 1 -- current position
 
---- Utility
+-- Utility
+--- Base (can be found in generated code)
 local function idiv_trunc(a, b)
   if b == 0 then error("division by zero") end
   local q = math.modf(a / b) -- truncated toward zero
@@ -25,7 +26,6 @@ local function int_to_float(i)
     local f = string.unpack("f", packed)
     return f
 end
-
 local function float_to_double(f)
     -- Pack float into 4 bytes
     local packed_f = string.pack("f", f)
@@ -47,38 +47,6 @@ local function hi(addr)
 end
 local function lo(addr)
     return bit32.band(addr, 0xFFF)
-end
-local function extract_args()
-   return {
-       registers.x10,
-       registers.x11,
-       registers.x12,
-       registers.x13,
-       registers.x14,
-       registers.x15,
-       registers.x16,
-       registers.x17,
-   }
-end
-local function return_args(...)
-    local vals = {...}
-    for i = 1, #vals do
-        registers["x" .. i + 9] = vals[i]
-    end
-end
-local function read_string(startPointer)
-    -- read null terminated strings from memory
-    local pointer = startPointer
-    local str = ""
-    local byte
-    repeat
-        byte = buffer.readbits(memory, pointer * 8, 8)
-        if byte == 0 then break end
-        str = str .. string.char(byte)
-        pointer = pointer + 1
-        if pointer >= mem then error("Exceeded buffer size when reading string.") end
-    until false
-    return str
 end
 function fclass(x)
     local result = 0
@@ -120,6 +88,8 @@ function fclass(x)
 
     return result
 end
+
+--- Strings
 local function format_string(fmt, args)
     -- custom format string because strings are stored as pointers, and floats as ints.
     local arg_index = 1
@@ -155,6 +125,41 @@ local function format_string(fmt, args)
 
     return result
 end
+local function read_string(startPointer)
+    -- read null terminated strings from memory
+    local pointer = startPointer
+    local str = ""
+    local byte
+    repeat
+        byte = buffer.readbits(memory, pointer * 8, 8)
+        if byte == 0 then break end
+        str = str .. string.char(byte)
+        pointer = pointer + 1
+        if pointer >= mem then error("Exceeded buffer size when reading string.") end
+    until false
+    return str
+end
+
+--- Args
+local function extract_args()
+   return {
+       registers.x10,
+       registers.x11,
+       registers.x12,
+       registers.x13,
+       registers.x14,
+       registers.x15,
+       registers.x16,
+       registers.x17,
+   }
+end
+local function return_args(...)
+    local vals = {...}
+    for i = 1, #vals do
+        registers["x" .. i + 9] = vals[i]
+    end
+end
+
 
 -- Functions
 local functions = {
@@ -207,7 +212,7 @@ local readf32 = buffer.readf32
 local readf64 = buffer.readf64
 local fill = buffer.fill
 
--- math
+--- math
 local sqrt = math.sqrt
 local abs = math.abs
 local sgn = math.sign
