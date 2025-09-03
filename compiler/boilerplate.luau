@@ -7,6 +7,7 @@ local registers = table.create(64,0)
 
 -- Variables
 local PC = 1 -- current position
+local mallocDepth = 0
 
 -- Utility
 --- Base (can be found in generated code)
@@ -143,6 +144,12 @@ local function format_string(fmt, args)
     return result
 end
 
+--- Memory
+local function malloc(size)
+    mallocDepth+=size
+    return buffer.len(memory)-mallocDepth
+end
+
 --- Args
 local function get_args()
    return
@@ -197,6 +204,12 @@ local functions = {
 
         buffer.copy(memory, dest, memory, src, count)
     end,
+    ["malloc"] = function()
+        local size = get_args()
+        local dest = malloc(size)
+
+        push_args(dest)
+    end
 }
 
 -- Extensions
