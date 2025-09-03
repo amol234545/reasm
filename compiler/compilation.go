@@ -257,6 +257,7 @@ func BeforeCompilation(writer *OutputWriter) {
 	/* load directives */
 	WriteIndentedString(writer, "function init()\n")
 	writer.Depth++
+	WriteIndentedString(writer, "reset_registers()\n")
 	for _, command := range writer.Commands {
 		if command.Type == Label {
 			writer.CurrentLabel = command.Name /* macros depend on label */
@@ -324,6 +325,7 @@ func AfterCompilation(writer *OutputWriter) []byte {
 		return_args = return_args,
 		two_words_to_double = two_words_to_double,
 		fclass = fclass,
+		reset_registers = reset_registers,
 	},
 	registers = registers,
 	data = data,

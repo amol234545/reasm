@@ -88,8 +88,27 @@ function fclass(x)
 
     return result
 end
+function reset_registers()
+    for regName, regValue in registers do
+        registers[regName] = 0
+    end
+end
 
 --- Strings
+local function read_string(startPointer)
+    -- read null terminated strings from memory
+    local pointer = startPointer
+    local str = ""
+    local byte
+    repeat
+        byte = buffer.readbits(memory, pointer * 8, 8)
+        if byte == 0 then break end
+        str = str .. string.char(byte)
+        pointer = pointer + 1
+        if pointer >= mem then error("Exceeded buffer size when reading string.") end
+    until false
+    return str
+end
 local function format_string(fmt, args)
     -- custom format string because strings are stored as pointers, and floats as ints.
     local arg_index = 1
@@ -115,7 +134,7 @@ local function format_string(fmt, args)
             arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
             local high = args[arg_index]; arg_index+=1;
-            local float = int_to_double(high, low)
+            local float = two_words_to_double(high, low)
 
             return string.format("%"..spec, float)
         else
@@ -124,20 +143,6 @@ local function format_string(fmt, args)
     end)
 
     return result
-end
-local function read_string(startPointer)
-    -- read null terminated strings from memory
-    local pointer = startPointer
-    local str = ""
-    local byte
-    repeat
-        byte = buffer.readbits(memory, pointer * 8, 8)
-        if byte == 0 then break end
-        str = str .. string.char(byte)
-        pointer = pointer + 1
-        if pointer >= mem then error("Exceeded buffer size when reading string.") end
-    until false
-    return str
 end
 
 --- Args
