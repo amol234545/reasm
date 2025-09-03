@@ -39,6 +39,6 @@ local math_wrappers = {
 
 for name, func in pairs(math_wrappers) do
     functions[name] = function()
-        registers[43] = func(registers[43],registers[44],registers[45])
+        push_f_args(func(get_f_args()))
     end
 end

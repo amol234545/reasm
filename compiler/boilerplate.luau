@@ -39,7 +39,7 @@ local function float_to_double(f)
     return d
 end
 local function two_words_to_double(lowWord, highWord)
-    local packed = string.pack("I4I4", math.abs(lowWord or 0), math.abs(highWord or 0))
+    local packed = string.pack("I4I4", lowWord, highWord)
     local d = string.unpack("d", packed)
     return d
 end
@@ -121,7 +121,6 @@ local function format_string(fmt, args)
         elseif spec:sub(-1) == "X" then
             return string.format("%X", val)
         elseif spec:sub(-1) == "f" then
-            arg_index+=1 -- skip for alignment
             local low = args[arg_index]; arg_index+=1;
             local high = args[arg_index]; arg_index+=1;
             local float = two_words_to_double(high, math.abs(low))
@@ -145,8 +144,8 @@ local function format_string(fmt, args)
 end
 
 --- Args
-local function extract_args()
-   return {
+local function get_args()
+   return
        registers[11],
        registers[12],
        registers[13],
@@ -154,13 +153,30 @@ local function extract_args()
        registers[15],
        registers[16],
        registers[17],
-       registers[18],
-   }
+       registers[18]
 end
-local function return_args(...)
+local function push_args(...)
     local vals = {...}
     for i = 1, #vals do
-        registers["x" .. i + 9] = vals[i]
+        registers[i + 10] = vals[i]
+    end
+end
+
+local function get_f_args()
+   return
+       registers[43],
+       registers[44],
+       registers[45],
+       registers[46],
+       registers[47],
+       registers[48],
+       registers[49],
+       registers[50]
+end
+local function push_f_args(...)
+    local vals = {...}
+    for i = 1, #vals do
+        registers[i + 42] = vals[i]
     end
 end
 
@@ -168,16 +184,16 @@ end
 -- Functions
 local functions = {
     ["printf"] = function()
-        local args = extract_args()
+        local args = {get_args()}
         local str = args[1]
         table.remove(args, 1)
         print(format_string(read_string(str), args))
     end,
     ["puts"] = function()
-        print(read_string(extract_args()[1]))
+        print(read_string(get_args()))
     end,
     ["memcpy"] = function()
-        local dest,src,count = unpack(extract_args())
+        local dest,src,count = get_args()
 
         buffer.copy(memory, dest, memory, src, count)
     end,
